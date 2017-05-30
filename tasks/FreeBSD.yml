@@ -1,0 +1,20 @@
+   #- portinstall:  name="virtualbox-ose"          state=present  
+
+   - name:   git
+     when:   beefy_version
+     pkgng:  name="git"            autoremove=yes   cached=yes   state=present
+
+   - name:   rsync
+     pkgng:  name="rsync"          autoremove=yes   cached=yes   state=present
+
+   - name:   gmake
+     pkgng:  name="gmake"          autoremove=yes   cached=yes   state=present
+
+   - name:   sudo
+     pkgng:  name="sudo"           autoremove=yes   cached=yes   state=present
+
+   - name:   python
+     pkgng:  name="python"         autoremove=yes   cached=yes   state=present
+
+   - name:   python
+     pkgng:  name="py27-psycopg2"  autoremove=yes   cached=yes   state=present

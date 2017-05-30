@@ -1,0 +1,9 @@
+     - name: zz/ioannis
+       zfs:  name={{ pool }}/ioannis  state=present  compression=on  mountpoint=/home/ioannis
+     - name: zz/postgres
+       zfs:  name={{ pool }}/postgres state=present  compression=on  mountpoint=/home/postgres
+     - name: zz/green
+       zfs:  name={{ pool }}/green    state=present  compression=on  mountpoint=/home/postgres/green
+
+     - include: zfsnap_Debian.yml
+       when: ansible_os_family  == "Debian"

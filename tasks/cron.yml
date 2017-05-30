@@ -1,0 +1,4 @@
+   - name: cron MAILTO
+     cron: name=MAILTO env=yes  value=""
+   - name: cron PATH
+     cron: name=PATH env=yes  value=/bin:/usr/bin:/usr/sbin insertafter=MAILTO

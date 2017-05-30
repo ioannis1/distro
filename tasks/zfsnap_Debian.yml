@@ -1,0 +1,15 @@
+     - name: zfsnap
+       apt: pkg=zfsnap state=installed
+       register: zfSsnap_installed 
+
+     - name: cron zfs1
+       when: zfSsnap_installed
+       cron: name="zfs daily"  hour=2     job='zfSnap -e -s -S -d -a 1d -r {{zpool}}'
+
+     - name: cron zfs2
+       when: zfSsnap_installed
+       cron: name="zfs hourly" minute=2   job='zfSnap -e -s -S -d -a 58m -r {{zpool}}'
+
+     - name: cron3 
+       cron: name=POOL env=yes  value="zz" insertafter=PATH
+

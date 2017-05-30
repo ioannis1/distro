@@ -1,0 +1,35 @@
+- lineinfile:
+    path: /etc/hosts
+    insertbefore: '.*99.100'
+    line: '192.168.64.1      bulk.local        bulk'
+
+- lineinfile:
+    path: /etc/hosts
+   #regexp: '^# port for http'
+    #insertbefore: '^www.*80/tcp'
+    line: '192.168.99.100    coreos-1.haw.org  coreos   cbulk'
+
+- lineinfile:
+    path: /etc/hosts
+    insertafter: '.*99.100'
+    line: '192.168.99.101    freebsd.haw.org   freebsd   fbulk     maya'
+
+- lineinfile:
+    path: /etc/hosts
+    insertafter: '.*99.100'
+    line: '192.168.99.102    openbsd.haw.org   open     openbsd   obulk'
+
+
+- lineinfile:
+    path: /etc/hosts
+    insertafter: '.*99.100'
+    line: '192.168.99.201    sbulk.haw.org     stretch  sbulk'
+
+
+#::1     localhost ip6-localhost ip6-loopback
+#ff02::1 ip6-allnodes
+#ff02::2 ip6-allrouters
+#127.0.0.1       localhost
+#::1             localhost 
+
+

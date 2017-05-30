@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Ioannis Tambouras
+  description: configuration of postgresql roles, databases, extensions, privs
+  company: Akron Inc
+  license: "MIT"
+  min_ansible_version: 1.2
+  galaxy_tags:  []
+  platforms:
+      - name: Debian
+        versions:
+           - stretch
+      - name: FreeBSD
+        versions:
+           - 11.0
+
+allow_duplicates: no
+dependencies: []

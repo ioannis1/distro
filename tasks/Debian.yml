@@ -1,0 +1,57 @@
+   - name:      oracle_vbox_2016.asc
+     when:      allow_vbox_repo
+     apt_key:   data="{{ lookup('file', 'oracle_vbox_2016.asc') }}"      state="present"
+            
+   - name:           apt_repository virtualbox
+     when:           allow_vbox_repo
+     apt_repository: state="present"  repo="deb http://download.virtualbox.org/virtualbox/debian stretch contrib"    
+
+   - name:           apt_repository virtualbox
+     when:           allow_contrib
+     apt_repository: state="present"   repo="deb http://httpredir.debian.org/debian/ jessie main contrib" 
+
+   - name:      virtualbox-5.1
+     when:      allow_vbox_repo
+     apt:       pkg="virtualbox-5.1"    state=installed   update_cache="yes"
+
+
+   - name:     Install rsync
+     apt:      pkg="rsync"             state=installed    update_cache="yes"
+
+   - name:     Install make
+     apt:      pkg="make"             state=installed 
+
+   - name:     Install console-setup
+     apt:      pkg="console-setup"    state=installed 
+
+   - name:     Install sudo
+     apt:      pkg="sudo" state=installed 
+
+   - name:     Install curl
+     apt:      pkg="curl"            state=installed 
+
+   - name:     Install git
+     apt:      pkg="git"             state=installed 
+     register: git_installed
+
+   - name:     Install zfs-fuse
+     apt:      pkg="zfs-fuse"       state=installed 
+
+   - name:     Install lynx
+     when:     beefy_version
+     apt:      pkg="lynx"          state=installed 
+
+   - name:     Install aptitude
+     when:     beefy_version
+     apt:      pkg="aptitude"      state=installed 
+
+   - name:     Install zfsnap
+     when:     beefy_version
+     apt:      pkg="zfsnap"        state=installed 
+
+   - name:     Install pgxnclient
+     apt:      pkg="pgxnclient"    state=installed 
+
+     #  psycopg2 needed by postgres module
+   - name:     Install psycopg2
+     apt:      pkg="python-psycopg2" state=installed 

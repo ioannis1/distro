@@ -1,0 +1,14 @@
+zfs:                        true
+beefy_version:              true
+allow_vbox_repo:            false
+allow_contrib:              true
+beefy_version:              true
+omit_postgres_dir_admin:    false
+
+need_role_ioannis:          true
+need_role_postgres:         true
+need_role_nagios:           true
+need_role_vagrant:          true
+need_role_root:             true
+pool: zz
+zpool: zz

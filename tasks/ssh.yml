@@ -1,0 +1,80 @@
+     - name:       populate  .ssh
+       copy:       src="ssh_keys/{{item}}/.ssh"   dest="/home/{{item}}" directory_mode=0700   owner="{{item}}" group="{{item}}"
+       with_items:
+           - ioannis
+           - postgres
+           - nagios
+           - vagrant
+
+     - copy:       src="ssh_keys/root/.ssh"   dest="/root" directory_mode=0700   owner="root" group="root"
+       when:       ansible_os_family == "Debian"
+
+     - copy:       src="ssh_keys/root/.ssh"   dest="/root" directory_mode=0700   owner="root" group="wheel"
+       when:       ansible_os_family == "FreeBSD"
+
+     - name:   perms   id_rsa
+       file:   path="/home/{{ item }}/.ssh/id_rsa"   owner="{{ item }}"   mode=600
+       with_items:
+           - ioannis
+           - postgres
+           - nagios
+           - vagrant
+
+     - file:   path="/root/.ssh/id_rsa"   owner="root"   mode=600
+
+  
+     ### if they exist
+     - name: perm id_rsa.pub
+       file: path="/home/{{ item }}/.ssh/id_rsa.pub"  owner="{{ item }}" mode=644
+       with_items:
+           - ioannis
+           - postgres
+           - nagios
+           - vagrant
+
+     ### if they exist
+     - name: perm root id_rsa.pub
+       file: path="/root/.ssh/id_rsa.pub"    owner=root    mode=644 
+
+     ##############  AUTHRIXED_KEYS #########################################
+     - name:  truncate authorized_keys
+       file:  dest="/home/{{item}}/.ssh/authorized_keys"     state="absent"
+       with_items:
+           - ioannis
+           - postgres
+           - nagios
+           - vagrant
+           - root
+
+     - name:             authorized_keys  for ioannis
+       authorized_key:   user="ioannis"   state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/ioannis/.ssh/id_rsa.pub
+         - ssh_keys/root/.ssh/id_rsa.pub
+
+     - name:             authorized_keys  for  postgres
+       authorized_key:   user="postgres"  state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/postgres/.ssh/id_rsa.pub
+         - ssh_keys/ioannis/.ssh/id_rsa.pub
+         - ssh_keys/root/.ssh/id_rsa.pub
+
+     - name:             authorized_keys  for  nagios
+       authorized_key:   user="nagios"    state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/nagios/.ssh/id_rsa.pub
+         - ssh_keys/ioannis/.ssh/id_rsa.pub
+         - ssh_keys/root/.ssh/id_rsa.pub
+
+     - name:             authorized_keys  for  vagrant
+       authorized_key:   user="vagrant"   state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/vagrant/.ssh/id_rsa.pub
+         - ssh_keys/root/.ssh/id_rsa.pub
+
+     - name:             authorized_keys  for  root
+       authorized_key:   user="root"   state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/vagrant/.ssh/id_rsa.pub
+         - ssh_keys/ioannis/.ssh/id_rsa.pub
+         - ssh_keys/root/.ssh/id_rsa.pub

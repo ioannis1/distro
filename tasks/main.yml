@@ -1,0 +1,22 @@
+     
+- include: zfs.yml
+  when:    zfs
+
+- include: account.yml
+  when:    ansible_os_family == "Debian"
+  vars:
+    - bash_shell: /bin/bash
+
+- include: account.yml
+  when:    ansible_os_family == "FreeBSD"
+  vars:
+    - bash_shell: /usr/local/bin/bash
+
+- include: ssh.yml
+  when:   not (ansible_os_family == "Darwin")
+
+- include: "{{ ansible_os_family }}.yml"
+
+- include: etc.yml
+
+- include: cron.yml
