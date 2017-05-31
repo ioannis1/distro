@@ -3,7 +3,7 @@
   when:    zfs
 
 - include: account.yml
-  when:    ansible_os_family == "Debian"
+  when:    ansible_os_family != "Debian"
   vars:
     - bash_shell: /bin/bash
 
