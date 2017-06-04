@@ -1,4 +1,9 @@
 - lineinfile:
+    path: /etc/profile
+    insertbefore: 'EOF'
+    line: 'test -f /usr/local/bin/gmake && alias make=gmake'
+
+- lineinfile:
     path: /etc/hosts
     insertbefore: '.*99.100'
     line: '192.168.64.1      bulk.local        bulk'
