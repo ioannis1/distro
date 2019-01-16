@@ -1,6 +1,6 @@
      
 - include: zfs.yml
-  when:    zfs
+  when:    zfs and (ansible_os_family != "Darwin")
 
 - include: account.yml
   when:    ansible_os_family == "Debian"

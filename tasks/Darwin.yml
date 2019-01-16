@@ -1,3 +1,7 @@
+# pip  Pyrseas
+
+#pip install --upgrade docutils
+
     - macports: name="ansible"
     - macports: name="apache2"
     - macports: name="apple-gcc42"
@@ -372,3 +376,4 @@
     - macports: name="xz"
     - macports: name="yarn"
     - macports: name="zlib"
+    - macports: name="coreutils"
