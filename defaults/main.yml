@@ -10,5 +10,6 @@ need_role_nagios:           true
 need_role_vagrant:          true
 need_role_root:             true
 need_docker:                true
+need_slack:                 true
 pool: zz
 zpool: zz

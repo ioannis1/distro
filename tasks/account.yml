@@ -15,11 +15,11 @@
      when:     need_role_ioannis
 
    - name:     group postgres
-     group:    name=postgres  gid=1001
+     group:    name=postgres  #gid=1001
      when:     need_role_postgres
 
    - name:     group nagios
-     group:    name=nagios    gid=1002
+     group:    name=nagios    #gid=1002
      when:     need_role_nagios
 
 ## Add Users
@@ -39,5 +39,5 @@
      when:     need_role_postgres
 
    - name:     user nagios
-     user:     name=nagios   shell="{{ SHELL }}"  uid=1002 createhome=yes  group=nagios
+     user:     name=nagios   shell="{{ SHELL }}"   createhome=yes  group=nagios
      when:     need_role_nagios

@@ -114,3 +114,16 @@
   when:          need_docker
   apt:           pkg="docker-ce"     
 
+- name:          Slack related
+  when:          need_slack
+  apt:           pkg="slapd"
+
+- name:          Slack 
+  when:          need_slack
+  shell:         snap install slack-term
+  when:          false
+
+- name:          Slack 
+  when:          need_slack
+  shell:         snap install slack
+  when:          false
