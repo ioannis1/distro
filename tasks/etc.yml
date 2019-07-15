@@ -8,6 +8,7 @@
 
 - name: interfaces.d/*
   copy:  src="etc/network/interfaces.d/"  dest="/etc/network/interfaces.d/" owner='root' mode='0640'    force='no'
+  when: os_family == 'Linux'
 
 
 - name: ansible config and roles
@@ -19,7 +20,6 @@
   copy:  src="etc/influxdb"  dest="/etc/"  mode='0642' owner='ioannis'   force='yes' 
 
 
-
 - name: sudoers
   copy:  src="etc/sudoers"  dest="/etc/" owner='root' mode='0640'    force='yes' 
 
@@ -28,5 +28,6 @@
 
 - name: lightdm
   copy:  src="etc/lightdm"  dest="/etc/" owner='root' mode='0644'    force='yes' 
+  when: os_family == 'Linux'
 
 - synchronize:  src="etc/lynx/lynx.cfg"  dest="/etc/"  copy_links='yes' 

@@ -1,102 +1,99 @@
-   - name: ubuntu.com  keyserver
-     apt_key:   keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
+- name:            ubuntu.com  keyserver
+  apt_key:         keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
 
-   - name:   ubuntu bionic  repository
-     apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
+- name:            ubuntu bionic  repository
+  apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
 
 
-   - name:      oracle_vbox_2016.asc
-     when:      allow_vbox_repo
-     apt_key:   data="{{ lookup('file', 'oracle_vbox_2016.asc') }}"      state="present"
+- name:            oracle_vbox_2016.asc
+  when:            allow_vbox_repo
+  apt_key:         data="{{ lookup('file', 'oracle_vbox_2016.asc') }}"      state="present"
             
-   - name: vbox keys
-     shell: apt-key  adv --keyserver keyserver.vbox.com  --recv-keys  A2F683C52980AECF
-     when:  false
+- name:            vbox keys
+  shell:           apt-key  adv --keyserver keyserver.vbox.com  --recv-keys  A2F683C52980AECF
+  when:            false
 
-   - name:           apt_repository virtualbox
-     when:           allow_vbox_repo
-     apt_repository: state="present"  repo="deb http://download.virtualbox.org/virtualbox/debian stretch contrib"    
+- name:            apt_repository virtualbox
+  when:            allow_vbox_repo
+  apt_repository:  repo="deb http://download.virtualbox.org/virtualbox/debian stretch contrib"    
 
-   - name:           apt_repository virtualbox
-     when:           allow_contrib
-     apt_repository: state="present"   repo="deb http://httpredir.debian.org/debian/ stable main contrib" 
-
-
-   - name:      virtualbox-5.1
-     when:      allow_vbox_repo
-     apt:       pkg="virtualbox-5.1"    update_cache='yes'        state=present  
+- name:            apt_repository virtualbox
+  when:            allow_contrib
+  apt_repository:  repo="deb http://httpredir.debian.org/debian/ stable main contrib" 
 
 
-   - name:     Install python-apt
-     apt:      pkg="python-apt"        
+- name:            virtualbox-5.1
+  when:            allow_vbox_repo
+  apt:             pkg="virtualbox-5.1"    update_cache='yes'      
 
-   - name:     Install python3-apt
-     apt:      pkg="python3-apt"        update_cache="yes"
 
-   - name:     Install rsync
-     apt:      pkg="rsync"              
+- name:           Install python-apt
+  apt:            pkg="python-apt"        
 
-   - name:     Install make
-     apt:      pkg="make"           
+- name:           Install python3-apt
+  apt:            pkg="python3-apt"        update_cache="yes"
 
-   - name:     Install console-setup
-     apt:      pkg="console-setup"  
+- name:           Install rsync
+  apt:            pkg="rsync"              
 
-   - name:     Install sudo
-     apt:      pkg="sudo"          
+- name:           Install make
+  apt:            pkg="make"           
 
-   - name:     Install curl
-     apt:      pkg="curl"       
+- name:           Install console-setup
+  apt:            pkg="console-setup"  
 
-   - name:     Install git
-     apt:      pkg="git"       
-     register: git_present
+- name:           Install sudo
+  apt:            pkg="sudo"          
 
-   - name:     Install zfs-fuse
-     apt:      pkg="zfs-fuse" 
-     when:     zfs
+- name:           Install curl
+  apt:            pkg="curl"       
 
-   - name:     Install lynx
-     when:     beefy_version
-     apt:      pkg="lynx"    
+- name:           Install git
+  apt:            pkg="git"       
+  register:       git_present
 
-   - name:     Install aptitude
-     when:     beefy_version
-     apt:      pkg="aptitude"    
+- name:           Install zfs-fuse
+  apt:            pkg="zfs-fuse" 
+  when:           zfs
 
-   - name:     Install zfsnap
-     when:     zfs
-     apt:      pkg="zfsnap"       
+- name:           Install lynx
+  apt:            pkg="lynx"    
 
-   - name:     Install fping
-     apt:      pkg="fping"         
+- name:           Install aptitude
+  apt:            pkg="aptitude"    
 
-   - name:     Install pgxnclient
-     apt:      pkg="pgxnclient"     
+- name:           Install zfsnap
+  when:           zfs
+  apt:            pkg="zfsnap"       
 
-     #  psycopg2 needed by postgres module
-   - name:     Install psycopg2
-     apt:      pkg="python-psycopg2" 
+- name:           Install fping
+  apt:            pkg="fping"         
 
-   - name:     Install xfce4
-     apt:      pkg="xfce4"        
+- name:           Install pgxnclient
+  apt:            pkg="pgxnclient"     
 
-   - name:     Install xfconf
-     apt:      pkg="xfconf"        
+  #  psycopg2 needed by postgres module
+- name:           Install psycopg2
+  apt:            pkg="python-psycopg2" 
 
-   - name:     Install libinput10
-     apt:      pkg="libinput10"     
+- name:           Install xfce4
+  apt:            pkg="xfce4"        
 
-   - name:     lightdm in effect
-     shell:    dpkg-reconfigure lightdm
+- name:           Install xfconf
+  apt:            pkg="xfconf"        
 
-  - name:               java12
-    apt:                pkg="oracle-java12-installer"     
-    ignore_erroes:      yes
+- name:           Install libinput10
+  apt:            pkg="libinput10"     
 
- -  apt:                pkg="oracle-java12-set-default"
-    ignore_erroes:      yes
+- name:           lightdm in effect
+  shell:          dpkg-reconfigure lightdm
 
- -  apt:                pkg="ascii"
-    ignore_erroes:      yes
+- name:           java12
+  apt:            pkg="oracle-java12-installer"     
+  ignore_errors:  yes
+
+- apt:           pkg="oracle-java12-set-default"
+  ignore_errors: yes
+
+- apt:           pkg="ascii"
 
