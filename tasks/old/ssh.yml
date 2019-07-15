@@ -1,0 +1,91 @@
+     - name:       populate  .ssh for root
+       copy:       src="ssh_keys/root/.ssh"   dest="/root" directory_mode=0700   owner="root" 
+       when:       os_family == "Debian"
+
+     - name:       populate  .ssh for root 
+       copy:       src="ssh_keys/root/.ssh"   dest="/root" directory_mode=0700   owner="root" group="wheel"
+       when:       os_family == "FreeBSD"
+
+     - name:       populate  .ssh for non-root users
+       copy:       src="ssh_keys/{{item}}/.ssh"   dest="{{HOME}}/{{item}}"  directory_mode=0700   owner="{{item}}"  #group="{{item}}"
+       with_items:
+             - ioannis
+             - postgres
+             - vagrant
+             - nagios
+
+
+     - name:   perms   id_rsa
+       file:   path="ssh_keys/{{ item }}/.ssh/id_rsa"   owner="{{ item }}"   mode=600
+       when:       os_family == "Debian"
+       ignore_errors: yes
+       with_items:
+           - ioannis
+           - postgres
+           - vagrant
+           - nagios
+
+     - copy:    src="ssh_keys/root/.ssh"   dest="/root/.ssh"  directory_mode=0700   owner='root'
+       when:    os_family != "Darwin"
+
+     - copy:    src="ssh_keys/root/.ssh"   dest="/var/root/.ssh"  directory_mode=0700   owner='root'
+       when:    os_family == "Darwin"
+
+  
+     - name: perm id_rsa.pub
+       file: path="{{HOME}}/{{ item }}/.ssh/id_rsa.pub"  owner="{{ item }}" mode=644
+       with_items:
+           - ioannis
+           - postgres
+           - vagrant
+           - nagios
+
+     ### if they exist
+     - name: perm root id_rsa.pub
+       file: path="/root/.ssh/id_rsa.pub"    owner=root    mode=644 
+       when:    os_family != "Darwin"
+
+
+     ##############  AUTHRIXED_KEYS #########################################
+     - name:  truncate authorized_keys
+       file:  dest="{{HOME}}/{{item}}/.ssh/authorized_keys"     state="absent"
+       with_items:
+           - ioannis
+           - postgres
+           - nagios
+           - vagrant
+
+     - name:  authorized_keys for root
+       copy:  src="ssh_keys/root/.ssh/authorized_keys"   dest="/root/.ssh/authorized_keys" mode=0644   owner="root" #group="root"
+       when:    os_family != "Darwin"
+
+
+     - name:             authorized_keys  for ioannis
+       authorized_key:   user="ioannis"   state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/ioannis/.ssh/id_rsa.pub
+
+     - name:             authorized_keys  for  postgres
+       authorized_key:   user="postgres"  state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/postgres/.ssh/id_rsa.pub
+
+     - name:             authorized_keys  for  nagios
+       authorized_key:   user="nagios"    state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/nagios/.ssh/id_rsa.pub
+         - ssh_keys/ioannis/.ssh/id_rsa.pub
+         - ssh_keys/root/.ssh/id_rsa.pub
+
+     - name:             authorized_keys  for  vagrant
+       authorized_key:   user="vagrant"   state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/vagrant/.ssh/id_rsa.pub
+         - ssh_keys/root/.ssh/id_rsa.pub
+
+     - name:             authorized_keys  for  root
+       authorized_key:   user="root"   state="present"    key="{{ item }}"
+       with_file:
+         - ssh_keys/vagrant/.ssh/id_rsa.pub
+         - ssh_keys/ioannis/.ssh/id_rsa.pub
+         - ssh_keys/root/.ssh/id_rsa.pub

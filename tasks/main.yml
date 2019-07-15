@@ -1,22 +1,45 @@
+################################## Helper Variables
+- shell:  uname -s
+  register: result
+
+- set_fact: os_family="{{result.stdout}}"
+
+- set_fact: 
+      HOME:  "/home"
+      SHELL: "/bin/bash"
+  when:  os_family == "Linux"
+
+- set_fact: 
+      HOME:  "/Users"
+      SHELL: "/bin/bash"
+  when:  os_family == "Darwin"
+
+- set_fact: 
+     HOME:   "/home"
+     SHELL:  "/usr/local/bin/bash"
+  when:  os_family == "FreeBSD"
+
+#################################################
      
 - include: zfs.yml
-  when:    zfs and (ansible_os_family != "Darwin")
+  when:    zfs and (os_family != "Darwin")
 
 - include: account.yml
-  when:    ansible_os_family == "Debian"
-  vars:
-    - bash_shell: /bin/bash
-
-- include: account.yml
-  when:    ansible_os_family == "FreeBSD"
-  vars:
-    - bash_shell: /usr/local/bin/bash
+  #vars:
+      #- bash_shell: /usr/local/bin/bash
 
 - include: ssh.yml
-  when:   not (ansible_os_family == "Darwin")
 
-- include: "{{ ansible_os_family }}.yml"
+- include: "{{ os_family }}.yml"
+
+- include: hosts.yml
 
 - include: etc.yml
 
+- include: X11.yml
+  when: os_family == 'Linux'
+
+- include: var.yml
+
 - include: cron.yml
+

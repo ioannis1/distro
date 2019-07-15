@@ -1,0 +1,32 @@
+
+      - name:        fail unless ansible executing as unix user postgres
+        when:        not (ansible_user_id == "postgres")
+        fail:        msg="Detected ansible_user_id='{{ ansible_user_id}}'. This role must run as 'postgres'"
+
+      - name:       ~postgres/src
+        file:       path="{{ ansible_env.HOME }}/src"   owner=postgres  group=postgres  group=postgres  state=directory
+
+    
+################### Configure ############################
+
+           # TOD: needs to be automatically
+           #      - name:      ./autogen.sh
+           #command:   "./autogen.sh  chdir={{ ansible_env.HOME }}/src/postgis"
+
+      - name:      ./configure
+        #command:   "./configure    --with-projdir=/opt/local  chdir={{ ansible_env.HOME }}/src/p"
+        shell:   "cd /Users/postgres/src//p && ./io"
+        environment:
+            #PATH:    "{{ ansible_env.HOME }}/dist-pg/bin:/usr/bin:/usr/local/bin:{{ansible_env.PATH}}"
+            CFLAGS:  "-I/opt/local/include -L/opt/local/lib" 
+
+
+
+
+################### Compile postgis  ############################
+#- name:      make
+#make:      target="install"      chdir="{{ ansible_env.HOME }}/src/postgres" 
+
+           #- name:      "ln -sf ~/pg-{{ postgres_checkout }}  ~/dist-pg"
+           #file:      src="{{ansible_env.HOME}}/pg-{{ postgres_checkout  }}"  dest="{{ ansible_env.HOME}}/dist-pg"  owner=postgres   state=link    
+

@@ -1,9 +1,14 @@
+## Assumes vars:  SHELL
+
+
+## Add Groups
+
    - name:     group vagrant
      group:    name=vagrant  gid=998     state=present
      when:     need_role_vagrant
 
    - name:     group vboxsf
-     group:    name=vboxsf    gid=999     state=present
+     group:    name=vboxsf    state=present
 
    - name:     group ioannis
      group:    name=ioannis   gid=1000
@@ -17,20 +22,22 @@
      group:    name=nagios    gid=1002
      when:     need_role_nagios
 
-   - name:     vagrant
-     user:     name=vagrant  shell="{{ bash_shell }}"  uid=998  createhome=yes  group=vagrant   password=sobxtSZ2VA78Q
+## Add Users
+
+   - name:     user vagrant
+     user:     name=vagrant  shell="{{ SHELL }}"  uid=998  createhome=yes  group=vagrant   password=sobxtSZ2VA78Q
      when:     need_role_vagrant
 
-   - name:     vboxadd
-     user:     name=vboxadd  shell="{{ bash_shell }}"  uid=999  createhome=yes  group=daemon
+   - name:     user vboxadd
+     user:     name=vboxadd  shell="{{ SHELL }}"   createhome=yes  group=daemon
 
-   - name:     ioannis
-     user:     name=ioannis  shell="{{ bash_shell }}" uid=1000 createhome=yes  group=ioannis
+   - name:     user ioannis
+     user:     name=ioannis  shell="{{ SHELL }}" uid=1000 createhome=yes  group=ioannis
 
-   - name:      postgres
-     user:      name=postgres shell="{{ bash_shell }}" uid=1001 createhome=yes  group=postgres
-     when:      need_role_postgres
+   - name:     user postgres
+     user:     name=postgres shell="{{ SHELL }}" uid=1001 createhome=yes  group=postgres
+     when:     need_role_postgres
 
-   - name:      nagios
-     user:      name=nagios   shell="{{ bash_shell }}"  uid=1002 createhome=yes  group=nagios
-     when:      need_role_nagios
+   - name:     user nagios
+     user:     name=nagios   shell="{{ SHELL }}"  uid=1002 createhome=yes  group=nagios
+     when:     need_role_nagios

@@ -1,0 +1,4 @@
+#auto wlo1
+#iface wlo1 inet dhcp
+#  wpa-ssid  ioannis
+#  wpa-psk   my_fake_paswd

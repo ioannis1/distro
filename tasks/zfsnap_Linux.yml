@@ -1,5 +1,5 @@
-     - name: zfsnap
-       apt: pkg=zfsnap state=installed
+     - name:     zfsnap
+       apt:      pkg=zfsnap   state=present
        register: zfSsnap_installed 
 
      - name: cron zfs1

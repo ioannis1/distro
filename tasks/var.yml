@@ -1,0 +1,20 @@
+- name:   /var/log/nagios  
+  file:   dest="/var/log/{{item}}"       state='directory'    owner="{{item}}"   mode=750
+  when:  need_role_nagios
+  with_items:
+      - nagios
+
+- name:   /var/log/postgres
+  when:   need_role_postgres
+  file:   dest="/var/log/postgresql"     state='directory'    owner="postgres"   mode=750
+
+- name:   /var  subdirectories
+  file:   dest="/var/{{item}}"          state='directory'    owner="ioannis"    mode=750
+  with_items:
+      - consul
+      - filebeat
+      - elasticsearch
+      - grafana
+      - influxdb
+      - nagios
+      - packetbeat

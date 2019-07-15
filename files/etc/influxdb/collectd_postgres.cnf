@@ -1,0 +1,190 @@
+
+LoadPlugin postgresql
+
+
+<Plugin postgresql>
+               <Query checkpoint>
+                       Statement " SELECT buffers_checkpoint, buffers_clean, buffers_backend 
+                                   FROM pg_stat_bgwriter;"
+ 		<Result>
+ 			Type           count
+ 			InstancePrefix "buffers_checkpoint"
+ 			ValuesFrom     "buffers_checkpoint"
+ 		</Result>
+ 		<Result>
+ 			Type           count
+ 			InstancePrefix "buffers_clean"
+ 			ValuesFrom     "buffers_clean"
+ 		</Result>
+ 		<Result>
+ 			Type           count
+ 			InstancePrefix "buffers_backend"
+ 			ValuesFrom     "buffers_backend"
+ 		</Result>
+ 	</Query>
+
+ 	<Query tps_rate>
+ 		Statement "
+                        WITH tmp AS (
+                            SELECT   datname
+                               , pg_stat_get_db_stat_reset_time(datid) ::timestamp(0)                AS t_reset
+                               , extract (epoch from (now()-pg_stat_get_db_stat_reset_time(datid)))  AS epoch
+                               , xact_commit + xact_rollback                                        AS xact
+                            FROM pg_stat_database
+                            WHERE datname ~ 'bench'
+                        )
+
+                        SELECT  datname
+                              , xact                                AS   num_xact
+                              , (xact /epoch) ::numeric(999,2)      AS  "per second"
+                              , (60*xact/epoch)::int                AS  "per minute"
+                              , (60*60*xact/epoch) ::int            AS  "per hour"
+                        FROM tmp
+                       "
+                       <Result>
+                               Type counter
+                               InstancePrefix "tps_rate"
+                               ValuesFrom "per minute"
+                       </Result>
+               </Query>
+               <Query clog>
+                       Statement " SELECT sum( (pg_stat_file(file)).size)
+                            FROM (SELECT    'pg_clog/'|| pg_ls_dir('pg_clog') AS file) as t"
+
+ 		<Result>
+ 			Type file_size
+ 			InstancePrefix "clog"
+ 			ValuesFrom "sum"
+ 		</Result>
+ 	</Query>
+ 	<Query age>
+ 		Statement "SELECT age FROM public.person WHERE name = 'iet'"
+ 		<Result>
+ 			#Type counter
+ 			Type counter
+ 			#InstancesFrom "name"
+ 			InstancePrefix "age"
+ 			ValuesFrom "age"
+ 		</Result>
+ 	</Query>
+ 	<Query xlog>
+ 		Statement " SELECT   count(*) from pg_ls_dir('pg_xlog') a(file) WHERE file ~ '^00'" 
+ 		<Result>
+ 			#Type counter
+ 			Type bytes
+ 			#InstancesFrom "name"
+ 			#InstancePrefix "pg_xlog"
+ 			ValuesFrom "count"
+ 		</Result>
+ 	</Query>
+ 	<Query db_sizes>
+ 		Statement "SELECT  datname, pg_database_size(oid) AS size FROM pg_database WHERE datname !~ 'template'"
+
+ 		<Result>
+ 			Type bytes
+ 			ValuesFrom  "size"
+ 			InstancesFrom "datname"
+ 		</Result>
+ 	</Query>
+ 	<Query cluster_size>
+ 		Statement "SELECT  sum(pg_database_size(oid)) FROM pg_database"
+
+ 		<Result>
+ 			#Type counter
+ 			Type counter
+ 			ValuesFrom "sum"
+ 		</Result>
+ 	</Query>
+ 	<Query seqscan>
+               Statement "WITH tmp AS (
+                            SELECT schemaname||'.'||C.relname  AS tbl
+                                  , n_tup_ins + n_tup_upd + n_tup_del   AS mod
+                                  , seq_scan                            AS seq
+                            FROM pg_stat_user_tables S JOIN pg_class C   ON (C.relname = S.relname)
+                            )
+                            SELECT tbl,seq FROM tmp ORDER BY seq DESC NULLS LAST LIMIT 10 "
+
+                          <Result>
+                            Type counter
+ 			    InstancesFrom "tbl"
+                            #InstancePrefix "tseq"
+                            ValuesFrom  "seq"
+ 		</Result>
+ 	</Query>
+ 	<Query buffercache>
+                Statement   "SELECT CASE  WHEN D.datname IS NULL  THEN 'free' ELSE datname  END
+                                        , count(1) AS count , sum(usagecount) AS usage
+                                        , count(isdirty) AS isdirty
+                             FROM pg_buffercache   B
+                                        LEFT JOIN pg_database D  ON  B.reldatabase = D.oid
+                                        GROUP BY D.datname"
+                <Result>
+                    Type "pg_blks"
+                    InstancesFrom "datname"
+                    ValuesFrom  "count"
+                </Result>
+ 	</Query>
+ 	 <Database misc>
+ 		 Interval 30
+ 		 Service "collectd_postgres"
+ 		 Query clog
+                 Instance pg_clog
+ 	 </Database>
+ 	 <Database misc>
+ 		 Interval 30
+ 		 Service "collectd_postgres"
+ 		 Query xlog
+                 Instance pg_xlog
+ 	 </Database>
+ 	 <Database bench>
+ 		 Interval 30
+ 		 Service "collectd_bench"
+ 		 Query tps_rate
+ 	 </Database>
+ 	 <Database bench>
+ 		 Interval 30
+ 		 Service "collectd_bench"
+ 		 Query backend # predefined
+ 		 #Query age
+ 		#Query rt36_tickets
+ 	 </Database>
+ 	 <Database misc>
+ 		 Interval 30
+ 		 Service "collectd_misc"
+ 		 Query db_sizes
+                 Instance db_sizes
+ 	 </Database>
+ 	  <Database bench>
+                 Instance seq_scan
+ 	 	 Interval 30
+ 	 	 Service "collectd_bench"
+ 	 	 Query seqscan
+ 	  </Database>
+ 	 <Database ioannis>
+ 		 Interval 30
+ 		 Service "collectd_ioannis"
+ 		 Query backend
+ 		#Query rt36_tickets
+ 	 </Database>
+ 	 <Database ioannis>
+                 Instance cluster_size
+ 		 Service "collectd_ioannis"
+ 		 Interval 30
+ 		 Query cluster_size
+ 	 </Database>
+ 	<Database postgres>
+ 		 Service "collectd_postgres"
+ 		 Interval 30
+                 Instance "checkpoint"
+ 		 Query    checkpoint
+ 	</Database>
+ 	#<Database bench>
+ 		 #Service "collectd_bench"
+ 		 #Interval 30
+                 #Instance "pg_buffercache"
+ 		 #Query    buffercache
+ 	#</Database>
+#Writer sqlstore
+# see collectd.conf(5) for details
+#CommitInterval 30
+</Plugin>

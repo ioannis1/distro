@@ -1,0 +1,28 @@
+
+127.0.0.1 	 localhost
+127.0.0.1         mars  
+10.0.0.236        qft.haw.org qft
+10.0.0.24         bulk.local bulk
+10.0.0.65         qed.haw.org qed
+
+127.0.0.1         plato.local plato
+127.0.0.1         pgcluu.local pgcluu
+127.0.0.1         nagios.local nagios
+127.0.0.1         powa.local powa
+127.0.0.1         trac.local trac
+
+192.168.99.1      vbox.
+192.168.99.100    coreos-1.haw.org coreos
+192.168.99.101    freebsd.haw.org  freebsd  maya
+192.168.99.102    openbsd.haw.org  openbsd  open
+192.168.99.201    stretch.haw.org           stretch
+192.168.99.202    trusty.haw.org            trusty
+192.168.99.203    bionic.haw.org   ubuntu   bionic
+192.168.99.205    buster.haw.org   debian   buster   qm
+
+
+#127.0.0.1       static.ak.connect.facebook.com
+#127.0.0.1       connect.facebook.net
+255.255.255.255	 broadcasthost
+#::1              localhost 
+#fe80::1%lo0	 localhost

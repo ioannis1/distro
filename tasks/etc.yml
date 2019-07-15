@@ -3,38 +3,30 @@
     insertbefore: 'EOF'
     line: 'test -f /usr/local/bin/gmake && alias make=gmake'
 
-- lineinfile:
-    path: /etc/hosts
-    insertbefore: '.*99.100'
-    line: '192.168.64.1      bulk.local        bulk'
+- name: /etc/resolv.conf
+  copy:  src="etc/resolv.conf"  dest="/etc/"  mode='0644' owner='root'   force='yes' 
 
-- lineinfile:
-    path: /etc/hosts
-   #regexp: '^# port for http'
-    #insertbefore: '^www.*80/tcp'
-    line: '192.168.99.100    coreos-1.haw.org  coreos   cbulk'
-
-- lineinfile:
-    path: /etc/hosts
-    insertafter: '.*99.100'
-    line: '192.168.99.101    freebsd.haw.org   freebsd   fbulk     maya'
-
-- lineinfile:
-    path: /etc/hosts
-    insertafter: '.*99.100'
-    line: '192.168.99.102    openbsd.haw.org   open     openbsd   obulk'
+- name: interfaces.d/*
+  copy:  src="etc/network/interfaces.d/"  dest="/etc/network/interfaces.d/" owner='root' mode='0640'    force='no'
 
 
-- lineinfile:
-    path: /etc/hosts
-    insertafter: '.*99.100'
-    line: '192.168.99.201    sbulk.haw.org     stretch  sbulk'
+- name: ansible config and roles
+  synchronize:  src="etc/ansible"  dest="/etc/"  copy_links='yes' delete='no'  owner='no'
+  when: false
 
 
-#::1     localhost ip6-localhost ip6-loopback
-#ff02::1 ip6-allnodes
-#ff02::2 ip6-allrouters
-#127.0.0.1       localhost
-#::1             localhost 
+- name: influxdb, collectd, and grafana configs
+  copy:  src="etc/influxdb"  dest="/etc/"  mode='0642' owner='ioannis'   force='yes' 
 
 
+
+- name: sudoers
+  copy:  src="etc/sudoers"  dest="/etc/" owner='root' mode='0640'    force='yes' 
+
+- name: lynx config 
+  copy:  src="etc/lynx"  dest="/etc/" owner='root' mode='0644'    force='yes' 
+
+- name: lightdm
+  copy:  src="etc/lightdm"  dest="/etc/" owner='root' mode='0644'    force='yes' 
+
+- synchronize:  src="etc/lynx/lynx.cfg"  dest="/etc/"  copy_links='yes' 

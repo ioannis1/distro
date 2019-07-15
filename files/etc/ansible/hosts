@@ -1,0 +1,34 @@
+
+coreos-1           ansible_ssh_host=localhost   ansible_ssh_user=core      ansible_ssh_port=2100 
+localhost          ansible_ssh_user=root
+
+
+[freebsd]
+maya               ansible_ssh_host=localhost   ansible_ssh_user=root      #ansible_ssh_port=2101
+
+[debian]
+stretch            ansible_ssh_user=root      #ansible_ssh_port=2201
+qm                 ansible_ssh_user=root      #ansible_ssh_port=2205
+qft                ansible_ssh_user=root      #ansible_ssh_port=2201
+
+[osx]
+localhost    
+
+[coreos]
+coreos-1
+
+[freebsd:vars]
+ansible_python_interpreter=/usr/local/bin/python
+
+[coreos:vars]
+#ansible_ssh_user=core
+ansible_python_interpreter="/home/core/bin/python"
+
+[osx:vars]
+ansible_python_interpreter="/opt/local/bin/python"
+
+
+################################################################################################
+## db-[99:101]-node.example.com
+#asnsible_remote_user=ioannis  ansible_become=yes 
+

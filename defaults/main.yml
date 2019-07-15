@@ -1,8 +1,7 @@
 zfs:                        true
 beefy_version:              true
 allow_vbox_repo:            false
-allow_contrib:              true
-beefy_version:              true
+allow_contrib:              false
 omit_postgres_dir_admin:    false
 
 need_role_ioannis:          true

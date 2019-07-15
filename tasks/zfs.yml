@@ -5,5 +5,5 @@
      - name: zz/green
        zfs:  name={{ pool }}/green    state=present  compression=on  mountpoint=/home/postgres/green
 
-     - include: zfsnap_Debian.yml
-       when: ansible_os_family  == "Debian"
+     - include: zfsnap_Linux.yml
+       when: os_family  == "Linux"

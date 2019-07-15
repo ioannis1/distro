@@ -1,0 +1,32 @@
+- name: X11/40-libinput.conf
+  lineinfile:
+     path: /usr/share/X11/xorg.conf.d/40-libinput.conf
+     insertafter: 'libinput touchpad catchall'
+     line: '       Option "Tapping" "on"'
+
+
+- name: lightdm  autologin
+  lineinfile:
+     path: /etc/lightdm/lightdm.conf
+     insertbefore: '# XDMCP Server configuration'
+     line: '#autologin-user=ioannis'
+
+  lineinfile:
+     path: /etc/lightdm/lightdm.conf
+     insertafter: 'autologin-user=ioannis'
+     line: '  '
+
+ 
+ #   - #name: X11/40-libinput.conf
+  #shell: xfconf-query -c pointers -p /ETPS2_Elantech_Touchpad/Properties/libinput_Tapping_Enabled -n -t int -s 1
+  #  when:  os_family == 'Linux'
+#  copy:  src="X11/40-libinput.conf"   dest="/usr/share/X11/xorg.conf.d/40-libinput.conf"   mode='0644' owner='root'   force='yes'
+
+
+
+
+  #- name: ansible config and roles
+  #synchronize:  src="etc/ansible"  dest="/etc/"  copy_links='yes' delete='no'  owner='no'
+  #when: false
+
+
