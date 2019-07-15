@@ -4,18 +4,27 @@
 - name:            ubuntu bionic  repository
   apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
 
+- name:            docker.asc
+  when:            need_docker
+  apt_key:         data="{{ lookup('file', 'docker.asc') }}"   
 
 - name:            oracle_vbox_2016.asc
   when:            allow_vbox_repo
-  apt_key:         data="{{ lookup('file', 'oracle_vbox_2016.asc') }}"      state="present"
+  apt_key:         data="{{ lookup('file', 'oracle_vbox_2016.asc') }}"   
             
 - name:            vbox keys
   shell:           apt-key  adv --keyserver keyserver.vbox.com  --recv-keys  A2F683C52980AECF
   when:            false
 
-- name:            apt_repository virtualbox
+- name:            virtualbox repo
   when:            allow_vbox_repo
   apt_repository:  repo="deb http://download.virtualbox.org/virtualbox/debian stretch contrib"    
+
+- name:            Docker repo
+  when:            need_docker
+  apt_repository:  repo="deb http://download.docker.com/linux/debian buster stable"    
+
+
 
 - name:            apt_repository virtualbox
   when:            allow_contrib
@@ -96,4 +105,12 @@
   ignore_errors: yes
 
 - apt:           pkg="ascii"
+
+- name:          Docker related
+  when:          need_docker
+  apt:           pkg="apt-transport-https"     
+
+- name:          Docker
+  when:          need_docker
+  apt:           pkg="docker-ce"     
 
