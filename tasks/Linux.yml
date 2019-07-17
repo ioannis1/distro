@@ -2,6 +2,7 @@
   apt_key:         keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
 
 - name:            ubuntu bionic  repository
+  when:     false
   apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
 
 - name:            docker.asc
@@ -21,7 +22,8 @@
   apt_repository:  repo="deb http://download.virtualbox.org/virtualbox/debian stretch contrib"    
 
 - name:            Docker repo
-  when:            need_docker
+  when:   false
+  #when:            need_docker
   apt_repository:  repo="deb http://download.docker.com/linux/debian buster stable"    
 
 
@@ -36,94 +38,86 @@
   apt:             pkg="virtualbox-5.1"    update_cache='yes'      
 
 
-- name:           Install python-apt
-  apt:            pkg="python-apt"        
+- name:            update_cache" if the last one is more than 3600 seconds ago
+  apt:             update_cache="yes"   cache_valid_time=3600
 
-- name:           Install python3-apt
-  apt:            pkg="python3-apt"        update_cache="yes"
+- name:            python
+  apt:
+     pkg:
+                  - python-apt
+                  - python3-apt
+                  - python-pip
+                  - python3-apt
+                  - python-psycopg2
 
-- name:           Install rsync
-  apt:            pkg="rsync"              
 
-- name:           Install make
-  apt:            pkg="make"           
+- apt:     
+     pkg:
+                   - rsync
+                   - make
+                   - console-setup
+                   - curl
+                   - git
+                   - aptitude
+                   - lynx
+                   - fping
+                   - ascii
+                   - ansible
+                   - slapd
 
-- name:           Install console-setup
-  apt:            pkg="console-setup"  
+- name:            xorg
+  apt:             
+     pkg:
+                   - xfce4
+                   - xfconf
+                   - libinput10     
+                   - lightdm
 
-- name:           Install sudo
-  apt:            pkg="sudo"          
+- name:            zfs 
+  when:            zfs
+  apt:             
+     pkg:
+                   - zfs-fuse
+                   - zfsnap
 
-- name:           Install curl
-  apt:            pkg="curl"       
-
-- name:           Install git
-  apt:            pkg="git"       
-  register:       git_present
-
-- name:           Install zfs-fuse
-  apt:            pkg="zfs-fuse" 
-  when:           zfs
-
-- name:           Install lynx
-  apt:            pkg="lynx"    
-
-- name:           Install aptitude
-  apt:            pkg="aptitude"    
-
-- name:           Install zfsnap
-  when:           zfs
-  apt:            pkg="zfsnap"       
-
-- name:           Install fping
-  apt:            pkg="fping"         
 
 - name:           Install pgxnclient
   apt:            pkg="pgxnclient"     
 
-  #  psycopg2 needed by postgres module
-- name:           Install psycopg2
-  apt:            pkg="python-psycopg2" 
+- name:            java12
+  ignore_errors:   yes
+  apt:             
+     pkg:
+                   - oracle-java12-installer     
+                   - oracle-java12-set-default
 
-- name:           Install xfce4
-  apt:            pkg="xfce4"        
 
-- name:           Install xfconf
-  apt:            pkg="xfconf"        
+- name:            docker
+  when:            need_docker
+  apt:             
+     pkg:
+                   - apt-transport-https  
+                   - docker-ce 
 
-- name:           Install libinput10
-  apt:            pkg="libinput10"     
 
-- name:           lightdm in effect
-  shell:          dpkg-reconfigure lightdm
 
-- name:           java12
-  apt:            pkg="oracle-java12-installer"     
-  ignore_errors:  yes
-
-- apt:           pkg="oracle-java12-set-default"
-  ignore_errors: yes
-
-- apt:           pkg="ascii"
-
-- name:          Docker related
-  when:          need_docker
-  apt:           pkg="apt-transport-https"     
-
-- name:          Docker
-  when:          need_docker
-  apt:           pkg="docker-ce"     
-
-- name:          Slack related
+- name:          copy slack-desktop-3.4.2-amd64.deb
   when:          need_slack
-  apt:           pkg="slapd"
+  copy:          src="ioannis/slack-desktop-3.4.2-amd64.deb"  dest="/root"  
+  register:      slackapp
 
 - name:          Slack 
-  when:          need_slack
+  when:          need_slack and slackapp
+  apt:           deb="/root/slack-desktop-3.4.2-amd64.deb"
+
+
+- name:          Slack 
+  #when:          need_slack
   shell:         snap install slack-term
   when:          false
 
 - name:          Slack 
-  when:          need_slack
+  #when:          need_slack
   shell:         snap install slack
   when:          false
+

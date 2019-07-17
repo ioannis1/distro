@@ -1,0 +1,28 @@
+- name: vim valternative
+  alternatives:
+       name: vi
+       path: /bin/vim.tiny
+       priority: 10
+
+- name: editor alternative
+  alternatives:
+       name: editor
+       path: /bin/vim.tiny
+       priority: 10
+
+- name: python altenative 2.7
+  alternatives:
+       name: python
+       link: /usr/bin/python
+       path: /usr/bin/python2.7
+       priority: 4
+
+# because ansibile sets last alternative as the 'manual' default
+- name: python altenative 3.7
+  alternatives:
+       name: python
+       link: /usr/bin/python
+       path: /usr/bin/python3.7
+       priority: 10
+
+

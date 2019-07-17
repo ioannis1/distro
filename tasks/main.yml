@@ -32,6 +32,9 @@
 
 - include: "{{ os_family }}.yml"
 
+- include: "Linux-config.yml"
+  when:  os_family == "Linux"
+
 - include: hosts.yml
 
 - include: etc.yml
