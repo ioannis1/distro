@@ -101,16 +101,6 @@
 
 
 
-- name:          copy slack-desktop-3.4.2-amd64.deb
-  when:          need_slack
-  copy:          src="ioannis/slack-desktop-3.4.2-amd64.deb"  dest="/root"  
-  register:      slackapp
-
-- name:          Slack 
-  when:          need_slack and slackapp
-  apt:           deb="/root/slack-desktop-3.4.2-amd64.deb"
-
-
 - name:          Slack 
   #when:          need_slack
   shell:         snap install slack-term
