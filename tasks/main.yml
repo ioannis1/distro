@@ -19,7 +19,7 @@
      SHELL:  "/usr/local/bin/bash"
   when:  os_family == "FreeBSD"
 
-#################################################
+#################################################     M A I N
      
 - include: zfs.yml
   when:    zfs and (os_family != "Darwin")
@@ -46,3 +46,10 @@
 
 - include: cron.yml
 
+##############################################  POST INSTALL
+# Host-specific files (if available)
+- include:   "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_hostname }}.yml"
+      skip: true
