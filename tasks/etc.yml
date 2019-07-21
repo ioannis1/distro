@@ -1,3 +1,33 @@
+- name:                 /etc/postfix/main.cf
+  when:                 need_postfix
+  blockinfile:
+      insertbefore:     EOF
+      path:             /etc/postfix/main.cf
+      owner:            root
+      block: |
+          relayhost = [smtp.gmail.com]:587
+          smtp_sasl_auth_enable = yes
+          smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+          smtp_sasl_security_options = noanonymous
+          smtp_tls_CAfile = /etc/postfix/cacert.pem
+          smtp_use_tls = yes
+
+
+- name:        /etc/postfix/sasl_passwd
+  copy:        src="etc/postfix/{{ item }}"   dest="/etc/postfix/{{ item }}"    owner=root     mode=400
+  when:        need_postfix
+  with_items:
+          - sasl_passwd
+          - cacert.pem
+
+- command:     '/sbin/postmap /etc/postfix/sasl_passwd'
+  when:        need_postfix
+
+- command:     '/etc/init.d/postfix reload'
+  when:        need_postfix
+
+
+
 - lineinfile:
     path: /etc/profile
     insertbefore: 'EOF'

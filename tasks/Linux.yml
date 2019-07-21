@@ -100,6 +100,12 @@
                    - docker-ce 
 
 
+- apt:            pkg=postfix
+- apt:            pkg=mailutils
+- apt:            pkg=libsasl2-2
+- apt:            pkg=ca-certificates
+- apt:            pkg=libsasl2-modules
+- apt:            pkg=mutt
 
 - name:          Slack 
   #when:          need_slack
@@ -110,4 +116,6 @@
   #when:          need_slack
   shell:         snap install slack
   when:          false
+
+
 
