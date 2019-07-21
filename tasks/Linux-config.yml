@@ -1,14 +1,26 @@
 - name: vim valternative
   alternatives:
        name: vi
-       path: /bin/vim.tiny
+       path: "{{ item }}"
        priority: 10
+  with_first_found:
+       - /bin/vim.tiny
+       - /usr/bin/vim.tiny
+       - /bin/vim.basic
+       - /usr/bin/vim.basic
+       - /bin/vim
+       - /usr/bin/vim
+
+
 
 - name: editor alternative
   alternatives:
-       name: editor
-       path: /bin/vim.tiny
+       name:   editor
+       path:  "{{ item }}"
        priority: 10
+  with_first_found:
+       - /usr/bin/vim.tiny
+       - /usr/bin/vim.tiny
 
 - name: python altenative 2.7
   alternatives:
