@@ -106,6 +106,7 @@
 - apt:            pkg=ca-certificates
 - apt:            pkg=libsasl2-modules
 - apt:            pkg=mutt
+- apt:            pkg=fetchmail
 
 - name:          Slack 
   #when:          need_slack
