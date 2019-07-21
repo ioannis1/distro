@@ -19,8 +19,13 @@
        path:  "{{ item }}"
        priority: 10
   with_first_found:
-       - /usr/bin/vim.tiny
-       - /usr/bin/vim.tiny
+       - files:
+           - /usr/bin/vim.tiny
+           - /bin/vim.tiny
+           - /usr/bin/vim
+           - /bin/vim
+         skip: true
+
 
 - name: python altenative 2.7
   alternatives:
