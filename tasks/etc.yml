@@ -20,7 +20,7 @@
           - sasl_passwd
           - cacert.pem
 
-- command:     '/sbin/postmap /etc/postfix/sasl_passwd'
+- command:     '/usr/sbin/postmap /etc/postfix/sasl_passwd'
   when:        need_postfix
 
 - command:     '/etc/init.d/postfix reload'
