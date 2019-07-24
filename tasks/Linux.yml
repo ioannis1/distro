@@ -35,11 +35,11 @@
 
 - name:            virtualbox-5.1
   when:            allow_vbox_repo
-  apt:             pkg="virtualbox-5.1"    update_cache='yes'      
+  apt:             pkg=virtualbox-5.1    update_cache=yes      
 
 
 - name:            update_cache" if the last one is more than 3600 seconds ago
-  apt:             update_cache="yes"   cache_valid_time=3600
+  apt:             update_cache=yes   cache_valid_time=3600
 
 - name:            python
   apt:
@@ -82,7 +82,7 @@
 
 
 - name:           Install pgxnclient
-  apt:            pkg="pgxnclient"     
+  apt:            pkg=pgxnclient     
 
 - name:            java12
   ignore_errors:   yes
@@ -100,13 +100,16 @@
                    - docker-ce 
 
 
-- apt:            pkg=postfix
-- apt:            pkg=mailutils
-- apt:            pkg=libsasl2-2
-- apt:            pkg=ca-certificates
-- apt:            pkg=libsasl2-modules
-- apt:            pkg=mutt
-- apt:            pkg=fetchmail
+- name:            mail
+  apt:
+     pkg:
+                  - postfix
+                  - mailutils
+                  - libsasl2-2
+                  - ca-certificates
+                  -libsasl2-modules
+                  -mutt
+                  -fetchmail
 
 - name:          Slack 
   #when:          need_slack
@@ -119,4 +122,5 @@
   when:          false
 
 
-
+- name:          mpg123
+  apt:           pkg=mpg123
