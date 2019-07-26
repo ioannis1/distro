@@ -110,9 +110,11 @@
                   - mailutils
                   - libsasl2-2
                   - ca-certificates
-                  -libsasl2-modules
-                  -mutt
-                  -fetchmail
+                  - libsasl2-modules
+                  - mutt
+                  - fetchmail
+                  - feh
+                  - urlview 
 
 - name:          Slack 
   #when:          need_slack
