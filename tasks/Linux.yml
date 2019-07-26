@@ -64,6 +64,9 @@
                    - ascii
                    - ansible
                    - slapd
+                   - w3m
+                   - mpg123
+
 
 - name:            xorg
   apt:             
@@ -122,5 +125,3 @@
   when:          false
 
 
-- name:          mpg123
-  apt:           pkg=mpg123
