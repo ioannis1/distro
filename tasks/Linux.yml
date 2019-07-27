@@ -116,15 +116,18 @@
                   - feh
                   - urlview 
                   - xpdf
+                  - abook
+
+- name:           snapd
+  apt:            pkg=snapd
+  when:           need_slack
 
 - name:          Slack 
-  #when:          need_slack
+  when:          need_slack
   shell:         snap install slack-term
-  when:          false
 
 - name:          Slack 
-  #when:          need_slack
-  shell:         snap install slack
-  when:          false
+  when:          need_slack
+  shell:         snap install slack  --classic
 
 
