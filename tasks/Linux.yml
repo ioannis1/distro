@@ -115,6 +115,7 @@
                   - fetchmail
                   - feh
                   - urlview 
+                  - xpdf
 
 - name:          Slack 
   #when:          need_slack
