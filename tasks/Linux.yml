@@ -66,6 +66,7 @@
                    - slapd
                    - w3m
                    - mpg123
+                   - apache2
 
 
 - name:            xorg
