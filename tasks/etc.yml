@@ -73,10 +73,18 @@
       - apache2_etc.tar.gz
   when: need_apache
 
-- name:  www pages  - links
-  file:  src="{{ HOME }}/Shared/{{ item }}"  dest="/var/www/html/{{ item }}"   state=link    owner=www-data  group=www-data
+- name:  www pages  - links ( books, jbooks, tutorials)
+  file:  src="{{ HOME }}/Shared/{{ item }}"  dest="/var/www/html/{{ item }}"   state=link    owner=www-data  group=www-data   force=yes
   with_items:
       - books
       - jbooks
       - tutorials
   when: need_apache
+
+
+
+- name:  www pages  - links  (Postgres docs)
+  file:  src="~postgres/dist-pg/share/doc/html"  dest="/var/www/html/Postgres"   state=link    owner=www-data  group=www-data  force=yes
+  when: need_apache
+
+

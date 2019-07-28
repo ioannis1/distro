@@ -43,3 +43,5 @@
        priority: 10
 
 
+- name:  link /Users 
+  file:  src=/home  dest=/Users  state=link  owner=root 
