@@ -1,9 +1,9 @@
 - name:            ubuntu.com  keyserver
   apt_key:         keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
 
-- name:            ubuntu bionic  repository
-  when:     false
-  apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
+- name:            grafana.asc
+  shell:           wget -q -O - https://packages.grafana.com/gpg.key  |  apt-key add -
+
 
 - name:            docker.asc
   when:            need_docker
@@ -16,6 +16,22 @@
 - name:            vbox keys
   shell:           apt-key  adv --keyserver keyserver.vbox.com  --recv-keys  A2F683C52980AECF
   when:            false
+
+- name:            ubuntu bionic  repository
+  when:     false
+  apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
+
+- name:           grafana & slack repository
+  copy:           src="etc/apt/{{ item }}"  dest="/etc/apt/sources.list.d/{{ item }}" owner=root  mode=644
+  with_items:
+      - grafana.list
+      - slack.list
+
+- name:            timescaledb  repository
+  apt_repository:  repo="ppa:timescale/timescaledb-ppa"
+  when:   false
+
+
 
 - name:            virtualbox repo
   when:            allow_vbox_repo
@@ -118,6 +134,9 @@
                   - urlview 
                   - xpdf
                   - abook
+                  - libfontconfig1
+                  - grafana
+                  - collectd
 
 - name:           snapd
   apt:            pkg=snapd
