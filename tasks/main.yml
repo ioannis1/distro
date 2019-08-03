@@ -36,6 +36,7 @@
   when:  os_family == "Linux"
 
 - include: hosts.yml
+  when: false
 
 - include: etc.yml
 

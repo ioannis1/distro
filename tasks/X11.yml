@@ -11,7 +11,7 @@
      insertbefore: '# XDMCP Server configuration'
      line: '#autologin-user=ioannis'
 
-  lineinfile:
+- lineinfile:
      path: /etc/lightdm/lightdm.conf
      insertafter: 'autologin-user=ioannis'
      line: '  '
