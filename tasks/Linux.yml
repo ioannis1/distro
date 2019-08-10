@@ -154,3 +154,18 @@
 - name:           apache2
   apt:            pkg=apache2
   when:           need_apache
+
+- name:          prometheus 
+  when:          need_prometheus
+  apt:
+     pkg:
+                  - prometheus-blackbox-exporter 
+                  - prometheus 
+                  - protheus-postgres-exporter
+                  - protheus-pgbouncer-exporter
+                  - protheus-node-exporter
+                  - prometheus-pushgateway 
+                    #- prometheus-apache-exporter
+                  - pgbouncer
+                  - prometheus-alertmanager
+
