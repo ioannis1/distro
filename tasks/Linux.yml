@@ -168,4 +168,6 @@
                     #- prometheus-apache-exporter
                   - pgbouncer
                   - prometheus-alertmanager
+                  - consul
+
 
