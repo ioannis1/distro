@@ -1,3 +1,8 @@
+- name:        pgbouncer
+  copy:        src="etc/pgbouncer"   dest="/etc"    owner=postgres   
+  when:        need_pgbouncer
+
+
 - name:                 /etc/postfix/main.cf
   when:                 need_postfix
   blockinfile:
@@ -121,3 +126,4 @@
           127.0.0.1           localhost
           ff02::1 ip6-allnodes
           ff02::2 ip6-allrouters
+

@@ -74,10 +74,9 @@ root ALL=(ALL) ALL
 ioannis ALL=(ALL)  ALL
 ioannis ALL=(ALL)  NOPASSWD: /opt/local/bin/make
 ioannis ALL=(ALL)  NOPASSWD: /bin/launchctl, /opt/local/bin/vi /Library/LaunchAgents/*
-ioannis ALL=(ALL)  NOPASSWD: /opt/collectd/bin/collectdctl , /opt/collectd/sbin/collectdmon, /opt/collectd/sbin/collectd
 ioannis ALL=(ALL) NOPASSWD: /usr/bin/killall
 nagios  ALL=(ALL) NOPASSWD: /bin/launchctl, /usr/bin/vim
-postgres ALL=(ALL) NOPASSWD: /usr/bin/bash, /usr/bin/vim
+postgres ALL=(ALL) NOPASSWD: /bin/systemctl
 
 ## Read drop-in files from /private/etc/sudoers.d
 ## (the '#' here does not indicate a comment)

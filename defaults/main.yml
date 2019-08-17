@@ -13,7 +13,15 @@ need_docker:                true
 need_slack:                 true
 need_postfix:               true
 need_prometheus:            true
+need_pgbouncer:             true
 need_apache:                true
 need_www_pages:             false
 pool:                       zz
 zpool:                      zz
+postgres_passwd:            changeme
+
+users:
+    - { name: ioannis,     passwd: "{{postgres_passwd}}", attr: createdb    }
+    - { name: nagios,      passwd: "{{postgres_passwd}}"                    }
+
+

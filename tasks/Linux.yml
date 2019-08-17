@@ -155,6 +155,10 @@
   apt:            pkg=apache2
   when:           need_apache
 
+- name:          pgbouncer
+  when:          need_pgbouncer
+  apt:           pkg=pgbouncer
+
 - name:          prometheus 
   when:          need_prometheus
   apt:
@@ -169,5 +173,4 @@
                   - pgbouncer
                   - prometheus-alertmanager
                   - consul
-
 

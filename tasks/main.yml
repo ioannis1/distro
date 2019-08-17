@@ -19,6 +19,8 @@
      SHELL:  "/usr/local/bin/bash"
   when:  os_family == "FreeBSD"
 
+- set_fact: need_pgbouncer = true
+  when:     need_prometheus
 #################################################     M A I N
      
 - include: zfs.yml
@@ -46,6 +48,9 @@
 - include: var.yml
 
 - include: cron.yml
+
+- include: pgbouncer.yml
+  when:    need_pgbouncer
 
 ##############################################  POST INSTALL
 # Host-specific files (if available)
