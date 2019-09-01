@@ -1,6 +1,11 @@
+
 - name:        pgbouncer
   copy:        src="etc/pgbouncer"   dest="/etc"    owner=postgres   
   when:        need_pgbouncer
+
+- name:        prometheus 
+  include:     prometheus_config.yml
+  when:        need_prometheus
 
 
 - name:                 /etc/postfix/main.cf
