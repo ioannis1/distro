@@ -1,0 +1,129 @@
+- name:        pgbouncer
+  copy:        src="etc/pgbouncer"   dest="/etc"    owner=postgres   
+  when:        need_pgbouncer
+
+
+- name:                 /etc/postfix/main.cf
+  when:                 need_postfix
+  blockinfile:
+      insertbefore:     EOF
+      path:             /etc/postfix/main.cf
+      owner:            root
+      block: |
+          relayhost = [smtp.gmail.com]:587
+          smtp_sasl_auth_enable = yes
+          smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+          smtp_sasl_security_options = noanonymous
+          smtp_tls_CAfile = /etc/postfix/cacert.pem
+          smtp_use_tls = yes
+
+
+- name:        /etc/postfix/sasl_passwd
+  copy:        src="etc/postfix/{{ item }}"   dest="/etc/postfix/{{ item }}"    owner=root     mode=400
+  when:        need_postfix
+  with_items:
+          - sasl_passwd
+          - cacert.pem
+
+- command:     '/usr/sbin/postmap /etc/postfix/sasl_passwd'
+  when:        need_postfix
+
+- command:     '/etc/init.d/postfix reload'
+  when:        need_postfix
+
+
+
+- lineinfile:
+    path: /etc/profile
+    insertbefore: 'EOF'
+    line: 'test -f /usr/local/bin/gmake && alias make=gmake'
+
+- name: /etc/resolv.conf
+  copy:  src="etc/resolv.conf"  dest="/etc/"  mode='0644' owner='root'   force='yes' 
+
+- name: interfaces.d/*
+  copy:  src="etc/network/interfaces.d/"  dest="/etc/network/interfaces.d/" owner='root' mode='0640'    force='no'
+  when: os_family == 'Linux'
+
+
+- name: ansible config and roles
+  synchronize:  src="etc/ansible"  dest="/etc/"  copy_links='yes' delete='no'  owner='no'
+  when: false
+
+
+- name: influxdb, collectd, and grafana configs
+  copy:  src="etc/influxdb"  dest="/etc/"  mode='0642' owner='ioannis'   force='yes' 
+
+
+- name: sudoers
+  copy:  src="etc/sudoers"  dest="/etc/" owner='root' mode='0640'    force='yes' 
+
+- name: lynx config 
+  copy:  src="etc/lynx"  dest="/etc/" owner='root' mode='0644'    force='yes' 
+
+- name: lightdm
+  copy:  src="etc/lightdm"  dest="/etc/" owner='root' mode='0644'    force='yes' 
+  when: os_family == 'Linux'
+
+- synchronize:  src="etc/lynx/lynx.cfg"  dest="/etc/"  copy_links='yes' 
+
+
+- name: untar apache2_etc.tar.gz
+  unarchive:
+      src:            "etc/{{ item }}"
+      dest:           '/etc/apache2'
+      owner:          root
+      group:          root
+  with_items:
+      - apache2_etc.tar.gz
+  when: need_apache
+
+- name:  www pages  - links ( books, jbooks, tutorials)
+  file:  src="{{ HOME }}/Shared/{{ item }}"  dest="/var/www/html/{{ item }}"   state=link    owner=www-data  group=www-data   force=yes
+  with_items:
+      - books
+      - jbooks
+      - tutorials
+  when: need_apache
+
+
+
+- name:  www pages  - links  (Postgres docs)
+  file:  src="~postgres/dist-pg/share/doc/html"  dest="/var/www/html/Postgres"   state=link    owner=www-data  group=www-data  force=yes
+  when: need_apache
+
+
+- name:                 /etc/hosts
+  blockinfile:
+      insertbefore:     EOF
+      path:             /etc/hosts
+      owner:            root
+      block: |
+          10.0.0.24           bulk.local           bulk
+          10.0.0.65           qed.haw.org          qed
+          10.0.0.236          qft.haw.org          qft
+
+          192.168.99.1        vbox
+          192.168.99.100      coreos-1.haw.org     coreos
+          192.168.99.101      freebsd.haw.org      freebsd    maya
+          192.168.99.102      openbsd.haw.org      openbsd    open
+          192.168.99.201      stretch.haw.org                 stretch
+          192.168.99.202      trusty.haw.org                  trusty
+          192.168.99.203      bionic.haw.org       ubuntu     bionic
+          192.168.99.205      buster.haw.org       debian     buster  qm
+          10.0.0.24           bulk.local           bulk
+          10.0.0.65           qed.haw.org          qed
+          10.0.0.236          qft.haw.org          qft
+          192.168.99.1        vbox
+          192.168.99.100      coreos-1.haw.org     coreos
+          192.168.99.101      freebsd.haw.org      freebsd    maya
+          192.168.99.102      openbsd.haw.org      openbsd    open
+          192.168.99.201      stretch.haw.org                 stretch
+          192.168.99.202      trusty.haw.org                  trusty
+          192.168.99.203      bionic.haw.org       ubuntu     bionic
+          192.168.99.205      buster.haw.org       debian     buster
+          #::1 localhost
+          127.0.0.1           localhost
+          ff02::1 ip6-allnodes
+          ff02::2 ip6-allrouters
+

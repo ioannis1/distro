@@ -1,0 +1,42 @@
+ type |   user   | database  | state  |   addr    | port  | local_addr | local_port |    connect_time     |    request_time     | wait | wait_us |      ptr       |      link      | remote_pid |                         tls                         
+------+----------+-----------+--------+-----------+-------+------------+------------+---------------------+---------------------+------+---------+----------------+----------------+------------+-----------------------------------------------------
+ C    | ioannis  | lessons   | active | 127.0.0.1 | 55985 | 127.0.0.1  |       6543 | 2018-04-23 08:22:43 | 2018-04-23 08:22:43 |    0 |       0 | 0x7fbdef82f4c0 | 0x7fbdf3187fe0 |          0 | TLSv1.2/ECDHE-RSA-AES128-GCM-SHA256/ECDH=prime256v1
+
+ C    | postgres | pgbouncer | active | 127.0.0.1 | 61100 | 127.0.0.1  |       6543 | 2018-04-23 08:55:30 | 2018-04-23 08:55:30 |    0 |       0 | 0x7fbdef82f330 |                |          0 | TLSv1.2/ECDHE-RSA-AES128-GCM-SHA256/ECDH=prime256v1
+(2 rows)
+
+
+ type |   user   | database  | state  |   addr    | port  | local_addr | local_port |    connect_time     |    request_time     | wait | wait_us |      ptr       |      link      | remote_pid |                         tls                         
+------+----------+-----------+--------+-----------+-------+------------+------------+---------------------+---------------------+------+---------+----------------+----------------+------------+-----------------------------------------------------
+ C    | ioannis  | lessons   | active | 127.0.0.1 | 55985 | 127.0.0.1  |       6543 | 2018-04-23 08:22:43 | 2018-04-23 08:22:43 |    0 |       0 | 0x7fbdef82f4c0 | 0x7fbdf3187fe0 |          0 | TLSv1.2/ECDHE-RSA-AES128-GCM-SHA256/ECDH=prime256v1
+
+ C    | ioannis  | lessons   | active | 127.0.0.1 | 61114 | 127.0.0.1  |       6543 | 2018-04-23 08:55:37 | 2018-04-23 08:55:37 |    0 |       0 | 0x7fbdef82f330 | 0x7fbdf3188490 |          0 | TLSv1.2/ECDHE-RSA-AES128-GCM-SHA256/ECDH=prime256v1
+
+ C    | postgres | pgbouncer | active | 127.0.0.1 | 61196 | 127.0.0.1  |       6543 | 2018-04-23 08:56:02 | 2018-04-23 08:56:02 |    0 |       0 | 0x7fbdef82f7e0 |                |          0 | TLSv1.2/ECDHE-RSA-AES128-GCM-SHA256/ECDH=prime256v1
+(3 rows)
+
+=========================================================================================================================
+ type |  user   |  database   | state  |   addr    | port | local_addr | local_port |    connect_time     |    request_time     | wait | wait_us |      ptr       |      link      | remote_pid | tls 
+------+---------+-------------+--------+-----------+------+------------+------------+---------------------+---------------------+------+---------+----------------+----------------+------------+-----
+ S    | ioannis | lessons     | active | 127.0.0.1 | 5432 | 127.0.0.1  |      55987 | 2018-04-23 08:22:43 | 2018-04-23 08:22:43 |    0 |       0 | 0x7fbdf3187fe0 | 0x7fbdef82f4c0 |      27771 | 
+
+ S    | ioannis | lessons     | active | 127.0.0.1 | 5432 | 127.0.0.1  |      55988 | 2018-04-23 08:22:43 | 2018-04-23 08:55:37 |    0 |       0 | 0x7fbdf3188490 | 0x7fbdef82f330 |      27778 | 
+
+ S    | ioannis | lessons     | used   | 127.0.0.1 | 5432 | 127.0.0.1  |      55986 | 2018-04-23 08:22:43 | 2018-04-23 08:22:43 |    0 |       0 | 0x7fbdf3188300 |                |      27769 | 
+
+ S    | ioannis | timescaledb | used   | 127.0.0.1 | 5432 | 127.0.0.1  |      60285 | 2018-04-23 08:50:00 | 2018-04-23 08:57:06 |    0 |       0 | 0x7fbdf3187b30 |                |      47230 | 
+
+ S    | ioannis | timescaledb | used   | 127.0.0.1 | 5432 | 127.0.0.1  |      59075 | 2018-04-23 08:42:00 | 2018-04-23 08:57:00 |    0 |       0 | 0x7fbdf3187e50 |                |      41528 | 
+
+(5 rows)
+
+                          0x7fbdef82f4c0 | 0x7fbdf3187fe0 
+                          0x7fbdef82f330 | 0x7fbdf3188490
+
+                             ptr                   link
+ioannis lessons          0x7fbdf3187fe0      0x7fbdef82f4c0
+ioannis lessons          0x7fbdf3188490      0x7fbdef82f330
+ioannis lessons          0x7fbdf3188300
+ioannis timescaledb      0x7fbdf3187b30 
+ioannis timescaledb      0x7fbdf3187e50
+

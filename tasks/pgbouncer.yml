@@ -1,0 +1,23 @@
+
+- name:        pgbouncer
+  copy:        src="etc/pgbouncer"   dest="/etc"    owner=postgres
+
+- file:        path="/etc/pgbouncer"   owner=postgres
+
+- name:         hba.conf
+  template:     src=hba.conf.j2   dest="/etc/pgbouncer/hba.conf"   owner=postgres  mode=660
+
+- name:         userlist.txt
+  template:     src=userlist.txt.j2   dest="/etc/pgbouncer/userlist.txt"   owner=postgres   mode=600
+
+- name:  pgbouncer crt symlinks
+  file:  src="{{ HOME }}/postgres/main/{{ item }}"   dest="/etc/pgbouncer/{{ item }}"   state=link  owner=postgres force=yes
+  with_items:
+      - root.crt
+      - server.crt
+      - server.key
+
+- name:        reload service pgbouncer
+  #systemd:    name="pgbouncer"     state="reloaded"
+  make:        target="reload"      chdir="/etc/pgbouncer"
+

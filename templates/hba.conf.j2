@@ -1,0 +1,34 @@
+######################################################################## Local  Connections
+{% for user in [{'name':'postgres'}]| union(users) %}
+{{ " local   %-5s    %-12s       %-10s" | format('all', user.name,'peer')}}
+{% endfor %}
+{{ " local   %-5s    %-12s       %-10s" | format('all','all','reject')}}
+######################################################################## ipv4  Connections  
+{% for ip   in ['127.0.0.1']| union(ansible_all_ipv4_addresses) %}
+{% for user in [{'name':'postgres'}]| union(users) %}
+{% if postgres_passwd is defined %}
+{{ " host   %-5s    %-12s  %17s/32      %-10s" | format('all', user.name, ip, 'md5') }}
+{% elif allow_trust|default(false) %}
+{{ " host   %-5s    %-12s  %17s/32      %-10s" | format('all', user.name, ip, 'trust') }}
+{% else %}
+{{ "#host   %-5s    %-12s  %17s/32      %-10s" | format('all', user.name, ip, 'trust') }}
+{% endif %}
+{% endfor %}
+{% endfor %}
+######################################################################## ipv6  Connections  
+{% if postgres_passwd is defined %}
+{{ " host   %-5s    %-12s  %16s/128      %-10s" | format('all', 'postgres', '::1', 'md5') }}
+{% else %}
+{{ " host   %-5s    %-12s  %16s/128      %-10s" | format('all', 'postgres', '::1', 'trust') }}
+{% endif %}
+####################################################################### Replication  Connections
+{% for ip in ansible_all_ipv4_addresses %}
+{% if postgres_passwd is defined  %}
+{{ "# host   %-5s    %-12s  %17s/24      %-10s" | format('replication', 'replication', ip, 'md5') }}
+{% elif allow_trust|default(false) %}
+{{ "# host   %-5s    %-12s  %17s/24      %-10s" | format('replication', 'replication', ip, 'trust') }}
+{% else %}
+{{ "#host   %-5s    %-12s  %17s/24      %-10s" | format('replication', 'replication', ip, 'trust') }}
+{% endif %}
+{% endfor %}
+{{ "#host   %-5s    %-12s  %16s/128      %-10s" | format('replication', 'all', '::1', 'md5') }}
