@@ -19,6 +19,7 @@ need_www_pages:             false
 pool:                       zz
 zpool:                      zz
 postgres_passwd:            changeme
+thinkorswim:                false
 
 users:
     - { name: ioannis,     passwd: "{{postgres_passwd}}", attr: createdb    }

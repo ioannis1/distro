@@ -17,8 +17,20 @@
   shell:           apt-key  adv --keyserver keyserver.vbox.com  --recv-keys  A2F683C52980AECF
   when:            false
 
+- name:            java-zulu keys
+  shell:           apt-key  adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+  when:            thinkorswim
+
+- name:            java-zulu  zulu.list
+  shell:           echo 'deb http://repos.azulsystems.com/debian stable main' > /etc/apt/sources.list.d/zulu.list
+  when:            thinkorswim
+
+- name:            java-zulu-8 package
+  apt:             pkg=zulu-8      update_cache=yes
+  when:            thinkorswim
+
 - name:            ubuntu bionic  repository
-  when:     false
+  when:            false
   apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
 
 - name:           grafana & slack repository
@@ -38,7 +50,7 @@
   apt_repository:  repo="deb http://download.virtualbox.org/virtualbox/debian stretch contrib"    
 
 - name:            Docker repo
-  when:   false
+  when:            false
   #when:            need_docker
   apt_repository:  repo="deb http://download.docker.com/linux/debian buster stable"    
 
@@ -92,6 +104,7 @@
                    - xfconf
                    - libinput10     
                    - lightdm
+                   - xfce4-screenshooter
 
 - name:            zfs 
   when:            zfs
@@ -160,17 +173,23 @@
   when:          need_pgbouncer
   apt:           pkg=pgbouncer
 
+- name:          perl
+  apt:
+     pkg:
+                  - libfile-slurp-perl
+                  - libdata-show-perl
+
 - name:          prometheus 
   when:          need_prometheus
   apt:
      pkg:
                   - prometheus-blackbox-exporter 
                   - prometheus 
-                  - protheus-postgres-exporter
-                  - protheus-pgbouncer-exporter
-                  - protheus-node-exporter
+                  - prometheus-postgres-exporter
+                  - prometheus-pgbouncer-exporter
+                  - prometheus-node-exporter
                   - prometheus-pushgateway 
-                    #- prometheus-apache-exporter
+                  - prometheus-apache-exporter
                   - pgbouncer
                   - prometheus-alertmanager
                   - consul

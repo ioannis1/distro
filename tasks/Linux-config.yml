@@ -42,6 +42,15 @@
        path: /usr/bin/python3.7
        priority: 10
 
+- name: set java
+  when: thinkorswim
+  alternatives: name=java  path=/usr/lib/jvm/zulu-8-amd64/jre/bin/java
+
+
+- name: set javac
+  when: thinkorswim
+  alternatives: name=javac  path=/usr/lib/jvm/zulu-8-amd64/bin/javac
+
 
 - name:  link /Users 
   file:  src=/home  dest=/Users  state=link  owner=root 
