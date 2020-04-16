@@ -5,7 +5,8 @@
 
 - name:        prometheus 
   include:     prometheus_config.yml
-  when:        need_prometheus
+  #when:        need_prometheus
+  when:        false
 
 
 - name:                 /etc/postfix/main.cf
