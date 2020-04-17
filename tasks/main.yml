@@ -34,5 +34,28 @@
 
 - include: "{{ os_family }}.yml"
 
-  #- include: "Linux-config.yml"
-  #when:  os_family == "Linux"
+- include: "Linux-config.yml"
+  when:  os_family == "Linux"
+
+- include: hosts.yml
+  when: false
+
+- include: etc.yml
+
+- include: X11.yml
+  when: os_family == 'Linux'
+
+- include: var.yml
+
+- include: cron.yml
+
+- include: pgbouncer.yml
+  when:    need_pgbouncer
+
+##############################################  POST INSTALL
+# Host-specific files (if available)
+- include:   "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_hostname }}.yml"
+      skip: true
