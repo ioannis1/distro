@@ -1,9 +1,25 @@
+- name:            Add add-apt-repository
+  apt:             pkg=software-properties-common
+
+- name:           Google, Inc. (Linux Package Signing Authority)
+  apt_key:
+       id:       'EB4C1BFD4F042F6DDDCCEC917721F63BD38B4796'
+       url:      https://dl.google.com/linux/linux_signing_key.pub
+       state:    present
+
+
+- name:           Google, Inc. Linux Package Signing Key
+  apt_key:
+       id:         '4CCA1EAF950CEE4AB83976DCA040830F7FAC5991'
+       url:        https://dl.google.com/linux/linux_signing_key.pub
+
 - name:            ubuntu.com  keyserver
   apt_key:         keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
 
-- name:            grafana.asc
-  shell:           wget -q -O - https://packages.grafana.com/gpg.key  |  apt-key add -
-
+- name:           Grafana Key
+  apt_key:
+      id:         '4E40DDF6D76E284A4A6780E48C8C34C524098CB6'
+      url:        https://packages.grafana.com/gpg.key
 
 - name:            docker.asc
   when:            need_docker
@@ -33,10 +49,16 @@
   when:            false
   apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
 
-- name:           grafana & slack repository
+- name:            grafana repository
+  apt_repository:  repo="deb https://packages.grafana.com/oss/deb stable main"  
+
+- name:            grafana BETA repository
+  when:            false
+  apt_repository:  repo="deb https://packages.grafana.com/oss/deb beta main"  
+
+- name:           slack repository
   copy:           src="etc/apt/{{ item }}"  dest="/etc/apt/sources.list.d/{{ item }}" owner=root  mode=644
   with_items:
-      - grafana.list
       - slack.list
 
 - name:            timescaledb  repository

@@ -8,6 +8,9 @@
   #when:        need_prometheus
   when:        false
 
+- name:       start grafana-server
+  systemd:    name="grafana-server"   daemon_reload="yes"   state="started"
+
 
 - name:                 /etc/postfix/main.cf
   when:                 need_postfix
