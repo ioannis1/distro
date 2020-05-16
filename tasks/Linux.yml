@@ -117,7 +117,7 @@
                    - slapd
                    - w3m
                    - mpg123
-
+                   - lm-sensors
 
 - name:            xorg
   apt:             
@@ -127,6 +127,14 @@
                    - libinput10     
                    - lightdm
                    - xfce4-screenshooter
+                   - xfce4-screenshooter
+                   - xfce4-battery-plugin
+                   - xfce4-systemload-plugin
+                   - xfce4-weather-plugin
+                   - flashrom node-flashproxy 
+                   - flashproxy-client 
+                   - get-flash-videos
+[qf
 
 - name:            zfs 
   when:            zfs
