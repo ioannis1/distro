@@ -13,8 +13,8 @@
        id:         '4CCA1EAF950CEE4AB83976DCA040830F7FAC5991'
        url:        https://dl.google.com/linux/linux_signing_key.pub
 
-- name:            ubuntu.com  keyserver
-  apt_key:         keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
+#- name:            ubuntu.com  keyserver
+#  apt_key:         keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
 
 - name:           Grafana Key
   apt_key:
@@ -26,12 +26,22 @@
   apt_key:         data="{{ lookup('file', 'docker.asc') }}"   
 
 - name:            oracle_vbox_2016.asc
+sudo add-apt-repository ppa:linuxuprising/java
   when:            allow_vbox_repo
   apt_key:         data="{{ lookup('file', 'oracle_vbox_2016.asc') }}"   
+
             
 - name:            vbox keys
   shell:           apt-key  adv --keyserver keyserver.vbox.com  --recv-keys  A2F683C52980AECF
   when:            false
+
+- name:            oracle_java
+  shell:           apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 73C3DB2A
+  when:            oracle_java
+
+- name:            oracle_java
+  shell:           echo "deb http://ppa.launchpad.net/linuxuprising/java/ubuntu focal main" >  /etc/apt/sources.list.d/linuxuprising-java.list
+  when:            oracle_java
 
 - name:            java-zulu keys
   shell:           apt-key  adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
@@ -89,6 +99,7 @@
 
 
 - name:            update_cache" if the last one is more than 3600 seconds ago
+  when:            false
   apt:             update_cache=yes   cache_valid_time=3600
 
 - name:            python
@@ -118,6 +129,8 @@
                    - w3m
                    - mpg123
                    - lm-sensors
+                   - sc
+                   - info
 
 - name:            xorg
   apt:             
@@ -127,14 +140,15 @@
                    - libinput10     
                    - lightdm
                    - xfce4-screenshooter
-                   - xfce4-screenshooter
                    - xfce4-battery-plugin
+                   - xfce-keyboard-shortcuts
                    - xfce4-systemload-plugin
                    - xfce4-weather-plugin
-                   - flashrom node-flashproxy 
+                   - flashrom 
+                   - node-flashproxy 
                    - flashproxy-client 
                    - get-flash-videos
-[qf
+
 
 - name:            zfs 
   when:            zfs
@@ -147,12 +161,14 @@
 - name:           Install pgxnclient
   apt:            pkg=pgxnclient     
 
-- name:            java12
+- name:            oracle_java
   ignore_errors:   yes
+  when:            oracle_java
   apt:             
      pkg:
-                   - oracle-java12-installer     
-                   - oracle-java12-set-default
+                   - oracle-java14-installer     
+                   - oracle-java14-set-default
+                   - icedtea-netx
 
 
 - name:            docker
@@ -194,6 +210,10 @@
   when:          need_slack
   shell:         snap install slack  --classic
 
+
+- name:           libappindicator3
+  apt:            pkg=libappindicator3
+  when:           need_slack
 
 - name:           apache2
   apt:            pkg=apache2

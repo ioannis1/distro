@@ -110,7 +110,7 @@
       block: |
           10.0.0.24           bulk.local           bulk
           10.0.0.65           qed.haw.org          qed
-          10.0.0.236          qft.haw.org          qft
+          10.0.0.237          qft.haw.org          qft
 
           192.168.99.1        vbox
           192.168.99.100      coreos-1.haw.org     coreos

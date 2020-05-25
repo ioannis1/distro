@@ -35,7 +35,7 @@
      user:     name=ioannis  shell="{{ SHELL }}" uid=1000 createhome=yes  group=ioannis
 
    - name:     user postgres
-     user:     name=postgres shell="{{ SHELL }}" uid=1001 createhome=yes  group=postgres
+     user:     name=postgres shell="{{ SHELL }}" createhome=yes  group=postgres
      when:     need_role_postgres
 
    - name:     user nagios
