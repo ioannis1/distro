@@ -131,6 +131,9 @@ sudo add-apt-repository ppa:linuxuprising/java
                    - lm-sensors
                    - sc
                    - info
+                   - beep
+                   - wordnet
+                   - openssh-server
 
 - name:            xorg
   apt:             
