@@ -3,6 +3,9 @@
   copy:        src="etc/pgbouncer"   dest="/etc"    owner=postgres   
   when:        need_pgbouncer
 
+- name:        sshd
+  copy:        src="etc/ssh/sshd_config"   dest="/etc/ssh"    owner=root
+
 - name:        prometheus 
   include:     prometheus_config.yml
   #when:        need_prometheus
