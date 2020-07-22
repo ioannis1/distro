@@ -52,6 +52,11 @@
 - include: pgbouncer.yml
   when:    need_pgbouncer
 
+- include:       adobe.yml
+  become_user:   root
+  become:        yes
+  when:          need_adobe_flash and (os_family != "Darwin")
+
 ##############################################  POST INSTALL
 # Host-specific files (if available)
 - include:   "{{ item }}"

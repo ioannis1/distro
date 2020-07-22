@@ -1,0 +1,5 @@
+- copy:    src="adobe/flash_installer.sh"                       dest="/tmp"       mode=550
+
+- copy:    src="adobe/flash_player_npapi_linux.x86_64.tar.gz"   dest="/tmp"
+
+- shell:   /tmp/flash_installer.sh
