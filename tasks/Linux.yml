@@ -135,6 +135,7 @@ sudo add-apt-repository ppa:linuxuprising/java
                    - wordnet
                    - dc 
                    - bc 
+                   - nvi
                    - openssh-server
 
 - name:            xorg
