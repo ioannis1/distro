@@ -1,0 +1,3 @@
+- name:    tastyworks
+  shell:   snap install tastyworks-unofficial
+  when:    need_tastyworks

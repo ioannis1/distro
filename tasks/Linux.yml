@@ -133,6 +133,8 @@ sudo add-apt-repository ppa:linuxuprising/java
                    - info
                    - beep
                    - wordnet
+                   - dc 
+                   - bc 
                    - openssh-server
 
 - name:            xorg

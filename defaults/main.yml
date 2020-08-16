@@ -17,6 +17,7 @@ need_pgbouncer:             true
 need_apache:                true
 need_www_pages:             false
 need_adobe_flash:           false
+need_tastyworks:            false
 pool:                       zz
 zpool:                      zz
 oracle_java:                true

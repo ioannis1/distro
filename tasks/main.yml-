@@ -42,8 +42,6 @@
 
 - include: etc.yml
 
-- include: stock_brokers.yml
-
 - include: X11.yml
   when: os_family == 'Linux'
 
