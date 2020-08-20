@@ -216,6 +216,9 @@ sudo add-apt-repository ppa:linuxuprising/java
   when:          need_slack
   shell:         snap install slack  --classic
 
+- name:          zoom
+  when:          need_zoom
+  shell:         snap install zoom-client
 
 - name:           libappindicator3
   apt:            pkg=libappindicator3

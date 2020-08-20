@@ -18,6 +18,7 @@ need_apache:                true
 need_www_pages:             false
 need_adobe_flash:           false
 need_tastyworks:            false
+need_zoom:                  false
 pool:                       zz
 zpool:                      zz
 oracle_java:                true
