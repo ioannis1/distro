@@ -1,0 +1,12 @@
+- name:          zoom snap
+  when:          false
+  shell:         snap install zoom-client
+
+- name:          zoom .deb prereq
+  apt:           pkg=libxcb-xtest0
+
+- name:          zoom .deb
+  copy:          src="zoom_amd64.deb"   dest="/tmp/zoom_amd64.deb"      mode=644 owner=ioannis
+
+- name:          zoom .deb 
+  shell:         dpkg -i /tmp/zoom_amd64.deb
