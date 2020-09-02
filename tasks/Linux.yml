@@ -1,6 +1,7 @@
 - name:            Add add-apt-repository
   apt:             pkg=software-properties-common
 
+
 - name:           Google, Inc. (Linux Package Signing Authority)
   apt_key:
        id:       'EB4C1BFD4F042F6DDDCCEC917721F63BD38B4796'
@@ -15,11 +16,6 @@
 
 #- name:            ubuntu.com  keyserver
 #  apt_key:         keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
-
-- name:           Grafana Key
-  apt_key:
-      id:         '4E40DDF6D76E284A4A6780E48C8C34C524098CB6'
-      url:        https://packages.grafana.com/gpg.key
 
 - name:            docker.asc
   when:            need_docker
@@ -58,13 +54,6 @@ sudo add-apt-repository ppa:linuxuprising/java
 - name:            ubuntu bionic  repository
   when:            false
   apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
-
-- name:            grafana repository
-  apt_repository:  repo="deb https://packages.grafana.com/oss/deb stable main"  
-
-- name:            grafana BETA repository
-  when:            false
-  apt_repository:  repo="deb https://packages.grafana.com/oss/deb beta main"  
 
 - name:           slack repository
   copy:           src="etc/apt/{{ item }}"  dest="/etc/apt/sources.list.d/{{ item }}" owner=root  mode=644
@@ -200,8 +189,6 @@ sudo add-apt-repository ppa:linuxuprising/java
                   - urlview 
                   - xpdf
                   - abook
-                  - libfontconfig1
-                  - grafana
                   - collectd
 
 - name:           snapd

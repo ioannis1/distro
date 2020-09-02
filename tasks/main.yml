@@ -39,6 +39,9 @@
 
 - include: hosts.yml
   when: false
+     
+- include: grafana.yml
+  when:    need_grafana
 
 - include: etc.yml
 

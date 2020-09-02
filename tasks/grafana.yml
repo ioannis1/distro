@@ -1,0 +1,63 @@
+- name:           Grafana Key
+  apt_key:
+      id:         '4E40DDF6D76E284A4A6780E48C8C34C524098CB6'
+      url:        https://packages.grafana.com/gpg.key
+
+- name:            grafana repository
+  when:            false
+  apt_repository:  repo="deb https://packages.grafana.com/oss/deb stable main"  
+
+- name:            grafana BETA repository
+  apt_repository:  repo="deb https://packages.grafana.com/oss/deb beta main"  
+
+- name:            packages
+  apt:
+     pkg:
+                 - software-properties-common
+                 - apt-transport-https
+                 - libfontconfig1
+                 - grafana
+##############################################################################################
+#- name: grafana
+  #copy:  src="etc/grafana/grafana.ini"  dest="/etc/grafana/"  backup='yes' mode=640  owner='root'
+
+- name:     group grafana
+  group:    name=grafana    #gid=1002
+
+## Add Users
+
+- name:     user grafana
+  user:     name=grafana  shell="/bin/false"   createhome=no  group=grafana   #password=sobxtSZ2VA78Q  uuid=999
+
+- name:    empty grafana.db
+  synchronize:  src="grafana.db"  dest="/var/lib/grafana/grafana.db"    rsync_opts=--ignore-existing
+
+- name:    chown -R grafana.db
+  file:    owner=grafana group=grafana  path=/var/lib/grafana/grafana.db mode=640
+
+- name:    plugins
+  shell:   grafana-cli --pluginsDir /var/lib/grafana/plugins  plugins install  "{{ item }}"
+  with_items:
+      - camptocamp-prometheus-alertmanager-datasource	
+      - jdbranham-diagram-panel     
+      - mtanda-histogram-panel     
+      - grafana-clock-panel        
+      - grafana-piechart-panel    
+      - grafana-worldmap-panel
+
+- name:    provisioning
+  synchronize:  src="etc/grafana"  dest="/etc/"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+
+- name:    chown -R grafana:grafana
+  file:   recurse=yes  owner=grafana group=grafana  path=/etc/grafana
+
+- name:    passwd
+  shell:  grafana-cli admin reset-admin-password silver
+  args:
+     chdir: /usr/share/grafana
+  
+
+- name: restart grafana server
+  systemd:    name="grafana-server"   daemon_reload="yes"   
+
+
