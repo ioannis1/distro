@@ -20,8 +20,8 @@ rule_files:
     static_configs:
       - targets: ['localhost:9100'] 
         labels:
-             server_ip = '{{ ansible_all_ipv4_addresses.0 }}'
-             hostname  = '{{ ansible_hostname }}'
+             server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
+             hostname : '{{ ansible_hostname }}'
 
   - job_name: 'apache'
     static_configs:

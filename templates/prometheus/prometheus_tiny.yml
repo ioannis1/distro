@@ -43,6 +43,6 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9100']
         labels:
-             server_ip = '{{ ansible_all_ipv4_addresses.0 }}'
-             hostname  = '{{ ansible_hostname }}'
+             server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
+             hostname : '{{ ansible_hostname }}'
 
