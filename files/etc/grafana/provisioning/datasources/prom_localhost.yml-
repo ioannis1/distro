@@ -9,7 +9,7 @@ apiVersion: 1
 # list of datasources to insert/update depending
 # whats available in the database
 datasources:
-- name: prom
+- name: prom_localhost
   type: prometheus
   # ccess mode: direct or proxy. Required
   access: proxy

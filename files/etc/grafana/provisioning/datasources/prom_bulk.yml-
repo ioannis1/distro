@@ -1,0 +1,37 @@
+# config file version
+apiVersion: 1
+
+# list of datasources that should be deleted from the database
+#deleteDatasources:
+#- name: prom
+#orgId: 1
+
+# list of datasources to insert/update depending
+# whats available in the database
+datasources:
+- name: prom_bulk
+  type: prometheus
+  # ccess mode: direct or proxy. Required
+  access: proxy
+  orgId: 1
+  url: http://bulk:9090
+  password:
+  user:   
+  database:
+  basicAuth: false
+  basicAuthUser: 
+  basicAuthPassword: 
+  # <bool> enable/disable with credentials headers
+  withCredentials:
+  # <bool> mark as default datasource. Max one per org
+  isDefault: false
+  jsonData:
+     graphiteVersion: "1.1"
+     tlsAuth: false
+     tlsAuthWithCACert: false
+  secureJsonData:
+    tlsCACert: "..."
+    tlsClientCert: "..."
+    tlsClientKey: "..."
+  version: 1
+  editable: true
