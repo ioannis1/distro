@@ -45,9 +45,6 @@
 - include: grafana.yml
   when:    need_grafana
 
-- include: prometheus.yml
-  when:    need_prometheus
-
 - include: stock_brokers.yml
 
 - include: X11.yml

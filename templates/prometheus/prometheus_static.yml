@@ -1,0 +1,110 @@
+#Conuration documentation: https://prometheus.io/docs/operating/configuration
+ 
+global:
+  scrape_interval:      1m      # Default is every 1 minute.
+  scrape_timeout:      10s      # Default 10s
+  evaluation_interval:  4m      # Default is every 1 minute.      Evaluates rules 
+  # sample_limit:       5000      # upper limit num of ts we can scrape
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+rule_files:
+    # - "/etc/prometheus/first_rules.yml"
+     - "/etc/prometheus/first_alert.yml"
+ 
+  - job_name: 'node'
+    scrape_interval:  20s
+    static_configs:
+      - targets: ['localhost:9100'] 
+        labels:
+             server_ip = '{{ ansible_all_ipv4_addresses.0 }}'
+             hostname  = '{{ ansible_hostname }}'
+
+  - job_name: 'apache'
+    static_configs:
+      - targets: ['localhost:9117'] 
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['localhost:9187'] 
+    metric_relabel_configs:
+     #  - source_labels: [__name__]
+     #    regex: 'pg_settings_[^nps].*'
+     #    action: drop
+     #  - source_labels: [__name__]
+     #    regex: 'pg_settings_.*t?'
+     #    action: drop
+        - source_labels: [__name__]
+          regex: 'pg_settings_s[ysqtu].*'
+          action: drop
+        - source_labels: [datname]
+          regex: '^template[012]'
+          action: drop
+
+  - job_name: 'pushgatway'
+    honor_labels: true
+    static_configs:
+      - targets: ['localhost:9091'] 
+        labels:
+          group: 'push'
+
+  - job_name: 'pro'
+    static_configs:
+    - targets: ['localhost:9090'] 
+
+
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  
+    static_configs:
+      - targets:
+        - http://prometheus.io  
+        - http://akroninc.net:80
+        - http://localhost
+          #- http://localhost:9090
+          #- http://localhost:9091
+          #- http://localhost:3000
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115  #blackbox_export
+
+
+
+#remote_write:
+#       - url: http://localhost:9201/write
+#         remote_timeout: 100s
+#         queue_config:
+#            max_shards: 1000
+#            max_samples_per_send: 100
+#            max_retries: 3
+#            batch_send_deadline: 5s
+
+#         write_relabel_configs:
+
+#         - source_labels: [__name__]
+#           regex: 'pg_settings_.*'
+#           action: drop
+
+#         - source_labels: [__name__]
+#           regex: 'go_.*'
+#           action: drop
+
+#         - source_labels: [__name__]
+#           regex: 'prometheus_.*'
+#           action: drop
+
+#         - source_labels: [__name__]
+#           regex: '.*'
+#           replacement: 'bulk'
+#           target_label:  'monitor'
+
+
+# - /etc/prometheus/write_relabel.yml

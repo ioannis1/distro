@@ -2,7 +2,7 @@
 apiVersion: 1
 
 providers:
- - name:                      'bulk'
+ - name:                      'qft'
    type:                      file
    updateIntervalSeconds:     600
    orgId:                     1
@@ -10,6 +10,6 @@ providers:
    disableDeletion:           false
    editable:                  true
    options:
-     path:                          /etc/grafana/provisioning/dashboards/bulk/
+     path:                          /etc/grafana/provisioning/dashboards/qft/
      foldersFromFilesStructure:     true
 

@@ -80,28 +80,8 @@
 - synchronize:  src="etc/lynx/lynx.cfg"  dest="/etc/"  copy_links='yes' 
 
 
-- name: untar apache2_etc.tar.gz
-  unarchive:
-      src:            "etc/{{ item }}"
-      dest:           '/etc/apache2'
-      owner:          root
-      group:          root
-  with_items:
-      - apache2_etc.tar.gz
-  when: need_apache
-
-- name:  www pages  - links ( books, jbooks, tutorials)
-  file:  src="{{ HOME }}/Shared/{{ item }}"  dest="/var/www/html/{{ item }}"   state=link    owner=www-data  group=www-data   force=yes
-  with_items:
-      - books
-      - jbooks
-      - tutorials
-  when: need_apache
-
-
-
-- name:  www pages  - links  (Postgres docs)
-  file:  src="~postgres/dist-pg/share/doc/html"  dest="/var/www/html/Postgres"   state=link    owner=www-data  group=www-data  force=yes
+- name: apache
+  include: apache.yml
   when: need_apache
 
 

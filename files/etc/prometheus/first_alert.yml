@@ -1,0 +1,22 @@
+groups:
+- name: alert_1b
+  rules:
+  - alert: greatErrorRate
+    expr: cou{country='GB'}>100
+    for: 2s
+    labels:
+      severity: critical
+    annotations:
+      summary: Billing queue appears to be building up (consistently more than 100 jobs waiting)
+      dashboard: https://grafana.monitoring.intra/dashboard/db/billing-overview
+      impact: Billing is experiencing delays, causing orders to be marked as pending
+      runbook: https://wiki.intra/runbooks/billing-queues-issues.html
+
+  - alert: pushgateway
+    #expr: absent(avg_over_time(up{instance="localhost:9091",job='pushgateway'}[4m])>0.9)
+    expr: absent(avg_over_time(up{instance="localhost:9091",job='pushgateway'}[4m])>100)
+    for: 6m
+    labels:
+      severity: notice
+    annotations:
+      summary: pushdateway is running at port 9091

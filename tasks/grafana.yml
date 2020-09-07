@@ -18,8 +18,8 @@
                  - libfontconfig1
                  - grafana
 ##############################################################################################
-#- name: grafana
-  #copy:  src="etc/grafana/grafana.ini"  dest="/etc/grafana/"  backup='yes' mode=640  owner='root'
+- name: grafana passwd
+  copy:  src="etc/grafana/passwd"  dest="/etc/grafana/"  backup='no' mode=600  owner='grafana' group='grafana'
 
 - name:     group grafana
   group:    name=grafana    #gid=1002

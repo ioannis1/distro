@@ -1,0 +1,10 @@
+- source_labels: [__name__]
+  regex: 'a_metric'
+  action: drop
+
+- source_labels: [__name__]
+  regex: 'pg_stat_.*'
+  action: drop
+
+
+

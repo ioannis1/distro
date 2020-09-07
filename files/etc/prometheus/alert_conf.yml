@@ -1,0 +1,39 @@
+# Simple example reference: https://github.com/prometheus/alertmanager/blob/master/doc/examples/simple.yml
+global:
+    smtp_smarthost: 'localhost:25'
+    smtp_from: 'Alertmanager <alertmanager@localhost>'
+    smtp_require_tls: false
+    #slack_api_url: 'https://api.slack.com/apps/A90S3Q753'
+
+templates:
+- '/etc/prometheus/templates/*.tmpl'
+  #- /etc/prometheus/templates/notifications.tmpl
+
+route:
+   receiver: team-X-mails
+   group_by: ['service','severity']
+   group_wait: 30s
+   group_interval: 5m
+   repeat_interval: 2d
+   routes:
+   - match_re:
+       service: ^(debug|critical|minor)$
+     receiver: slack
+   - match:
+       service: critical
+     receiver: team-X-mails
+
+
+receivers:
+- name: 'team-X-mails'
+  email_configs:
+  - to: 'ioannistambouras@gmail.com'
+
+- name: 'slack'
+  slack_configs:
+  - send_resolved: true
+    username: 'ioannis'
+    channel: 'general'
+    api_url: 'https://hooks.slack.com/services/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'
+    title: '{{ template "custom_title" . }}'
+    text: '{{ template "custom_slack_message" . }}'

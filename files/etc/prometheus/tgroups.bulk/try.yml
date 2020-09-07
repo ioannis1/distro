@@ -1,0 +1,23 @@
+- targets: ['localhost:9100']
+  labels:
+    job: 'node'
+
+- targets: ['localhost:9117']
+  labels:
+    job: 'apache'
+
+- targets: ['localhost:9187']
+  labels:
+    job: 'postgres'
+
+- targets: ['localhost:9091']
+  labels:
+    job: 'push'
+
+- targets: ['localhost:9090']
+  labels:
+    job: 'pro'
+
+- targets: ['localhost', 'akroninc.net:80']
+  labels:
+    job: 'blackbox'

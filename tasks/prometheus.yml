@@ -1,0 +1,51 @@
+####################################################  packages
+- name:          packages prometheus 
+  apt:
+     pkg:
+                  - prometheus-blackbox-exporter 
+                  - prometheus-postgres-exporter
+                  - prometheus-pgbouncer-exporter
+                  - prometheus-node-exporter
+                  - prometheus-pushgateway 
+                  - prometheus-apache-exporter
+                  - pgbouncer
+                  - prometheus-alertmanager
+                  - prometheus 
+                  - consul
+
+####################################################  /etc/prometheus   FILES
+- name:        Files   /etc/prometheus/*
+  synchronize:  src="etc/prometheus/"  dest="/etc/prometheus"  copy_links=yes  delete='no'  owner=no  dirs=yes #rsync_opts=--ignore-existing
+
+####################################################  /etc/prometheus  TEMPLATES
+#
+- name:        Templates /etc/prometheus/*
+  template:    src=prometheus/{{ item }}      dest="/etc/prometheus/"     owner=root
+  with_items:
+       - prometheus_tiny.yml
+       - prometheus_simple.yml          
+       - prometheus_static.yml          
+       - prometheus_static_write-pg.yml
+
+
+####################################################  symlink /etc/prometheus/prometheus.yml
+- name:    symlink  prometheus.yml
+  file:    src='/etc/prometheus/prometheus_tiny.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+
+####################################################  /etc/default
+- name:        default prometheus exporters
+  copy:        src="etc/default/prometheus-{{ item }}-exporter"   dest="/etc/default"    owner=root   
+  with_items:
+      #- postgres
+      - node
+####################################################   reload server
+
+- name:       reload  prometheus exporters
+  shell:       "/etc/init.d/prometheus-{{ item }}-exporter    force-reload"
+  with_items:
+      #- postgres
+      - node
+
+- name:       reload  prometheus 
+  when:  false
+  systemd:    name="prometheus"   daemon_reload="yes"

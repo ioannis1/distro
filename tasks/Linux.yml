@@ -224,18 +224,3 @@ sudo add-apt-repository ppa:linuxuprising/java
                   - libfile-slurp-perl
                   - libdata-show-perl
 
-- name:          prometheus 
-  when:          need_prometheus
-  apt:
-     pkg:
-                  - prometheus-blackbox-exporter 
-                  - prometheus 
-                  - prometheus-postgres-exporter
-                  - prometheus-pgbouncer-exporter
-                  - prometheus-node-exporter
-                  - prometheus-pushgateway 
-                  - prometheus-apache-exporter
-                  - pgbouncer
-                  - prometheus-alertmanager
-                  - consul
-

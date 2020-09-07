@@ -1,0 +1,23 @@
+#Conuration documentation: https://prometheus.io/docs/operating/configuration
+ 
+global:
+  scrape_interval:      1m      # Default is every 1 minute.
+  scrape_timeout:      10s      # Default 10s
+  evaluation_interval:  4m      # Default is every 1 minute.      Evaluates rules 
+  # sample_limit:       5000      # upper limit num of ts we can scrape
+  external_labels:    
+     monitor: 'bulk2'
+
+alerting:
+  alertmanagers:
+
+rule_files:
+     - "/etc/prometheus/first_alert.yml"
+ 
+
+remote_write:
+        - url: http://localhost:9302/write
+remote_read:
+        - url: http://localhost:9302/read
+          read_recent: false
+
