@@ -1,10 +1,4 @@
-zfs:                        true
-beefy_version:              true
-allow_vbox_repo:            false
-allow_contrib:              false
 omit_postgres_dir_admin:    false
-
-need_role_ioannis:          true
 need_role_postgres:         true
 need_role_nagios:           true
 need_role_vagrant:          true
@@ -23,11 +17,4 @@ need_zoom:                  false
 pool:                       zz
 zpool:                      zz
 oracle_java:                true
-postgres_passwd:            changeme
 thinkorswim:                false
-
-users:
-    - { name: ioannis,     passwd: "{{postgres_passwd}}", attr: createdb    }
-    - { name: nagios,      passwd: "{{postgres_passwd}}"                    }
-
-

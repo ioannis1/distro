@@ -1,11 +1,15 @@
 #Conuration documentation: https://prometheus.io/docs/operating/configuration
  
 global:
-  scrape_interval:      1m      # Default is every 1 minute.
-  scrape_timeout:       1m      # Default 10s
-  evaluation_interval:  4m      # Default is every 1 minute.      Evaluates rules 
-  # sample_limit:       5000      # upper limit num of ts we can scrape
+  scrape_interval:      {{ scrape_interval     | default( '1m'  )  }}
+  scrape_timeout:       {{ scrape_timeout      | default( '10s' )  }} 
+  evaluation_interval:  {{ evaluation_interval | default( '1m'  )  }}
+  # sample_limit:       {{ sample_limit        | default( '10000' )  }}
 
+  # Labels when communicating with  external systems (federation, remote storage, Alertmanager).
+  external_labels:
+      server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
+      hostname : '{{ ansible_hostname }}'
 
 rule_files:
     # - "/etc/prometheus/first_rules.yml"
@@ -19,6 +23,9 @@ scrape_configs:
         - targets: ['localhost:9487'] 
           labels:
               server : 'localhost:5434'
+              pg_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+              pg_host : '{{ ansible_hostname }}'
+              pg_port : '5434'
     metric_relabel_configs:
         - source_labels: [__name__]
           regex: 'pg_settings_s[ysqtu].*'
@@ -38,6 +45,9 @@ scrape_configs:
         - targets: ['localhost:9187'] 
           labels:
               server : 'localhost:5432'
+              pg_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+              pg_host : '{{ ansible_hostname }}'
+              pg_port : '5434'
     metric_relabel_configs:
      #  - source_labels: [__name__]
      #    regex: 'pg_settings_[^nps].*'
@@ -62,7 +72,6 @@ scrape_configs:
         labels:
              server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
              hostname : '{{ ansible_hostname }}'
-
 
 
 #remote_write:

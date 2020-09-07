@@ -1,0 +1,6 @@
+postgres_passwd:            changeme
+
+
+users:
+    - { name: ioannis,     passwd: "{{postgres_passwd}}", attr: createdb    }
+    - { name: nagios,      passwd: "{{postgres_passwd}}"                    }
