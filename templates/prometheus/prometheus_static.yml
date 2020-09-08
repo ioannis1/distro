@@ -17,7 +17,7 @@ alerting:
         - targets: ['localhost:9093']
 
 rule_files:
-    # - "/etc/prometheus/first_rules.yml"
+   - "rules/memory.yml"
      - "/etc/prometheus/first_alert.yml"
  
   - job_name: 'node'

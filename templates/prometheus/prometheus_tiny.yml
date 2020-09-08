@@ -15,7 +15,7 @@ global:
    # - targets: ['localhost:9093']
 
 rule_files:
-  # - "first_rules.yml"
+   - "rules/memory.yml"
   # - "second_rules.yml"
 
 scrape_configs:

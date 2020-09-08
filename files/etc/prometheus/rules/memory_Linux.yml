@@ -1,0 +1,26 @@
+groups:
+  - name: MemFree
+    #interval: <duration> | default = global.evaluation_interval ]
+    interval: 10s
+    rules:
+       - record: node_memory_ioannis_MemFree
+         expr:   node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Cached_bytes - node_memory_Buffers_bytes
+
+  - name: MemUsed
+    interval: 10s
+    rules:
+       - record: node_memory_ioannis_MemUsed
+         expr:   node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Cached_bytes - node_memory_Buffers_bytes
+
+  - name: MemBufCach
+    interval: 10s
+    rules:
+       - record: node_memory_ioannis_MemBufCash
+         expr:   node_memory_Cached_bytes + node_memory_Buffers_bytes
+
+  - name: MemTotal
+    interval: 10s
+    rules:
+       - record: node_memory_ioannis_MemaTotal
+         expr:   node_memory_MemTotal_bytes
+

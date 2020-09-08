@@ -12,8 +12,8 @@ global:
       hostname : '{{ ansible_hostname }}'
 
 rule_files:
-    # - "/etc/prometheus/first_rules.yml"
-     - "/etc/prometheus/first_alert.yml"
+   - "rules/memory.yml"
+    #- "/etc/prometheus/first_alert.yml"
  
 scrape_configs:
 
