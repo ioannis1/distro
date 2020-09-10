@@ -1,0 +1,29 @@
+
+groups:
+  - name: cpu_user
+    interval: 1m
+    rules:
+       - record: node_cpu_ioannis_user
+         expr: sum by ( instance) (irate(node_cpu_seconds_total{mode="user"}[1m]))
+
+
+
+  - name: cpu_system
+    interval: 1m
+    rules:
+       - record: node_cpu_ioannis_system
+         expr: sum by ( instance) (irate(node_cpu_seconds_total{mode="system"}[1m]))
+
+  - name: cpu_iowait
+    interval: 1m
+    rules:
+       - record: node_cpu_ioannis_iowait
+         expr: sum by ( instance) (irate(node_cpu_seconds_total{mode="iowait"}[1m]))
+
+
+  - name: cpu_idle
+    interval: 1m
+    rules:
+       - record: node_cpu_ioannis_idle
+         expr: sum by ( instance) (irate(node_cpu_seconds_total{mode="idle"}[1m]))
+

@@ -8,9 +8,9 @@ datasources:
     type:     postgres
     url:      localhost:5432
     database: timescaledb
-    user:     grafana
+    user:     read_only
     secureJsonData:
-      password: "silver"
+      password: "{{ generic_passwd }}"
     jsonData:
       sslmode: "disable" # disable/require/verify-ca/verify-full
       maxOpenConns: 0         # Grafana v5.4+

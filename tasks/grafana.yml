@@ -51,8 +51,14 @@
 - name:    chown -R grafana:grafana
   file:   recurse=yes  owner=grafana group=grafana  path=/etc/grafana
 
+- name:    templates
+  template:  src="etc/grafana/{{ item }}"  dest="/etc/grafana/provisioning/datasources"    owner=root group=root  mode=640
+  with_items:
+      - qft-postgres.yaml
+
+
 - name:    passwd
-  shell:  grafana-cli admin reset-admin-password silver
+  shell:  "grafana-cli admin reset-admin-password {{ generic_passwd }}"
   args:
      chdir: /usr/share/grafana
   

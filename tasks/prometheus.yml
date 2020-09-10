@@ -20,7 +20,7 @@
 ####################################################  /etc/prometheus  TEMPLATES
 #
 - name:        Templates /etc/prometheus/*
-  template:    src=prometheus/{{ item }}      dest="/etc/prometheus/"     owner=root
+  template:    src=etc/prometheus/{{ item }}      dest="/etc/prometheus/"     owner=root
   with_items:
        - prometheus_tiny.yml
        - prometheus_simple.yml          
@@ -30,7 +30,7 @@
 
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
-  file:    src='/etc/prometheus/prometheus_tiny.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+  file:    src='/etc/prometheus/prometheus_simple.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
 
 - name:    symlink  rules/memory_rules.yml
   file:    src="/etc/prometheus/rules/memory_{{ os_family }}.yml"   dest='/etc/prometheus/rules/memory.yml'   state=link  owner=root   force=yes
@@ -39,14 +39,21 @@
 - name:        default prometheus exporters
   copy:        src="etc/default/prometheus-{{ item }}-exporter"   dest="/etc/default"    owner=root   
   with_items:
-      #- postgres
       - node
-####################################################   reload server
+
+- name:        default templates /etc/default
+  template:    src=etc/default/prometheus-{{ item }}-exporter      dest="/etc/default/"     owner=root
+  with_items:
+      - postgres
+####################################################  mkdir
+- name:    mkdir  /tmp/node_dat
+  file:    dest='/tmp/node_dat'     state=directory  owner=root   force=yes
+####################################################   reload servers
 
 - name:       reload  prometheus exporters
   shell:       "/etc/init.d/prometheus-{{ item }}-exporter    force-reload"
   with_items:
-      #- postgres
+      - postgres
       - node
 
 - name:       reload  prometheus 

@@ -17,37 +17,16 @@ rule_files:
  
 scrape_configs:
 
-  - job_name: 'postgres_5434'
-    honor_labels: true
-    static_configs:
-        - targets: ['localhost:9487'] 
-          labels:
-              server : 'localhost:5434'
-              pg_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
-              pg_host : '{{ ansible_hostname }}'
-              pg_port : '5434'
-    metric_relabel_configs:
-        - source_labels: [__name__]
-          regex: 'pg_settings_s[ysqtu].*'
-          action: drop
-        - source_labels: [datname]
-          regex: '^template[012]'
-          action: drop
 
-  - job_name: 'pgbounce'
+  - job_name: postgres
     honor_labels: true
     static_configs:
-        - targets: ['localhost:9911'] 
-
-  - job_name: 'postgres'
-    honor_labels: true
-    static_configs:
-        - targets: ['localhost:9187'] 
+        - targets: ['{{ ansible_hostname }}:9187'] 
           labels:
               server : 'localhost:5432'
               pg_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
               pg_host : '{{ ansible_hostname }}'
-              pg_port : '5434'
+              pg_port : '5432'
     metric_relabel_configs:
      #  - source_labels: [__name__]
      #    regex: 'pg_settings_[^nps].*'
@@ -73,6 +52,27 @@ scrape_configs:
              server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
              hostname : '{{ ansible_hostname }}'
 
+# - job_name: postgres_5433
+#   honor_labels: true
+#   static_configs:
+#       - targets: ['{{ ansible_hostname }}:9387'] 
+#         labels:
+#             server :  '{{ ansible_hostname }}:5433'
+#             pg_ip:    '{{ ansible_all_ipv4_addresses.0 }}'
+#             pg_host : '{{ ansible_hostname }}'
+#             pg_port : '5433'
+#   metric_relabel_configs:
+#       - source_labels: [__name__]
+#         regex: 'pg_settings_s[ysqtu].*'
+#         action: drop
+#       - source_labels: [datname]
+#         regex: '^template[012]'
+#         action: drop
+
+# - job_name: 'pgbounce'
+#   honor_labels: true
+#   static_configs:
+#       - targets: ['{{ ansible_hostname }}:9911'] 
 
 #remote_write:
 #       - url: http://localhost:9201/write
