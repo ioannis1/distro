@@ -1,0 +1,30 @@
+- alert: PostgreSQL_SplitBrain
+  expr: 'count(pg_replication_is_replica == 0) BY (environment) != 1'
+  annotations:
+title: |
+      Split Brain: more than one postgres databases in environment
+      {{$labels.environment}} in read-write (primary) mode
+- alert: PostgreSQL_SplitBrain_Replicas
+  expr: |
+    count(
+      count(pg_stat_wal_receiver_status >= 0) BY (environment, upstream_host)
+    ) BY (environment) > 1
+  annotations:
+    title: |
+      Split Brain: replicas in environment {{$labels.environment}}
+      have different upstream databases configured
+
+- alert: PostgreSQL_FleetSizeChange
+  expr: 'postgres:databases != postgres:databases OFFSET 2m'
+  annotations:
+    description: 'There are now {{$value}} databases in "{{$labels.environment}}"'
+    title: 'Number of PostgreSQL Databases in {{$labels.environment}} has changed'
+- alert: PostgreSQL_RoleChange
+  expr: 'pg_replication_is_replica and changes(pg_replication_is_replica[1m]) > 0'
+    title: 'Postgres Database replica promotion occurred in "{{$labels.environment}
+- alert: PostgreSQL_ConfigurationChange
+  expr: |
+        {__name__= ̃"pg_settings_.*"} !=
+        ON(__name__, instance)
+        {__name__= ̃"pg_settings_.*",__name__!="pg_settings_transaction_read_only"}
+        OFFSET 10m

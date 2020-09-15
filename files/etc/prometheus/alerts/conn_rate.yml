@@ -1,0 +1,18 @@
+groups:
+- name: postgresql.rules
+  rules:
+  - alert: PostgreSQL_ConnectionsTooHigh
+expr: |
+      sum(pg_stat_activity_count) BY (environment, instance)
+        > ON(instance)
+      pg_settings_max_connections * 0.75
+    for: 10m
+    labels:
+      severity: warn
+      channel: database
+    annotations:
+      runbook: troubleshooting/postgresql.md#connections
+      title: |
+        Postgres has {{$value}} connections on {{$labels.instance}}
+        which is close to the maximum
+

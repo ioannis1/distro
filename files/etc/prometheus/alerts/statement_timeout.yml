@@ -1,0 +1,15 @@
+- name: postgresql.rules
+  rules:
+  - alert: PostgreSQL_StatementTimeout_Errors
+expr: |
+      rate(postgresql_errors_total{type="statement_timeout"}[1m]) > 0.5
+    for: 5m
+    labels:
+      severity: warn
+      channel: database
+    annotations:
+      descrition: |
+        Database {{$labels.instance}} is logging
+        {{ $value | printf "%.1f" }} statement timeouts per second
+      runbook: troubleshooting/postgresql.md#errors
+      title: 'Postgres transactions showing high rate of statement timeouts'

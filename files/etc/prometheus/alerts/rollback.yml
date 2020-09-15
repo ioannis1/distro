@@ -1,0 +1,19 @@
+groups:
+- name: postgresql.rules
+  rules:
+  - alert: PostgreSQL_RollbackRateTooHigh
+expr: |
+      rate(pg_stat_database_xact_rollback{datname="gitlabhq_production"}[5m])
+        / ON(instance, datname)
+      rate(pg_stat_database_xact_commit{datname="gitlabhq_production"}[5m])
+        > 0.02
+    for: 5m
+    labels:
+      severity: warn
+      channel: database
+    annotations:
+      description: |
+        Ratio of transactions being aborted compared to committed is
+        {{$value | printf "%.2f" }} on {{$labels.instance}}
+      runbook: troubleshooting/postgresql.md#errors
+      title: 'Postgres transaction rollback rate is high'

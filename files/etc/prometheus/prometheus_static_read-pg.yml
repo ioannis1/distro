@@ -12,7 +12,7 @@ alerting:
   alertmanagers:
 
 rule_files:
-     - "/etc/prometheus/first_alert.yml"
+     - "/etc/prometheus/alerts/first_alert.yml"
  
 
 remote_write:

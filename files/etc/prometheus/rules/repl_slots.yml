@@ -1,0 +1,17 @@
+pg_replication_slots: query: |
+SELECT slot_name, slot_type,
+case when active then 1.0 else 0.0 end AS active, age(xmin) AS xmin_age,
+age(catalog_xmin) AS catalog_xmin_age,
+FROM pg_replication_slots
+metrics:
+- slot_name:
+usage: "LABEL"
+description: "Slot Name" - slot_type:
+usage: "LABEL"
+description: "Slot Type" - active:
+usage: "GAUGE"
+description: "Boolean flag indicating whether this slot has a consumer streaming from it" - xmin_age:
+usage: "GAUGE"
+description: "Age of oldest transaction that cannot be vacuumed due to this replica" - catalog_xmin_age:
+usage: "GAUGE"
+description: "Age of oldest transaction that cannot be vacuumed from catalogs due to this replica (use

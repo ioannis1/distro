@@ -9,37 +9,8 @@ pg_replication_slots:
         usage: "GAUGE"
         description: "Number of availabe replication slots"
 
-pg_replication:
-  query: "SELECT EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp()))::INT as lag"
-  metrics:
-    - lag:
-        usage: "GAUGE"
-        description: "Replication lag behind master in seconds"
-
-pg_postmaster:
-  query: "SELECT pg_postmaster_start_time as start_time_seconds from pg_postmaster_start_time()"
-  metrics:
-    - start_time_seconds:
-        usage: "GAUGE"
-        description: "Time at which postmaster started"
-
-pg_database:
-  query: " SELECT pg_database.datname, pg_database_size(pg_database.datname) as size FROM pg_database" 
-  metrics:
-    - datname:
-        usage: "LABEL"
-        description: "Name of the database"
-    - size:
-        usage: "GAUGE"
-        description: "Disk space used by the database"
 
 
-pg_xlog:
-  query: "WITH tmp AS ( SELECT   count(*) from pg_ls_dir('pg_xlog') a(file) WHERE file ~ '^00' AND current_setting('server_version') ~ '^9' UNION SELECT   count(*) from pg_ls_dir('pg_wal') a(file) WHERE file ~ '^00' AND current_setting('server_version') ~ '^1') SELECT sum(count)  AS  total FROM tmp"
-  metrics:
-    - count:
-        usage: "GAUGE"
-        description: "total (unarchied) xlogs currently in use"
 
 pg_clog:
   query: "WITH tmp AS ( SELECT file, (pg_stat_file(file)).size FROM (SELECT       public.clog_dir()|| pg_ls_dir( clog_dir() ) AS file) as t) SELECT  sum(size) AS bytes FROM tmp"
@@ -48,3 +19,17 @@ pg_clog:
         usage: "GAUGE"
         description: "bytes in pg_clog/ directory"
 
+pg_xlog:
+  query: "WITH tmp AS ( SELECT   count(*) from pgexporter.ls_dir('pg_xlog') a(file) WHERE file ~ '^00' AND current_setting('server_version') ~ '^9' UNION SELECT   count(*) from pgexporter.ls_dir('pg_wal') a(file) WHERE file ~ '^00' AND current_setting('server_version') ~ '^1') SELECT sum(count)  AS  total FROM tmp"
+  metrics:
+    - count:
+        usage: "GAUGE"
+        description: "total (unarchied) xlogs currently in use"
+
+
+pg_logdir:
+  query: "SELECT ls_logdir AS size FROM pgexporter.ls_logdir() "
+  metrics:
+    - count:
+        usage: "GAUGE"
+        description: "total bytes inlogs files"

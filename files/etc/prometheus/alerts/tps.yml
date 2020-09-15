@@ -1,0 +1,19 @@
+groups:
+- name: postgresql.rules
+  rules:
+  - alert: PostgreSQL_CommitRateTooLow
+expr: |
+      rate(pg_stat_database_xact_commit{datname="gitlabhq_production",
+                                        environment="prd"}[1m]) < 1000
+    for: 2m
+    labels:
+      severity: warn
+      channel: database
+    annotations:
+      description: |
+        Commits/s on {{$labels.instance}} database {{$labels.datname}}
+        is {{$value | printf "%.0f" }} which is implausibly low.
+        Perhaps the application is unable to connect
+      runbook: troubleshooting/postgresql.md#availability
+      title: 'Postgres seems to be processing very few transactions'
+ 

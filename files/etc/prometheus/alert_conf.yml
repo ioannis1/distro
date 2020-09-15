@@ -6,8 +6,8 @@ global:
     #slack_api_url: 'https://api.slack.com/apps/A90S3Q753'
 
 templates:
-- '/etc/prometheus/templates/*.tmpl'
-  #- /etc/prometheus/templates/notifications.tmpl
+- '/etc/prometheus/alerts/templates/*.tmpl'
+  #- /etc/prometheus/alerts/templates/notifications.tmpl
 
 route:
    receiver: team-X-mails

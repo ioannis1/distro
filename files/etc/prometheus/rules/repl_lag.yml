@@ -1,0 +1,13 @@
+pg_replication:
+  query: |
+    SELECT EXTRACT(epoch FROM (
+             now() - pg_last_xact_replay_timestamp()
+           ))::int AS lag,
+           CASE WHEN pg_is_in_recovery() THEN 1 ELSE 0 END AS is_replica
+  metrics:
+    - lag:
+        usage: "GAUGE"
+        description: "Replication lag behind primary in seconds"
+    - is_replica:
+        usage: "GAUGE"
+        description: "Indicates if this host is a replica"

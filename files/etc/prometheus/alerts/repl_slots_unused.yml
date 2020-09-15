@@ -1,0 +1,13 @@
+groups:
+- name: postgresql.rules
+  rules:
+  - alert: PostgreSQL_UnusedReplicationSlot
+    expr: 'pg_replication_slots_active == 0'
+    for: 30m
+    labels:
+      severity: warn
+      channel: database
+    annotations:
+      description: |
+        Unused {{$labels.slot_type}} slot "{{$labels.slot_name}}"
+        on {{$labels.instance}}
