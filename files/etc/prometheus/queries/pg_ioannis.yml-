@@ -28,7 +28,7 @@ pg_xlog:
 
 
 pg_logdir:
-  query: "SELECT ls_logdir AS size FROM pgexporter.ls_logdir() "
+  query: "SELECT sum((i).size) AS size FROM pg_catalog.pg_ls_logdir() as i"
   metrics:
     - count:
         usage: "GAUGE"

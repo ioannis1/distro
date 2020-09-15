@@ -144,7 +144,7 @@ pg_xlog:
 
 
 pg_logdir:
-  query: "SELECT size AS size FROM pg_ls_logdir() "
+  query: "SELECT sum(size) FROM pg_ls_logdir() "
   metrics:
     - count:
         usage: "GAUGE"
