@@ -1,0 +1,28 @@
+- type: counter
+  name: pglog_checkpoints_total
+  help: Total number of checkpoints started
+  #match: 'checkpoint starting'
+  match: '%{PG_CHECKPOINT}'
+ 
+- type: counter
+  name: pglog_passwd_failed_total
+  help: Total number of password attempts
+  match: '%{PG_PASSWD_FAILED}'
+ 
+- type: counter
+  name: pglog_fatal_total
+  help: Total number of FATAL errors 
+  match: '%{PG_FATAL}'
+
+- type: counter
+  name: pglog_error_total
+  help: Total number of ERROR errors 
+  match: '%{PG_ERROR}'
+
+- type: counter
+  name: pglog_error_syntax_total
+  help: Total number of ERROR errors due to syntax
+  match: '%{PG_ERROR_SYNTAX}'
+
+ 
+ 

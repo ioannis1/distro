@@ -45,6 +45,10 @@
   template:    src=etc/default/prometheus-{{ item }}-exporter      dest="/etc/default/"     owner=root
   with_items:
       - postgres
+####################################################  other exporters
+- name:   grok_exporter
+  when:   need_grok_exporter
+  include:  grok_exporter.yml
 ####################################################  mkdir
 - name:    mkdir  /tmp/node_dat
   file:    dest='/tmp/node_dat'     state=directory  owner=root   force=yes

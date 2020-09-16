@@ -1,0 +1,28 @@
+####################################################  packages
+# NOTE: prerequisites: prometheus already installed
+
+####################################################  /etc/prometheus   FILES
+#
+- stat:        path="/usr/local/bin/grok_exporter"
+  register:    grokbin
+
+- name:        assert /usr/local/bin/grok_exporter
+  assert:       
+    that:
+        - grokbin.stat.exists
+    quiet:      true
+    fail_msg:   'please install grok_exporter(1)'
+
+- name:         chmod 755 usr/local/bin/grok_exporter
+  file:         path=/usr/local/bin/grok_exporter  mode=755
+
+
+
+- name:        systemd file
+  template:    src=etc/prometheus/grok_exporter.service     dest="/etc/systemd/system/"     owner=root
+  when:        os_family == 'Linux'
+####################################################  mkdir
+
+- name:       reload  grok_exporter
+  when:       os_family == 'Linux' 
+  systemd:    name="grok_exporter"   daemon_reload="yes"  state=started  enabled=yes

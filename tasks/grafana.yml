@@ -44,6 +44,9 @@
       - grafana-clock-panel        
       - grafana-piechart-panel    
       - grafana-worldmap-panel
+      - farski-blendstat-panel
+      - yesoreyeram-boomtable-panel
+
 
 - name:    provisioning
   synchronize:  src="etc/grafana"  dest="/etc/"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
@@ -52,7 +55,7 @@
   file:   recurse=yes  owner=grafana group=grafana  path=/etc/grafana
 
 - name:    templates
-  template:  src="etc/grafana/{{ item }}"  dest="/etc/grafana/provisioning/datasources"    owner=root group=root  mode=640
+  template:  src="etc/grafana/{{ item }}"  dest="/etc/grafana/provisioning/datasources"    owner=grafana group=grafana  mode=640
   with_items:
       - qft-postgres.yaml
 

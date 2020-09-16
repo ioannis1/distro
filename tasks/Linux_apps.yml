@@ -1,0 +1,20 @@
+
+- include: "Linux-config.yml"
+
+- include: grafana.yml
+  when:    need_grafana
+
+- include: prometheus.yml
+  when:    need_prometheus
+
+- include: stock_brokers.yml
+
+- include: X11.yml
+
+
+
+- include:       adobe.yml
+  become_user:   root
+  become:        yes
+  when:          need_adobe_flash 
+

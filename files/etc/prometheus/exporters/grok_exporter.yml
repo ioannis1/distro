@@ -1,0 +1,35 @@
+# https://github.com/fstab/grok_exporter/blob/master/CONFIG.md
+global:
+  config_version: 3
+input:
+  type: file
+  paths: 
+  - /var/log/postgresql/main*.log
+  #- /var/log/postgresql/karat*.log
+  #- /var/log/postgresql/main*.log
+  #fail_on_missing_logfile: true
+  fail_on_missing_logfile: false # NOTE:what we want
+  #readall: false # NOTE:what we want
+  readall: true 
+imports:
+- type: grok_patterns
+  dir: /etc/prometheus/exporters/patterns
+- type: metrics
+  #file: ./metrics/checkpoint
+  dir: /etc/prometheus/exporters/metrics
+  defaults:
+    #path: /var/log/syslog/*
+    retention: 2h30m0s
+    buckets: [0, 1, 2, 3]
+    quantiles: {0.5: 0.05, 0.9: 0.02, 0.99: 0.002}
+    labels:
+      logfile: '{{base .logfile}}'
+server:
+  protocol: http
+  port: 9144
+  host: localhost
+  #cert: /path/to/cert
+  #key: /path/to/key
+  #client_ca: /path/to/client_ca
+  #client_auth: RequireAndVerifyClientCert
+

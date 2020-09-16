@@ -17,7 +17,7 @@ alerting:
 
 rule_files:
    - "rules/memory.yml"
-     - "/etc/prometheus/first_alert.yml"
+     - "/etc/prometheus/alerts/first_alert.yml"
  
 scrape_configs:
 

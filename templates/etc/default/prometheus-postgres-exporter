@@ -9,7 +9,7 @@
 DATA_SOURCE_NAME='user=prometheus password={{ postgres_passwd }} host=localhost port=5432 dbname=ts application_name=promethus-exporter sslmode=disable'
 
 # Set the command-line arguments to pass to the server.
-ARGS='--extend.query-path=/etc/prometheus/queries/pgqueries.yaml'
+ARGS='--extend.query-path=/etc/prometheus/queries/pgqueries.yml'
 
 # Available flags:
 #  --web.listen-address=":9187"  Address to listen on for web interface and telemetry.

@@ -34,24 +34,16 @@
 
 - include: "{{ os_family }}.yml"
 
-- include: "Linux-config.yml"
-  when:  os_family == "Linux"
-
 - include: hosts.yml
   when: false
      
 - include: etc.yml
 
-- include: grafana.yml
-  when:    need_grafana
-
-- include: prometheus.yml
-  when:    need_prometheus
-
-- include: stock_brokers.yml
-
-- include: X11.yml
+- include: Linux_apps.yml
   when: os_family == 'Linux'
+
+- include: Darwin_apps.yml
+  when: os_family == 'Darwin'
 
 - include: var.yml
 

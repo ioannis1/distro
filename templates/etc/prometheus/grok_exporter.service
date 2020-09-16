@@ -1,0 +1,30 @@
+
+[Unit]
+Description=grok_exporter 
+After = network.target
+#ConditionPathExists = /etc/prometheus/exporters/grok-exporte.yml
+
+#WorkingDirectory=/var/logs/postgresql
+
+#KillUserProcesses=yes
+
+
+[Service]
+#Type=forking
+Type=simple
+#Type=notify
+ExecStart=/usr/local/bin/grok_exporter -config /etc/prometheus/exporters/grok_exporter.yml -disable-exporter-metrics 
+ExecStop=/bin/kill -TERM  $MAINPID
+ExecReload=/bin/kill -HUP  $MAINPID
+#OOMScoreAdjust=-900
+User=postgres
+#Group=postgres
+#Restart=on-failure
+
+
+RemoveIPC=no
+
+#RemainAfterExit=on
+
+[Install]
+WantedBy=multi-user.target
