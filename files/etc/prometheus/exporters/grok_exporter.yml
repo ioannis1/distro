@@ -27,7 +27,7 @@ imports:
 server:
   protocol: http
   port: 9144
-  host: localhost
+  #host: localhost
   #cert: /path/to/cert
   #key: /path/to/key
   #client_ca: /path/to/client_ca
