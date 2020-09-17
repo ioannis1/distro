@@ -1,0 +1,27 @@
+- name:        check for loki(1)
+  stat:        path="/usr/local/bin/loki-linux-amd64"
+  register:    lokibin
+
+- name:        assert /usr/local/bin/loki-linux-amd64
+  assert:       
+    that:
+        - lokibin.stat.exists
+    quiet:      true
+    fail_msg:   'please install loki-linux-amd64r(1)'
+
+
+- name:         chmod 755 usr/local/bin/loki
+  file:         path=/usr/local/bin/loki-linux-amd64  mode=755  owner=root
+
+- name:        config file
+  copy:        src=etc/grafana/loki.yaml     dest="/etc/grafana/"     owner=root   mode=640
+
+- name:        systemd file
+  copy:        src=etc/systemd/loki.service     dest="/etc/systemd/system/"     owner=root
+  when:        os_family == 'Linux'
+
+####################################################  mkdir
+
+- name:       reload  loki
+  when:       os_family == 'Linux' 
+  systemd:    name="loki"   daemon_reload="yes"  state=started  enabled=yes

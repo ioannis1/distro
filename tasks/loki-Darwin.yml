@@ -1,0 +1,16 @@
+# git clone DIR needed to compile
+# NOTE: prerequisites:   "brew install oniguruma"
+
+
+- name:               brew packages
+  become_user:        postgres
+  become:             yes
+  homebrew:
+    name:
+       - loki
+       - promtail 
+    state:            present
+    update_homebrew:  no
+
+
+

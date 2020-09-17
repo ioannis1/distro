@@ -1,0 +1,25 @@
+- name:        check for promtail(1)
+  stat:        path="/usr/local/bin/promtail"
+  register:    promtailbin
+
+- name:        assert /usr/local/bin/promtail
+  assert:       
+    that:
+        - promtailbin.stat.exists
+    quiet:      true
+    fail_msg:   'please install promtail-linux-amd64r(1)'
+
+- name:         chmod 755 usr/local/bin/promtail
+  file:         path=/usr/local/bin/promtail   mode=755  owner=root
+
+- name:        config file
+  copy:        src=etc/grafana/promtail.yaml     dest="/etc/grafana/"      owner=root   mode=640
+
+- name:        systemd file
+  copy:        src=etc/systemd/promtail.service     dest="/etc/systemd/system/"     owner=root
+  when:        os_family == 'Linux'
+####################################################  mkdir
+
+- name:       reload  promtail
+  when:       os_family == 'Linux' 
+  systemd:    name="promtail"   daemon_reload="yes"  state=started  enabled=yes
