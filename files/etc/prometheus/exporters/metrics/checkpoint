@@ -1,28 +1,54 @@
 - type: counter
-  name: pglog_checkpoints_total
-  help: Total number of checkpoints started
-  #match: 'checkpoint starting'
-  match: '%{PG_CHECKPOINT}'
- 
+  name: pglog_conn_nossl_total
+  help: Total number of connections without ssl
+  match: 'LOG:  connection authorized: user=%{USER:user} database=%{USER:datname}$' 
+  labels:
+      user: '{{.user}}'
+      datname: '{{.datname}}'
+
+- type: counter
+  name: pglog_conn_ssl_authorized_total
+  help: Total number of authorized connections using ssl
+  match: 'LOG:  connection authorized: user=%{USER:user} database=%{USER:datname} SSL enabled'
+  labels:
+      user: '{{.user}}'
+      datname: '{{.datname}}'
+
+- type: counter
+  name: pglog_conn_ssl_failed_total
+  help: Total number of failed connections using ssl
+  match: 'LOG:  could not accept SSL connection'
+
 - type: counter
   name: pglog_passwd_failed_total
   help: Total number of password attempts
-  match: '%{PG_PASSWD_FAILED}'
+  match: 'user=%{USER:user},db=%{USER:datname} FATAL:  password authentication failed' 
+  labels:
+      user: '{{.user}}'
+      datname: '{{.datname}}'
+
  
 - type: counter
   name: pglog_fatal_total
   help: Total number of FATAL errors 
-  match: '%{PG_FATAL}'
+  match: 'user=%{USER:user},db=%{USER:datname} FATAL::'
+  labels:
+      user: '{{.user}}'
+      datname: '{{.datname}}'
 
 - type: counter
   name: pglog_error_total
   help: Total number of ERROR errors 
-  match: '%{PG_ERROR}'
+  match: 'user=%{USER:user},db=%{USER:datname} ERROR:'
+  labels:
+      user: '{{.user}}'
+      datname: '{{.datname}}'
 
 - type: counter
   name: pglog_error_syntax_total
   help: Total number of ERROR errors due to syntax
-  match: '%{PG_ERROR_SYNTAX}'
+  match: 'user=%{USER:user},db=%{USER:datname} ERROR:  syntax error at or near'
+  labels:
+      user: '{{.user}}'
+      datname: '{{.datname}}'
 
- 
- 
