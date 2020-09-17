@@ -23,14 +23,14 @@
   template:    src=etc/prometheus/{{ item }}      dest="/etc/prometheus/"     owner=root
   with_items:
        - prometheus_tiny.yml
-       - prometheus_simple.yml          
+       - prometheus_pg.yml          
        - prometheus_static.yml          
        - prometheus_static_write-pg.yml
 
 
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
-  file:    src='/etc/prometheus/prometheus_simple.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+  file:    src='/etc/prometheus/prometheus_pg.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
 
 - name:    symlink  rules/memory_rules.yml
   file:    src="/etc/prometheus/rules/memory_{{ os_family }}.yml"   dest='/etc/prometheus/rules/memory.yml'   state=link  owner=root   force=yes
