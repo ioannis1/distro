@@ -1,0 +1,49 @@
+# git clone DIR needed to compile
+# NOTE: prerequisites:   "brew install oniguruma"
+
+
+- set_fact:
+      DESTDIR:  /tmp/grok_exporter
+      GODIR:    /usr/local/Cellar/go/1.11.4
+
+- name:               brew install oniguruma
+  become_user:        postgres
+  become:             yes
+  homebrew:
+    name:             oniguruma
+    state:            present
+    update_homebrew:  no
+
+# Updat
+
+
+################### git  grok_exporter  ############################
+- name:          git github grok_exporter
+  #ignore_errors: True
+  git:
+    repo:        https://github.com/fstab/grok_exporter
+    dest:       "{{ DESTDIR }}"
+    update:     yes
+    clone:      yes
+    force:      yes
+
+################### Compile & insall  ############################
+
+
+- name:       git submodule
+  command:    git submodule update --init --recursive
+  args:
+      chdir: "{{ DESTDIR}}"
+
+- name:        install grok_exporter
+  command:     /usr/local/bin/go install .
+  args:
+      chdir:         "{{ DESTDIR}}"
+      creates:       "{{ GODIR }}/bin/grok_exporter"
+  environment:
+          GOPATH:   "{{ GODIR }}"
+
+
+################### symlink  ############################
+- name:   symlink grok_exporter
+  file:   src="{{ GODIR }}/bin/grok_exporter"  dest=/usr/local/bin/grok_exporter   state=link owner=root  force=yes

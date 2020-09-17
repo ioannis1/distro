@@ -1,0 +1,40 @@
+# git clone DIR needed to compile
+- set_fact: DESTDIR='/tmp/grok_exporter'
+
+- name:          .deb golang
+  apt:     
+     pkg:
+         - golang
+         - libonig5 
+         - libonig-dev
+
+
+################### git  grok_exporter  ############################
+- name:          git github grok_exporter
+  #ignore_errors: True
+  git:
+    repo:        https://github.com/fstab/grok_exporter
+    dest:       "{{ DESTDIR }}"
+    update:     yes
+    clone:      yes
+    force:      yes
+
+################### Compile & insall  ############################
+
+
+- name:       git submodule
+  command:    git submodule update --init --recursive
+  args:
+      chdir: "{{ DESTDIR}}"
+
+- name:        install grok_exporter
+  command:    go install . 
+  args:
+      chdir: "{{ DESTDIR}}"
+      creates: /usr/lib/go/bin/grok_exporter
+  environment:
+          GOPATH:    /usr/lib/go-1.11/
+
+################### symlink  ############################
+- name:   symlink grok_exporter
+  file:   src=/usr/lib/go/bin/grok_exporter  dest=/usr/local/bin/grok_exporter   state=link owner=root  force=yes

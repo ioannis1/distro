@@ -3,7 +3,15 @@
 
 ####################################################  /etc/prometheus   FILES
 #
-- stat:        path="/usr/local/bin/grok_exporter"
+- name:        check for grok_exporter(1)
+  stat:        path="/usr/local/bin/grok_exporter"
+  register:    grokbin
+
+- include:     "compile/compile_grok_exporter-{{os_family}}.yml"
+  when:         not grokbin.stat.exists
+
+- name:        again, check for grok_exporter(1)
+  stat:        path="/usr/local/bin/grok_exporter"
   register:    grokbin
 
 - name:        assert /usr/local/bin/grok_exporter
