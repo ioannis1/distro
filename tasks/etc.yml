@@ -57,6 +57,10 @@
   copy:  src="etc/network/interfaces.d/"  dest="/etc/network/interfaces.d/" owner='root' mode='0640'    force='no'
   when: os_family == 'Linux'
 
+- name: journald  d.conf
+  synchronize:  src="etc/systemd/journald.conf.d"  dest="/etc/systemd/"  copy_links='yes' delete='no'  owner='no'   dirs=yes rsync_opts=--ignore-existing
+
+  when: os_family == 'Linux'
 
 - name: ansible config and roles
   synchronize:  src="etc/ansible"  dest="/etc/"  copy_links='yes' delete='no'  owner='no'

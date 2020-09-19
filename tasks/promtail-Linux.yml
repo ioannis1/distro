@@ -30,7 +30,7 @@
   synchronize:  src=etc/loki    dest="/etc/"    owner=root  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 - name:        systemd file
-  copy:        src=etc/systemd/promtail.service     dest="/etc/systemd/system/"     owner=root
+  copy:        src=etc/systemd/system/promtail.service     dest="/etc/systemd/system/"     owner=root
   when:        os_family == 'Linux'
 ####################################################  mkdir
 

@@ -56,7 +56,7 @@
 
 
 - name:        systemd file
-  copy:        src=etc/systemd/loki.service     dest="/etc/systemd/system/"     owner=root
+  copy:        src=etc/systemd/system/loki.service     dest="/etc/systemd/system/"     owner=root
   when:        os_family == 'Linux'
 
 ####################################################  mkdir

@@ -27,7 +27,7 @@
 
 
 - name:        systemd file
-  copy:        src=etc/systemd/grok_exporter.service     dest="/etc/systemd/system/"     owner=root
+  copy:        src=etc/systemd/system/grok_exporter.service     dest="/etc/systemd/system/"     owner=root
   when:        os_family == 'Linux'
 ####################################################  mkdir
 
