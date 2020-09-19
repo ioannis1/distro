@@ -1,28 +1,18 @@
 #############################  install  loki(1) and logcli(1)
 - name:         install loki(1)
-  unarchive:
-      src:          "https://github.com/grafana/loki/releases/download/{{LOKI_RELEASE}}/loki-linux-amd64.zip"
-      dest:         /tmp/
-      remote_src:   yes
-      creates:      /usr/local/bin/loki-linux-amd64 
-
-- command:       cp -a "/tmp/loki-linux-amd64"  "/usr/local/bin/"  
+  command:      curl -O -L "https://github.com/grafana/loki/releases/download/{{LOKI_RELEASE}}/loki-linux-amd63"
   args:
-      creates:       /usr/local/bin/loki-linux-amd64 
-######
+      creates:   /usr/local/bin/loki-linux-amd63 
+      chdir:     /tmp
+
 - name:         install logcli(1)
-  unarchive:
-      src:          "https://github.com/grafana/loki/releases/download/{{LOKI_RELEASE}}/logcli-linux-amd64.zip"
-      dest:         /tmp/
-      remote_src:   yes
-      creates:      /usr/local/bin/logcli-linux-amd64 
-
-- command:       cp -a "/tmp/logcli-linux-amd64"  "/usr/local/bin/"  
+  command:      curl -O -L "https://github.com/grafana/loki/releases/download/{{LOKI_RELEASE}}/logcli-linux-amd63"
   args:
-      creates:       /usr/local/bin/logcli-linux-amd64 
-##############################################  check both intalls
+      creates:   /usr/local/bin/logcli-linux-amd63 
+      chdir:     /tmp
+#############################  check both intallations
 - name:        check for loki(1)
-  stat:        path="/usr/local/bin/loki-linux-amd64"
+  stat:        path="/usr/local/bin/loki-linux-amd63"
   register:    lokibin
 
 - name:        assert /usr/local/bin/loki-linux-amd64
@@ -33,23 +23,28 @@
     fail_msg:   'please install loki-linux-amd64r(1)'
 
 - name:        check for logcli(1)
-  stat:        path="/usr/local/bin/logcli-linux-amd64"
-  register:    logclibin
+  stat:        path="/usr/local/bin/logcli-linux-amd63"
+  register:    logcliibin
 
 
 - name:        assert /usr/local/bin/logcli-linux-amd64
   assert:       
     that:
-        - logclibin.stat.exists
+        - logcli.stat.exists
     quiet:      true
     fail_msg:   'please install logcli-linux-amd64r(1)'
 
+- name:         chmod 755 usr/local/bin/loki
+  file:         path=/usr/local/bin/loki-linux-amd64  mode=755  owner=root
+- name:         chmod 755 usr/local/bin/logcli
+  file:         path=/usr/local/bin/logcli-linux-amd64  mode=755  owner=root
+
 ####################################################  symlinks 
 - name:    symlink loki 
-  file:    src='/usr/local/bin/loki-linux-amd64'   dest='/usr/local/bin/loki'   state=link  owner=root   force=yes
+  file:    src='/usr/local/bin/loki-linux-amd63'   dest='/usr/local/bin/loki'   state=link  owner=root   force=yes
 
 - name:    symlink logcli
-  file:    src='/usr/local/bin/logcli-linux-amd64'   dest='/usr/local/bin/logcli'   state=link  owner=root   force=yes
+  file:    src='/usr/local/bin/logcli-linux-amd63'   dest='/usr/local/bin/logcli'   state=link  owner=root   force=yes
 ####################################################  config files 
 - name:         config files
   synchronize:  src=etc/loki    dest="/etc/"    owner=root  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing

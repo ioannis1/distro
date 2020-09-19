@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 1,
   "id": 9,
-  "iteration": 1599942770519,
+  "iteration": 1600209410629,
   "links": [
     {
       "asDropdown": true,
@@ -706,7 +706,7 @@
       }
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -714,109 +714,181 @@
         "x": 0,
         "y": 13
       },
-      "id": 105,
-      "panels": [],
-      "title": "connections for \"$db\"",
+      "id": 110,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": true,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "string"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 0,
+            "y": 14
+          },
+          "hiddenSeries": false,
+          "id": 108,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "rate(pglog_passwd_failed_total[4m])",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "rate",
+              "refId": "A"
+            },
+            {
+              "expr": "(pglog_passwd_failed_total)",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "attempts",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "passwd failures",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:459",
+              "decimals": null,
+              "format": "string",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:460",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "breakPoint": "25%",
+          "cacheTimeout": null,
+          "combine": {
+            "label": "Others",
+            "threshold": 0
+          },
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "string"
+            },
+            "overrides": []
+          },
+          "fontSize": "80%",
+          "format": "short",
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 6,
+            "y": 14
+          },
+          "id": 112,
+          "interval": null,
+          "legend": {
+            "show": true,
+            "values": true
+          },
+          "legendType": "Under graph",
+          "links": [],
+          "nullPointMode": "connected",
+          "pieType": "pie",
+          "pluginVersion": "7.2.0-040ed969pre",
+          "strokeWidth": 1,
+          "targets": [
+            {
+              "expr": "sum(pglog_conn_ssl_authorized_total)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "ssl",
+              "refId": "B"
+            },
+            {
+              "expr": "sum(pglog_conn_nossl_total)",
+              "format": "table",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "no _ssl",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "auth ",
+          "type": "grafana-piechart-panel",
+          "valueName": "current"
+        }
+      ],
+      "title": "connection ERROR",
       "type": "row"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$ds",
-      "description": "Connection rate for db=$db",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 0,
-        "y": 14
-      },
-      "hiddenSeries": false,
-      "id": 103,
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum(irate(pg_stat_activity_count{datname=\"$db\"}[4m]))",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "connections",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "rate for \"$db\"",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:2874",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:2875",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     },
     {
       "collapsed": true,
@@ -825,7 +897,378 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 14
+      },
+      "id": 105,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "description": "Connection rate for db=$db",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "fill": 2,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 0,
+            "y": 22
+          },
+          "hiddenSeries": false,
+          "id": 103,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "(pg_stat_activity_count{datname=\"$db\"})",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "c",
+              "refId": "B"
+            },
+            {
+              "expr": "avg_over_time(pg_stat_activity_count{datname=\"$db\"}[4m])",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "c",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "fort \"$db\"  --  avg over [4m] ,",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:2874",
+              "decimals": 0,
+              "format": "none",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:2875",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "cacheTimeout": null,
+          "datasource": "$ds",
+          "description": "connections available (live)",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [
+                {
+                  "id": 0,
+                  "op": "=",
+                  "text": "N/A",
+                  "type": 1,
+                  "value": "null"
+                }
+              ],
+              "nullValueMode": "connected",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 6,
+            "y": 22
+          },
+          "id": 111,
+          "interval": null,
+          "links": [],
+          "maxDataPoints": 100,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "sum (pg_settings_max_connections)  - sum (pg_stat_database_numbackends{datname=\"$db\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "available for \"$db\"",
+          "type": "stat"
+        },
+        {
+          "datasource": "$ds",
+          "description": "cummulative  tps  for all databases",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 8,
+            "x": 10,
+            "y": 22
+          },
+          "id": 114,
+          "interval": "30s",
+          "links": [],
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "sum(pglog_fatal_total{datname=\"$db\"})",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 2,
+              "legendFormat": "FATAL",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(pglog_error_total{datname=\"$db\"})",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "ERROR",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "error types",
+          "type": "stat"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "description": " rate  syntax errors for db=$db",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "fill": 2,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 18,
+            "y": 22
+          },
+          "hiddenSeries": false,
+          "id": 115,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "irate(pglog_error_syntax_total{datname=\"$db\"}[4m])",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "c",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "syntax  for \"$db\"",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:2874",
+              "decimals": 0,
+              "format": "none",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:2875",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "title": "connections for \"$db\"",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
       },
       "id": 56,
       "panels": [
@@ -851,7 +1294,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 21
+            "y": 16
           },
           "hiddenSeries": false,
           "id": 53,
@@ -970,7 +1413,7 @@
             "h": 7,
             "w": 4,
             "x": 12,
-            "y": 21
+            "y": 16
           },
           "id": 52,
           "interval": null,
@@ -1042,7 +1485,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 16
       },
       "id": 58,
       "panels": [
@@ -1069,7 +1512,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 22
+            "y": 12
           },
           "id": 32,
           "interval": "30s",
@@ -1183,7 +1626,7 @@
             "h": 7,
             "w": 8,
             "x": 8,
-            "y": 22
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 70,
@@ -1354,7 +1797,7 @@
             "h": 7,
             "w": 8,
             "x": 16,
-            "y": 22
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 71,
@@ -1619,7 +2062,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 17
       },
       "id": 59,
       "panels": [
@@ -1647,7 +2090,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 23
+            "y": 13
           },
           "hiddenSeries": false,
           "id": 5,
@@ -1785,7 +2228,7 @@
             "h": 7,
             "w": 8,
             "x": 6,
-            "y": 23
+            "y": 13
           },
           "hiddenSeries": false,
           "id": 42,
@@ -1884,7 +2327,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 18
       },
       "id": 85,
       "panels": [
@@ -1896,7 +2339,8 @@
           "datasource": "$ds",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "custom": {},
+              "unit": "decbytes"
             },
             "overrides": []
           },
@@ -1906,7 +2350,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 24
+            "y": 14
           },
           "hiddenSeries": false,
           "id": 94,
@@ -1936,8 +2380,8 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "pg_logdir_size",
-              "instant": true,
+              "expr": "pg_logdir_sum",
+              "instant": false,
               "interval": "",
               "legendFormat": "logsizes ",
               "refId": "A"
@@ -1964,7 +2408,7 @@
           "yaxes": [
             {
               "$$hashKey": "object:2138",
-              "format": "bytes",
+              "format": "decbytes",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1985,6 +2429,76 @@
             "align": false,
             "alignLevel": null
           }
+        },
+        {
+          "cacheTimeout": null,
+          "datasource": "$ds",
+          "description": "connections available (live)",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [
+                {
+                  "id": 0,
+                  "op": "=",
+                  "text": "N/A",
+                  "type": 1,
+                  "value": "null"
+                }
+              ],
+              "nullValueMode": "connected",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 6,
+            "y": 14
+          },
+          "id": 106,
+          "interval": null,
+          "links": [],
+          "maxDataPoints": 100,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "pg_logdir_sum",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "available",
+          "type": "stat"
         },
         {
           "aliasColors": {
@@ -2017,8 +2531,8 @@
           "gridPos": {
             "h": 6,
             "w": 6,
-            "x": 6,
-            "y": 24
+            "x": 10,
+            "y": 14
           },
           "hiddenSeries": false,
           "id": 92,
@@ -2225,7 +2739,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 19
       },
       "id": 60,
       "panels": [
@@ -2255,7 +2769,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 25
+            "y": 15
           },
           "hiddenSeries": false,
           "id": 1,
@@ -2365,7 +2879,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 25
+            "y": 15
           },
           "id": 33,
           "interval": "30s",
@@ -2411,7 +2925,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 20
       },
       "id": 99,
       "panels": [
@@ -2441,7 +2955,7 @@
             "h": 5,
             "w": 7,
             "x": 0,
-            "y": 26
+            "y": 16
           },
           "hiddenSeries": false,
           "id": 73,
@@ -2551,7 +3065,7 @@
             "h": 5,
             "w": 6,
             "x": 7,
-            "y": 26
+            "y": 16
           },
           "id": 95,
           "interval": "30s",
@@ -2612,7 +3126,7 @@
             "h": 5,
             "w": 4,
             "x": 13,
-            "y": 26
+            "y": 16
           },
           "id": 100,
           "interval": "30s",
@@ -2658,7 +3172,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 21
       },
       "id": 61,
       "panels": [
@@ -2685,7 +3199,7 @@
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 27
+            "y": 17
           },
           "hiddenSeries": false,
           "id": 37,
@@ -2748,6 +3262,7 @@
           },
           "yaxes": [
             {
+              "$$hashKey": "object:1081",
               "format": "none",
               "label": "write   time     (ms)",
               "logBase": 1,
@@ -2756,6 +3271,7 @@
               "show": true
             },
             {
+              "$$hashKey": "object:1082",
               "format": "short",
               "label": "buffers",
               "logBase": 1,
@@ -2797,7 +3313,7 @@
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 27
+            "y": 17
           },
           "hiddenSeries": false,
           "id": 38,
@@ -2921,7 +3437,7 @@
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 27
+            "y": 17
           },
           "hiddenSeries": false,
           "id": 2,
@@ -3019,265 +3535,264 @@
       "type": "row"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 22
       },
       "id": 62,
-      "panels": [
-        {
-          "aliasColors": {},
-          "breakPoint": "50%",
-          "cacheTimeout": null,
-          "combine": {
-            "label": "Others",
-            "threshold": 0
-          },
-          "datasource": "$ds",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fontSize": "100%",
-          "format": "short",
-          "gridPos": {
-            "h": 8,
-            "w": 6,
-            "x": 0,
-            "y": 28
-          },
-          "id": 40,
-          "interval": null,
-          "legend": {
-            "percentage": true,
-            "show": false,
-            "values": true
-          },
-          "legendType": "On graph",
-          "links": [],
-          "maxDataPoints": 3,
-          "nullPointMode": "connected",
-          "pieType": "pie",
-          "repeat": null,
-          "strokeWidth": 1,
-          "targets": [
-            {
-              "expr": "pg_stat_bgwriter_buffers_backend",
-              "instant": false,
-              "interval": "",
-              "legendFormat": "backend",
-              "refId": "A"
-            },
-            {
-              "expr": "pg_stat_bgwriter_buffers_checkpoint",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "checkpoint",
-              "refId": "B"
-            },
-            {
-              "expr": "pg_stat_bgwriter_buffers_clean",
-              "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "clean",
-              "refId": "C"
-            }
-          ],
-          "title": "Cleaned By",
-          "type": "grafana-piechart-panel",
-          "valueName": "current"
-        },
-        {
-          "cacheTimeout": null,
-          "datasource": "$ds",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "align": null
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Value"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 100
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "__name__"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 330
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 7,
-            "x": 6,
-            "y": 28
-          },
-          "id": 74,
-          "interval": null,
-          "links": [],
-          "maxDataPoints": 3,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "last"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
-          },
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "expr": "pg_stat_bgwriter_buffers_backend_fsync",
-              "format": "table",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "fsync",
-              "refId": "A"
-            },
-            {
-              "expr": "pg_stat_bgwriter_maxwritten_clean",
-              "format": "table",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "maxwritten_clean",
-              "refId": "B"
-            }
-          ],
-          "title": "Cleaned By",
-          "transformations": [
-            {
-              "id": "filterFieldsByName",
-              "options": {
-                "include": {
-                  "names": [
-                    "__name__",
-                    "Value"
-                  ]
-                }
-              }
-            }
-          ],
-          "type": "stat"
-        },
-        {
-          "datasource": "$ds",
-          "description": "cummulative  tps  for all databases",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 8,
-            "x": 13,
-            "y": 28
-          },
-          "id": 101,
-          "interval": "30s",
-          "links": [],
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "last"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
-          },
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "expr": "sum(pg_stat_bgwriter_buffers_backend_fsync)",
-              "instant": false,
-              "interval": "",
-              "intervalFactor": 2,
-              "legendFormat": "buffers_backend_fsync",
-              "refId": "A"
-            },
-            {
-              "expr": "sum(pg_stat_bgwriter_maxwritten_clean)",
-              "instant": true,
-              "interval": "",
-              "legendFormat": "maxwritten_clean",
-              "refId": "B"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "tps",
-          "type": "stat"
-        }
-      ],
+      "panels": [],
       "repeat": null,
       "title": "bgwriter",
       "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "breakPoint": "50%",
+      "cacheTimeout": null,
+      "combine": {
+        "label": "Others",
+        "threshold": 0
+      },
+      "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fontSize": "100%",
+      "format": "short",
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 23
+      },
+      "id": 40,
+      "interval": null,
+      "legend": {
+        "percentage": true,
+        "show": false,
+        "values": true
+      },
+      "legendType": "On graph",
+      "links": [],
+      "maxDataPoints": 3,
+      "nullPointMode": "connected",
+      "pieType": "pie",
+      "repeat": null,
+      "strokeWidth": 1,
+      "targets": [
+        {
+          "expr": "pg_stat_bgwriter_buffers_backend",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "backend",
+          "refId": "A"
+        },
+        {
+          "expr": "pg_stat_bgwriter_buffers_checkpoint",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "checkpoint",
+          "refId": "B"
+        },
+        {
+          "expr": "pg_stat_bgwriter_buffers_clean",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "clean",
+          "refId": "C"
+        }
+      ],
+      "title": "Cleaned By",
+      "type": "grafana-piechart-panel",
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "__name__"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 330
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 7,
+        "x": 6,
+        "y": 23
+      },
+      "id": 74,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "expr": "pg_stat_bgwriter_buffers_backend_fsync",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "fsync",
+          "refId": "A"
+        },
+        {
+          "expr": "pg_stat_bgwriter_maxwritten_clean",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "maxwritten_clean",
+          "refId": "B"
+        }
+      ],
+      "title": "Cleaned By",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "__name__",
+                "Value"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": "$ds",
+      "description": "cummulative  tps  for all databases",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 13,
+        "y": 23
+      },
+      "id": 101,
+      "interval": "30s",
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "expr": "sum(pg_stat_bgwriter_buffers_backend_fsync)",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "buffers_backend_fsync",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(pg_stat_bgwriter_maxwritten_clean)",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "maxwritten_clean",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "tps",
+      "type": "stat"
     },
     {
       "collapsed": true,
@@ -3286,7 +3801,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 31
       },
       "id": 63,
       "panels": [
@@ -3491,7 +4006,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 32
       },
       "id": 64,
       "panels": [
@@ -3639,7 +4154,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 33
       },
       "id": 65,
       "panels": [
@@ -3662,7 +4177,7 @@
             "h": 5,
             "w": 8,
             "x": 0,
-            "y": 32
+            "y": 25
           },
           "hiddenSeries": false,
           "id": 47,
@@ -3771,7 +4286,7 @@
             "h": 5,
             "w": 8,
             "x": 8,
-            "y": 32
+            "y": 25
           },
           "hiddenSeries": false,
           "id": 50,
@@ -3889,7 +4404,7 @@
             "h": 5,
             "w": 8,
             "x": 16,
-            "y": 32
+            "y": 25
           },
           "id": 86,
           "interval": null,
@@ -3963,8 +4478,8 @@
       {
         "current": {
           "selected": true,
-          "text": "prom_bulk",
-          "value": "prom_bulk"
+          "text": "prom_qft",
+          "value": "prom_qft"
         },
         "hide": 0,
         "includeAll": false,
@@ -4148,5 +4663,5 @@
   "timezone": "browser",
   "title": "main_prom",
   "uid": "IdthhlDGk",
-  "version": 50
+  "version": 57
 }

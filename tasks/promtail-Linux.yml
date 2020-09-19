@@ -1,19 +1,33 @@
+#############################  install  loki(1) and logcli(1)
+- name:         install loki(1)
+  unarchive:
+      src:          "https://github.com/grafana/loki/releases/download/{{LOKI_RELEASE}}/promtail-linux-amd64.zip"
+      dest:         /tmp/
+      remote_src:   yes
+      creates:      /usr/local/bin/promtail-linux-amd64 
+
+- command:       cp -a "/tmp/promtail-linux-amd64"  "/usr/local/bin/"  
+  args:
+      creates:       /usr/local/bin/promtail-linux-amd64 
+      
+##############################################  check intallation
 - name:        check for promtail(1)
-  stat:        path="/usr/local/bin/promtail"
+  stat:        path="/usr/local/bin/promtail-linux-amd64"
   register:    promtailbin
 
-- name:        assert /usr/local/bin/promtail
+- name:        assert /usr/local/bin/promtail-linux-amd64
   assert:       
     that:
         - promtailbin.stat.exists
     quiet:      true
-    fail_msg:   'please install promtail-linux-amd64r(1)'
+    fail_msg:   'please install promtail-linux-amd64(1)'
+####################################################  symlinks 
+- name:    symlink promtail
+  file:    src='/usr/local/bin/promtail-linux-amd64'   dest='/usr/local/bin/promtail'   state=link  owner=root   force=yes
+####################################################  config files 
 
-- name:         chmod 755 usr/local/bin/promtail
-  file:         path=/usr/local/bin/promtail   mode=755  owner=root
-
-- name:        config file
-  copy:        src=etc/grafana/promtail.yaml     dest="/etc/grafana/"      owner=root   mode=640
+- name:         config files
+  synchronize:  src=etc/loki    dest="/etc/"    owner=root  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 - name:        systemd file
   copy:        src=etc/systemd/promtail.service     dest="/etc/systemd/system/"     owner=root

@@ -2,7 +2,7 @@
 [Unit]
 Description=Grafana's file aggregator
 After = network.target
-ConditionPathExists=/etc/grafana/loki.yaml
+ConditionPathExists=/etc/loki/loki.yaml
 
 #WorkingDirectory=/home/postgres/main
 
@@ -13,7 +13,7 @@ ConditionPathExists=/etc/grafana/loki.yaml
 Type=simple
 TimeoutStartSec=0
 #Type=notify
-ExecStart=/usr/local/bin/loki-linux-amd64 -config.file=/etc/grafana/loki.yaml
+ExecStart=/usr/local/bin/loki  -config.file=/etc/loki/loki.yaml
 ExecStop=/bin/kill -TERM  $MAINPID
 ExecReload=/bin/kill -HUP  $MAINPID
 #OOMScoreAdjust=-900

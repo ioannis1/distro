@@ -14,6 +14,7 @@ need_adobe_flash:           false
 need_tastyworks:            false
 need_grafana:               false
 need_zoom:                  false
+need_loki:                  false
 pool:                       zz
 zpool:                      zz
 oracle_java:                true

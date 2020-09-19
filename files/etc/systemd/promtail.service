@@ -2,7 +2,7 @@
 [Unit]
 Description=Grafana's promtail
 After = network.target
-ConditionPathExists=/etc/grafana/promtail.yaml
+ConditionPathExists=/etc/loki/promtail.yaml
 
 #WorkingDirectory=/home/postgres/main
 
@@ -13,7 +13,7 @@ ConditionPathExists=/etc/grafana/promtail.yaml
 Type=simple
 #TimeoutStartSeca=0
 #Type=notify
-ExecStart=/usr/local/bin/promtail  -config.file=/etc/grafana/promtail.yaml 
+ExecStart=/usr/local/bin/promtail  -config.file=/etc/loki/promtail.yaml 
 ExecStop=/bin/kill -TERM  $MAINPID
 ExecReload=/bin/kill -HUP  $MAINPID
 #OOMScoreAdjust=-900
