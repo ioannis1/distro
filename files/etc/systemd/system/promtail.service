@@ -11,19 +11,19 @@ ConditionPathExists=/etc/loki/promtail.yaml
 
 [Service]
 Type=simple
-#TimeoutStartSeca=0
-#Type=notify
 ExecStart=/usr/local/bin/promtail  -config.file=/etc/loki/promtail.yaml 
 ExecStop=/bin/kill -TERM  $MAINPID
 ExecReload=/bin/kill -HUP  $MAINPID
-#OOMScoreAdjust=-900
+WorkingDirectory=/etc/loki/
+ExecStartPre=/bin/sleep 2
 #User=postgres
+#Restart=on-failure
+#RestartSec=5
+#TimeoutStartSeca=0
+
+#OOMScoreAdjust=-900
 #Environment=PGDATA=/home/postgres/main
 #Environment=PGCONFIG=/home/postgres/dist-main/bin/pg_config
-
-#Group=postgres
-#Restart=on-failure
-
 
 RemoveIPC=no
 
