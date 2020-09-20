@@ -1,5 +1,5 @@
-#############################  install  loki(1) and logcli(1)
-- name:         install loki(1)
+#############################  install  promtail(1)
+- name:         install promtail(1)
   unarchive:
       src:          "https://github.com/grafana/loki/releases/download/{{LOKI_RELEASE}}/promtail-linux-amd64.zip"
       dest:         /tmp/
@@ -32,7 +32,7 @@
 - name:        systemd file
   copy:        src=etc/systemd/system/promtail.service     dest="/etc/systemd/system/"     owner=root
   when:        os_family == 'Linux'
-####################################################  mkdir
+####################################################  systemd
 
 - name:       reload  promtail
   when:       os_family == 'Linux' 

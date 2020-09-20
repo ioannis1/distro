@@ -1,0 +1,37 @@
+
+- name:           td-agent Key
+  when: false
+  apt_key:
+      url:        https://ftp-master.debian.org/keys/archive-key-6.0.asc
+      id:         '4FF8368B6EA0722A'
+
+- shell:  wget -qO - https://packages.fluentbit.io/fluentbit.key | apt-key add -
+
+
+- name:            td-agent repository
+  apt_repository:  repo="deb https://packages.fluentbit.io/ubuntu/bionic bionic main"
+
+
+
+- name:            packages
+  apt:
+     pkg:
+                 - td-agent-bit
+####################################################  config files 
+- name:         config files
+  synchronize:  src=etc/td-agent-bit    dest="/etc/"    owner=root  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+
+
+- name:        systemd file
+  copy:        src=etc/systemd/system/td-agent-bit.service     dest="/etc/systemd/system/"     owner=root
+  when:       
+    - false
+    - os_family == 'Linux' 
+
+####################################################  systemd
+
+- name:       reload  td-agent
+  when:       
+    - false
+    - os_family == 'Linux' 
+  systemd:    name="td-agent-biti"   daemon_reload="yes"  state=started  enabled=yes

@@ -7,6 +7,19 @@
 - include: prometheus.yml
   when:    need_prometheus
 
+- include: loki-Linux.yml
+  when:    need_loki
+
+- include: promtail-Linux.yml
+  when:    need_promtail
+
+- include: fluentd.yml
+  when:    need_fluentd
+
+- include: fluent-bit-Linux.yml
+  when:    need_fluent_bit
+
+
 - include: stock_brokers.yml
 
 - include: X11.yml

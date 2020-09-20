@@ -1,0 +1,36 @@
+
+[Unit]
+Description=fluentd log parser
+After = network.target
+ConditionPathExists=/etc/loki/fluent.conf
+
+#WorkingDirectory=/home/postgres/main
+
+#KillUserProcesses=yes
+
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/fluentd  --config /etc/loki/fluent.conf
+ExecStop=/bin/kill -TERM  $MAINPID
+ExecReload=/bin/kill -HUP  $MAINPID
+WorkingDirectory=/root/.gem/ruby/2.5.0/gems/fluentd-1.11.2
+
+ExecStartPre=/bin/sleep 1
+#User=postgres
+#Restart=on-failure
+#RestartSec=5
+#TimeoutStartSeca=0
+
+#OOMScoreAdjust=-900
+#Environment=PGDATA=/home/postgres/main
+Environment=GEM_PATH=/root/.gem/ruby/2.5.0:/var/lib/gems/2.5.0/gems
+Environment=PATH=/root/.gem/ruby/2.1.0/bin:/usr/bin:/bin:/usr/local/bin
+
+
+RemoveIPC=no
+
+#RemainAfterExit=on
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,43 @@
+#############################  packages
+- name:            packages
+  apt:
+     pkg:
+                 - ruby2.5-dev
+                 - postgresql-server-dev-11
+
+#############################  install fluentd(1)
+- name:         install fluentd(1)
+  gem:
+    name: fluent
+    state: present
+
+- name:         install fluent-plugin-grafana-loki
+  gem:
+    name: fluent-plugin-grafana-loki
+    state: present
+
+    
+- name:   fluent-plugin-postgres
+  gem:
+    name: fluent-plugin-postgres
+    state: present
+    #environment:
+    #- PGCONFIG:  /home/postgres/dist-pg/bin/pg_config
+
+####################################################  symlinks 
+- name:    symlink loki 
+  file:    src='/root/.gem/ruby/2.5.0/gems/fluentd-1.11.2/bin/fluentd'   dest='/usr/local/bin/fluentd'   state=link  owner=root   force=yes
+
+
+####################################################  config
+- name:  fluent.conf#
+  copy:  src="etc/loki/fluent.conf"  dest="/etc/loki"   owner=root  mode=640
+
+- name:        systemd file
+  copy:        src=etc/systemd/system/fluentd.service     dest="/etc/systemd/system/"     owner=root
+  when:        os_family == 'Linux'
+####################################################  systemd
+
+- name:       reload  fluentd
+  when:       os_family == 'Linux' 
+  systemd:    name="fluentd"   daemon_reload="yes"  state=started  enabled=yes

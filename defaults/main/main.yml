@@ -15,6 +15,9 @@ need_tastyworks:            false
 need_grafana:               false
 need_zoom:                  false
 need_loki:                  false
+need_fluent_bit:            false
+need_fluentd:               false
+need_promtail:              false
 pool:                       zz
 zpool:                      zz
 oracle_java:                true

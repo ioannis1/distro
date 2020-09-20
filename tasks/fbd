@@ -1,0 +1,58 @@
+# git clone DIR needed to compile
+# NOTE: alternatives:   "brew install fluent-bit"
+
+
+- set_fact:
+      DESTDIR:  /tmp/compile-fluent-bit
+      GODIR:    /usr/local/.....
+
+- name:               brew install fluent-bit
+  when:       false
+  become_user:        postgres
+  become:             yes
+  homebrew:
+    name:             fluent-bit
+    state:            present
+    update_homebrew:  no
+
+# Updat
+
+
+################### git  grok_exporter  ############################
+- name:          git github flient-bit
+  #ignore_errors: True
+  git:
+    repo:    https://github.com/fluent/fluent-bit
+    dest:       "{{ DESTDIR }}"
+    update:     yes
+    clone:      yes
+    force:      yes
+
+################### Compile & insall  ############################
+
+
+- name:        prepare to compile fluent-bit
+  file:        path="{{DESTDIR}}/build"  state=absent 
+
+- file:        path="{{DESTDIR}}/build"  state=directory
+
+- name:        compile fluent-bit
+  shell:       /opt/local/bin/cmake ..
+  args:
+      chdir:   "{{ DESTDIR}}/build"
+  enviroment:
+       MACOSX_DEPLOYMENT_TARGET:  "10.13"
+ 
+
+
+- name:        make fluent-bit
+  command:     make install
+  args:
+      chdir:   "{{ DESTDIR}}/build"
+  enviroment:
+       MACOSX_DEPLOYMENT_TARGET:  "10.13"
+
+################### symlink  ############################
+- name:   symlink fluent-bit.conf
+  when: false
+  file:   src="{{ GODIR }}/bin/grok_exporter"  dest=/usr/local/bin/grok_exporter   state=link owner=root  force=yes

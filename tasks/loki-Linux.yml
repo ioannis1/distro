@@ -59,7 +59,7 @@
   copy:        src=etc/systemd/system/loki.service     dest="/etc/systemd/system/"     owner=root
   when:        os_family == 'Linux'
 
-####################################################  mkdir
+####################################################  systemd
 
 - name:       reload  loki
   when:       os_family == 'Linux' 
