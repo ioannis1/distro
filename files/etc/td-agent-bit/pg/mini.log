@@ -1,0 +1,28 @@
+2020-09-15 00:00:47 PDT [20647,]: [2-1] user=,db= LOG:  automatic vacuum of table "ts.pg_catalog.pg_class": index scans: 0
+	pages: 0 removed, 15 remain, 0 skipped due to pins, 0 skipped frozen
+	tuples: 0 removed, 519 remain, 172 are dead but not yet removable, oldest xmin: 4294958205
+	buffer usage: 48 hits, 0 misses, 0 dirtied
+	avg read rate: 0.000 MB/s, avg write rate: 0.000 MB/s
+	system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2020-09-15 00:00:55 PDT [8864,promethus-exporter]: [10798-1] user=prometheus,db=ts LOG:  statement: SELECT version();
+2020-09-15 00:00:55 PDT [8864,promethus-exporter]: [10800-1] user=prometheus,db=ts LOG:  statement: WITH tmp AS ( SELECT   count(*) from pgexporter.ls_dir('pg_xlog') a(file) WHERE file ~ '^00' AND current_setting('server_version') ~ '^9' UNION SELECT   count(*) from pgexporter.ls_dir('pg_wal') a(file) WHERE file ~ '^00' AND current_setting('server_version') ~ '^1') SELECT sum(count)  AS  total FROM tmp
+2020-09-15 00:00:55 PDT [8864,promethus-exporter]: [10801-1] user=prometheus,db=ts LOG:  statement: SELECT EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp())) as lag
+2020-09-15 00:00:55 PDT [8864,promethus-exporter]: [10805-1] user=prometheus,db=ts LOG:  statement: SELECT pg_database.datname,tmp.mode,COALESCE(count,0) as count
+				FROM
+					(
+					  VALUES ('accesssharelock'),
+					         ('rowsharelock'),
+					         ('rowexclusivelock'),
+					         ('shareupdateexclusivelock'),
+					         ('sharelock'),
+					         ('sharerowexclusivelock'),
+					         ('exclusivelock'),
+					         ('accessexclusivelock')
+					) AS tmp(mode) CROSS JOIN pg_database
+				LEFT JOIN
+				  (SELECT database, lower(mode) AS mode,count(*) AS count
+				  FROM pg_locks WHERE database IS NOT NULL
+				  GROUP BY database, lower(mode)
+				) AS tmp2
+				ON tmp.mode=tmp2.mode and pg_database.oid = tmp2.database ORDER BY 1
+2020-09-15 00:00:55 PDT [8864,promethus-exporter]: [10806-1] user=prometheus,db=ts LOG:  statement: SELECT t2.rolname, t3.datname, queryid, calls, total_time / 1000 as total_time_seconds, min_time / 1000 as min_time_seconds, max_time / 1000 as max_time_seconds, mean_time / 1000 as mean_time_seconds, stddev_time / 1000 as stddev_time_seconds, rows, shared_blks_hit, shared_blks_read, shared_blks_dirtied, shared_blks_written, local_blks_hit, local_blks_read, local_blks_dirtied, local_blks_written, temp_blks_read, temp_blks_written, blk_read_time / 1000 as blk_read_time_seconds, blk_write_time / 1000 as blk_write_time_seconds FROM pgexporter.pg_stat_statements t1 JOIN pg_roles t2 ON (t1.userid=t2.oid) JOIN pg_database t3 ON (t1.dbid=t3.oid) WHERE t2.rolname != 'rdsadmin'

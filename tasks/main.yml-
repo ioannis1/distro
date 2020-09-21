@@ -1,0 +1,66 @@
+################################## Helper Variables
+- shell:  uname -s
+  register: result
+
+- set_fact: os_family="{{result.stdout}}"
+
+- set_fact: 
+      HOME:  "/home"
+      SHELL: "/bin/bash"
+  when:  os_family == "Linux"
+
+- set_fact: 
+      HOME:  "/Users"
+      SHELL: "/bin/bash"
+  when:  os_family == "Darwin"
+
+- set_fact: 
+     HOME:   "/home"
+     SHELL:  "/usr/local/bin/bash"
+  when:  os_family == "FreeBSD"
+
+- set_fact: need_pgbouncer = true
+  when:     need_prometheus
+#################################################     M A I N
+     
+- include: zfs.yml
+  when:    zfs and (os_family != "Darwin")
+
+- include: account.yml
+  #vars:
+      #- bash_shell: /usr/local/bin/bash
+
+- include: ssh.yml
+
+- include: "{{ os_family }}.yml"
+
+- include: hosts.yml
+  when: false
+     
+- include: etc.yml
+
+- include: Linux_apps.yml
+  when: os_family == 'Linux'
+
+- include: Darwin_apps.yml
+  when: os_family == 'Darwin'
+
+- include: var.yml
+
+- include: cron.yml
+
+- include: pgbouncer.yml
+  when:    need_pgbouncer
+
+- include:       adobe.yml
+  become_user:   root
+  become:        yes
+  when:          need_adobe_flash and (os_family != "Darwin")
+
+##############################################  POST INSTALL
+# Host-specific files (if available)
+- include:   "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_hostname }}.yml"
+      skip: true
