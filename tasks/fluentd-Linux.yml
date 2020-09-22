@@ -40,4 +40,4 @@
 
 - name:       reload  fluentd
   when:       os_family == 'Linux' 
-  systemd:    name="fluentd"   daemon_reload="yes"  state=started  enabled=yes
+  systemd:    name="fluentd"   daemon_reload="yes"  state=stopped  enabled=no

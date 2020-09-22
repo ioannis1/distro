@@ -34,4 +34,4 @@
   when:       
     - false
     - os_family == 'Linux' 
-  systemd:    name="td-agent-biti"   daemon_reload="yes"  state=started  enabled=yes
+  systemd:    name="td-agent-biti"   daemon_reload="yes"  state=stopped  enabled=no
