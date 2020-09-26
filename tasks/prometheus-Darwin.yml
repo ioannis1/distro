@@ -1,17 +1,4 @@
 ####################################################  packages
-- name:          packages prometheus 
-  apt:
-     pkg:
-                  - prometheus-blackbox-exporter 
-                  - prometheus-postgres-exporter
-                  - prometheus-pgbouncer-exporter
-                  - prometheus-node-exporter
-                  - prometheus-pushgateway 
-                  - prometheus-apache-exporter
-                  - pgbouncer
-                  - prometheus-alertmanager
-                  - prometheus 
-                  - consul
 
 ####################################################  /etc/prometheus   FILES
 - name:        Files   /etc/prometheus/*
@@ -35,33 +22,25 @@
 - name:    symlink  rules/memory_rules.yml
   file:    src="/etc/prometheus/rules/memory_{{ os_family }}.yml"   dest='/etc/prometheus/rules/memory.yml'   state=link  owner=root   force=yes
 
-####################################################  /etc/default
-- name:        default prometheus exporters
-  copy:        src="etc/default/{ item }}"    dest="/etc/default"    owner=root   
-  with_items:
-      - prometheus
-      - prometheus-node-exporter
+- name:    symlink  /etc/prometheus/makefile
+  file:    src='/etc/prometheus/validate/makefile_Darwin'   dest='/etc/prometheus/makefile'   state=link  owner=root   force=yes
 
-- name:        default templates /etc/default
-  template:    src=etc/default/prometheus-{{ item }}-exporter      dest="/etc/default/"     owner=root
-  with_items:
-      - postgres
+####################################################  /etc/default
 ####################################################  other exporters
 - name:   grok_exporter
   when:   need_grok_exporter
   include:  grok_exporter.yml
 ####################################################  mkdir
 - name:    mkdir  node_dat
-  file:    dest='/var/lib/prometheus/node-exporter/node_dat'    state=directory  owner=root   force=yes
+  file:    dest='/var/lib/prometheus/node_dat'    state=directory  owner=root   force=yes
 
 ####################################################   reload servers
 
 - name:       reload  prometheus exporters
+  when:  false
   shell:       "/etc/init.d/prometheus-{{ item }}-exporter    force-reload"
   with_items:
       - postgres
       - node
-
-- name:       reload  prometheus 
-  when:  false
-  systemd:    name="prometheus"   daemon_reload="yes"
+        
+# reload prometheus

@@ -2,6 +2,8 @@ auth_enabled: false
 
 server:
   http_listen_port: 3100
+  graceful_shutdown_timeout:  5s
+  log_level:  info
 
 ingester:
   lifecycler:
@@ -34,6 +36,10 @@ storage_config:
 
 limits_config:
   enforce_metric_name: false
+  ingestion_rate_mb: 4
+  max_label_name_length: 1024
+  max_label_names_per_series: 30
+  max_label_value_length: 2048
   reject_old_samples: true
   reject_old_samples_max_age: 168h
 

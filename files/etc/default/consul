@@ -1,0 +1,2 @@
+#DAEMON_ARGS="-data-dir=/var/lib/consul -config-dir=/etc/consul.d"
+DAEMON_ARGS=" -dev -data-dir=/var/lib/consul -config-dir=/etc/consul.d"

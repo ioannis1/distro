@@ -1,0 +1,1 @@
+2021-09-15 00:00:44 EDT [8864,promethus-exporter]: [10801-1] user=prometheus,db=misc LOG:  statement: SELECT EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp())) as lag

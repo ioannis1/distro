@@ -1,0 +1,37 @@
+## NOTE: change '-05:00' if TZ is not EST
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://localhost:3100/loki/api/v1/push
+785 UTC postgres postgres LOG:  AUDIT: SESSION,2,1,WRITE,INSERT,,,INSERT INTO pgauditExample(name) VALUES ('postgres');,<none>
+
+scrape_configs:
+- job_name: pg
+  pipeline_stages:
+       - regex:
+            expression: '^(?P<audit>)'
+       - regex:
+           expression: ':\s+(?P<audit>AUDIT):'
+       - labels:
+               audit: 
+       - metrics:
+           db_pgaudit_count:
+              type : Counter
+              description : 'count of pg_audit statements'
+              source: audit
+              value:  'AUDIT'
+              config:
+                     action: inc
+
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: pglogs
+      hostname: qft
+      __path__: /var/log/postgresql/main-*log

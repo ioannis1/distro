@@ -1,0 +1,17 @@
+{
+  "service": {
+        "ID"     : "pgbouncer-6543",
+        "name"   : "pgbouncer-exporter",
+        "address": "localhost",
+        "port"   : 9911,
+        "token"  : "root",
+        "enable_tag_override" : true,
+        "tags"  : [ "exporter", "prometheus"],
+        "check" : {
+                    "name"     : "pgbouncer-exporter_check",
+                    "tcp"      : "localhost:9911",
+                    "timeout"  : "2s",
+                    "interval" : "30s"
+                 }
+      }
+}

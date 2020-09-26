@@ -1,0 +1,17 @@
+{
+  "service": {
+                 "ID"     : "node-bulk",
+                 "name"   : "node-exporter",
+                 "address": "localhost",
+                 "port"   : 9100,
+                 "token"  : "root",
+                 "enable_tag_override" : false,
+                 "tags"  : [ "exporter", "prometheus" ],
+                 "check" : {
+                             "name"     : "node-exporter_check",
+                             "tcp"      : "localhost:9100",
+                             "timeout"  : "2s",
+                             "interval" : "30s"
+                          }
+  }
+}

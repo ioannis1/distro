@@ -1,0 +1,16 @@
+{
+  "Service": {
+                 "ID"     : "pgexport-5432",
+                 "name"   : "postgres-exporter",
+                 "address": "localhost",
+                 "port"   : 9187,
+                 "enable_tag_override" : false,
+                 "tags"   : [ "exporter", "prometheus" ],
+                 "check"  : {
+                              "name"     : "postgres-exporter_check",
+                              "tcp"      : "localhost:9187",
+			      "timeout"  : "2s",
+                              "interval" : "30s"
+                           }
+             }  
+ }
