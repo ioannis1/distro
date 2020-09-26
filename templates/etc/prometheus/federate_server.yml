@@ -1,0 +1,45 @@
+global:
+        #scrape_interval:      60s
+  scrape_interval:      15s
+  scrape_timeout:       10s 
+  evaluation_interval:  3m
+  # sample_limit:       10000
+
+  # Labels when communicating with  external systems (federation, remote storage, Alertmanager).
+  external_labels:
+      server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
+      hostname : '{{ ansible_hostname }}'
+
+#alerting:
+   #alertmanagers:
+   #- static_configs:
+   # - targets: ['localhost:9093']
+
+rule_files:
+   - "rules/memory.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+
+  - job_name:       'federate'
+    scrape_interval: 15s
+    honor_labels:   true
+    metrics_path:   '/federate'
+    params:
+       'match[]':
+               - '{job="prometheus"}'
+               - '{job="node"}'
+               - '{job=~"postgres.*"}'
+               - '{job="grok"}'
+                 #- '{job="node"}'
+                 #- '{__name__=~"job:.*"}'
+
+    static_configs:
+        - targets:    ['<client-servername>:9090']    #TODO: MUST changeme
+
+  - job_name: node
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+             server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
+             hostname : '{{ ansible_hostname }}'

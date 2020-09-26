@@ -26,7 +26,8 @@
        - prometheus_pg.yml          
        - prometheus_static.yml          
        - prometheus_static_write-pg.yml
-
+       - federate_server.yml
+       - federate_client.yml
 
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
