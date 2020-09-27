@@ -62,6 +62,21 @@ scrape_configs:
 #    - files:
 #      - /etc/prometheus/tgroups/*.yml
 
+  - job_name:       federate_from_bulk
+    scrape_interval: 15s
+    honor_labels:   true
+    metrics_path:   '/federate'
+    params:
+       'match[]':
+               - '{job="prometheus"}'
+               - '{job="node"}'
+               - '{job=~"postgres.*"}'
+               - '{job="grok"}'
+
+    static_configs:
+        - targets:    ['bulk:9090']  
+
+
 
 #remote_write:
         #- url: "http://localhost:9201/write"

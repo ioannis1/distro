@@ -32,19 +32,20 @@
        - dynamic_file.yml    
        - dynamic_consul.yml  
        - simple_consul.yml   
+       - simple_consul_fed.yml   
 
 
 
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
-  file:    src='/etc/prometheus/prometheus_pg.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+  file:    src='/etc/prometheus/pg.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
 
 - name:    symlink  rules/memory_rules.yml
   file:    src="/etc/prometheus/rules/memory_{{ os_family }}.yml"   dest='/etc/prometheus/rules/memory.yml'   state=link  owner=root   force=yes
 
 ####################################################  /etc/default
 - name:        default prometheus exporters
-  copy:        src="etc/default/{ item }}"    dest="/etc/default"    owner=root   
+  copy:        src="etc/default/{{ item }}"    dest="/etc/default"    owner=root   
   with_items:
       - prometheus
       - prometheus-node-exporter
@@ -71,4 +72,4 @@
 
 - name:       reload  prometheus 
   when:  false
-  systemd:    name="prometheus"   daemon_reload="yes"
+  systemd:    name="prometheus"   daemon_reload="yes"  enabled=no

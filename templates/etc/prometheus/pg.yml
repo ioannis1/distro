@@ -8,8 +8,8 @@ global:
 
   # Labels when communicating with  external systems (federation, remote storage, Alertmanager).
   external_labels:
-      server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
-      hostname : '{{ ansible_hostname }}'
+      host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+      hostname:  '{{ ansible_hostname }}'
 
 rule_files:
    - "rules/memory.yml"
@@ -62,9 +62,9 @@ scrape_configs:
 #       - targets: ['{{ ansible_hostname }}:9387'] 
 #         labels:
 #             server :  '{{ ansible_hostname }}:5433'
-#             pg_ip:    '{{ ansible_all_ipv4_addresses.0 }}'
-#             pg_host : '{{ ansible_hostname }}'
-#             pg_port : '5433'
+#             host_ip:    '{{ ansible_all_ipv4_addresses.0 }}'
+#             hostname : '{{ ansible_hostname }}'
+#             pg_port: '5433'
 #   metric_relabel_configs:
 #       - source_labels: [__name__]
 #         regex: 'pg_settings_s[ysqtu].*'

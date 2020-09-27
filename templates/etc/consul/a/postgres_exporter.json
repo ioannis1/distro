@@ -1,7 +1,7 @@
 {
   "Service": {
                  "ID"     : "pgexport-{{ ansible_hostname }}-5432",
-                 "name"   : "postgres-exporter-5432",
+                 "name"   : "postgres-exporter",
                  "address": "localhost",
                  "port"   : 9187,
                  "enable_tag_override" : false,

@@ -18,7 +18,7 @@
       -  postgres_exporter.json
       -  grok_exporter.json  
       -  node_exporter.json  
-      -  postgres4_exporter.json
+      -  postgres_exporter_5434.json
 
 ####################################################  symlinks 
 - name:    data directory 
