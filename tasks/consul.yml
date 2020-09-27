@@ -4,14 +4,14 @@
      pkg:
                   - consul
 
-####################################################  /etc/prometheus   FILES
+####################################################  /etc/consul   FILES
 - name:        Files   /etc/consul.d/*
   synchronize:  src="etc/consul.d/"  dest="/etc/consul.d"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 ####################################################  /etc/prometheus  TEMPLATES
 #
 - name:        Templates /etc/consul.d/*
-  template:    src=etc/consul.d/{{ item }}      dest="/etc/consul.d/"     owner=root
+  template:    src=etc/consul/{{ item }}      dest="/etc/consul.d/"     owner=root
   with_items:
       -  basic.json  
       -  pgbouncer_exporter.json  
@@ -31,4 +31,4 @@
 
 - name:       reload  consul
   when:       os_family  == 'Linux'  
-  systemd:    name="consul"   daemon_reload="yes"   enable=no
+  systemd:    name="consul"   daemon_reload="yes"   enabled=no

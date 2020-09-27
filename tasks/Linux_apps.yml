@@ -19,6 +19,8 @@
 - include: fluent-bit-Linux.yml
   when:    need_fluent_bit
 
+- include: consul
+  when:    need_consul
 
 - include: stock_brokers.yml
 
