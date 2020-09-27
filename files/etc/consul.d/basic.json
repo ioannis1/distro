@@ -1,5 +1,5 @@
 {
-          "datacenter"           :  "dc1",
+          "datacenter"           :  "bulk",
           "log_level"            :  "INFO",
           "node_name"            :  "bulk",
           "telemetry"            :  { "statsite_address": "127.0.0.1:2180" },
@@ -7,6 +7,7 @@
           "ui"                   :  true,
           "pid_file"             :  "/tmp/consul.pid",
           "enable_script_checks" :  true,
-          "disable_remote_exec"  :  false,
-          "log_file"             :  "/tmp/consul.log"
+	 "data_dir"              :  "/var/lib/consul",
+          "disable_remote_exec"  :  false
+
 }

@@ -1,6 +1,6 @@
 {
   "service": {
-        "ID"     : "pgbouncer-6543",
+        "ID"     : "pgbouncer-{{ ansible_hostname }}",
         "name"   : "pgbouncer-exporter",
         "address": "localhost",
         "port"   : 9911,

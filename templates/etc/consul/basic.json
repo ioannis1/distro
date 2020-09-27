@@ -1,0 +1,12 @@
+{
+          "datacenter"           :  "{{ ansible_hostname }}",
+          "log_level"            :  "INFO",
+          "node_name"            :  "{{ ansible_hostname }}",
+          "telemetry"            :  { "statsite_address": "{{ ansible_all_ipv4_addresses.0 }}:2180" },
+          "bind_addr"            :  "{{ ansible_all_ipv4_addresses.0 }}",
+          "ui"                   :  true,
+          "pid_file"             :  "/tmp/consul.pid",
+          "enable_script_checks" :  true,
+	 "data_dir"             :  "/var/lib/consul",
+          "disable_remote_exec"  :  false
+}

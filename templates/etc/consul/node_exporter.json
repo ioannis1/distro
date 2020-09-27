@@ -1,6 +1,6 @@
 {
   "service": {
-                 "ID"     : "node-bulk",
+                 "ID"     : "node-{{ ansible_hostname }}",
                  "name"   : "node-exporter",
                  "address": "localhost",
                  "port"   : 9100,

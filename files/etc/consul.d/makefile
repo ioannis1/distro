@@ -16,18 +16,6 @@ CONFDIR= /etc/consul.d
 #copt +=  -log-rotate-bytes=<value>
 #copt +=  -log-rotate-duration=
 
-help:
-	$(bin) --help
-help_start hs:
-	$(bin) agent --help
-start stop restart status:  
-	#mkdir -p $(RUNDIR)
-	#$(SUDO) $(bin) agent  -dev  --config-dir=$(CONFDIR)  &
-	service consul $@
-#stop:  
-	#ps axu|grep bin/consul|egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -TERM 
-#reload: 
-	#ps axu|grep bin/consul|egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -HUP 
 telemetry tel: 
 	ps axu|grep bin/consul|egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -USR1 
 members m:
@@ -35,9 +23,9 @@ members m:
 info i:
 	$(SUDO) $(bin) info | head -29
 services s:
-	$(SUDO) $(bin) catalog $@   # -node=bulk
+	$(SUDO) $(bin) catalog services  # -node=bulk
 nodes n:
-	$(SUDO) $(bin) catalog $@   #  -service=postgres-exporter
+	$(SUDO) $(bin) catalog nodes   #  -service=postgres-exporter
 
 
 cat log:
@@ -60,7 +48,7 @@ clean: stop
 	rm -rf $(RUNDIR)/* 
 validate v:
 	consul validate $(CONFDIR)
-default d:
+default:
 	vi /etc/default/consul
 h:
 	echo help 
@@ -75,3 +63,15 @@ h:
 	echo '(d)default'
 	echo 'cat, tail, ver, pid, ps, id'
 
+help:
+	$(bin) --help
+help_start hs:
+	$(bin) agent --help
+start stop restart status:  
+	#mkdir -p $(RUNDIR)
+	#$(SUDO) $(bin) agent  -dev  --config-dir=$(CONFDIR)  &
+	service consul $@
+#stop:  
+	#ps axu|grep bin/consul|egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -TERM 
+#reload: 
+	#ps axu|grep bin/consul|egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -HUP 
