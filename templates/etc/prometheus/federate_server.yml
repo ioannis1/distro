@@ -4,6 +4,9 @@ global:
   scrape_timeout:       10s 
   evaluation_interval:  3m
   # sample_limit:       10000
+  external_labels:
+      host_ip:    '{{ ansible_all_ipv4_addresses.0 }}'
+      hostname : '{{ ansible_hostname }}'
 
   # Labels when communicating with  external systems (federation, remote storage, Alertmanager).
   external_labels:
@@ -41,5 +44,5 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9100']
         labels:
-             server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
+             host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
              hostname : '{{ ansible_hostname }}'

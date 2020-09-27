@@ -1,0 +1,71 @@
+#https://github.com/prometheus/prometheus/blob/master/config/testdata/conf.good.yml#L32-L39
+ 
+global:
+  scrape_interval:      1m      # Default is every 1 minute.
+  scrape_timeout:      10s      # Default 10s
+  evaluation_interval:  4m      # Default is every 1 minute.      Evaluates rules 
+  # sample_limit:       5000      # upper limit num of ts we can scrape
+  external_labels:
+      host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+      hostname:  '{{ ansible_hostname }}'
+
+
+  
+#alerting:
+#  alertmanagers:
+#    - static_configs:
+#        - targets: ['localhost:9093']
+
+rule_files:
+     - "/etc/prometheus/alerts/first_alert.yml"
+ 
+scrape_configs:
+  - job_name: dummy
+    consul_sd_configs:
+      - server: 'localhost:8500'
+        tag: "prometheus"
+       #token: 'xyz'
+       #services: ['node_exporter', 'postgres_exporter']
+        refresh_interval: 30s
+
+
+
+    relabel_configs:
+      - source_labels: [__meta_consul_service ]
+        regex: '(.*)-exporter'
+        replacement: '${1}'
+        target_label: job
+
+      - source_labels: [__meta_consul_service,__meta_consul_service_address,__meta_consul_service_id]
+        regex: '(postgres|pgbouncer)-exporter,(.*),(pgbouncer|pgexport)-(.*)' 
+        replacement: '${1}:${2}'
+        target_label: server
+
+      - source_labels: [datname]
+        regex: '^template[012]'
+        action: drop
+
+
+    # - source_labels: [ __meta_consul_service_id ]
+    #   regex: '(apache|push).*'
+    #   action: drop
+
+
+
+
+#   services:                    not working
+#      - 'localhost:5432'
+#      - 'localhost:5434'
+#      - 'localhost:6543'
+#      - 'node_bulk'
+
+
+#  file_sd_configs:
+#    - files:
+#      - /etc/prometheus/tgroups/*.yml
+
+
+#remote_write:
+        #- url: "http://localhost:9201/write"
+#write_relabel_configs:
+          #- /etc/prometheus/write_relabel.yml

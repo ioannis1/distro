@@ -27,10 +27,10 @@ scrape_configs:
     static_configs:
         - targets: ['{{ ansible_hostname }}:9187'] 
           labels:
-              server : 'localhost:5432'
-              pg_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
-              pg_host : '{{ ansible_hostname }}'
-              pg_port : '5432'
+              server:    'localhost:5432'
+              host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+              hostname:  '{{ ansible_hostname }}'
+              pg_port:   '5432'
     metric_relabel_configs:
      #  - source_labels: [__name__]
      #    regex: 'pg_settings_[^nps].*'
@@ -53,8 +53,8 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9100']
         labels:
-             server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
-             hostname : '{{ ansible_hostname }}'
+             host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+             hostname:  '{{ ansible_hostname }}'
 
 # - job_name: postgres_5433
 #   honor_labels: true

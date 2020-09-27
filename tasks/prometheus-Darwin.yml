@@ -9,12 +9,16 @@
 - name:        Templates /etc/prometheus/*
   template:    src=etc/prometheus/{{ item }}      dest="/etc/prometheus/"     owner=root
   with_items:
-       - prometheus_tiny.yml
-       - prometheus_pg.yml          
-       - prometheus_static.yml          
-       - prometheus_static_write-pg.yml
+       - tiny.yml
+       - static.yml          
+       - pg.yml          
+       - static_read-pg.yml  
+       - static_write-pg.yml
        - federate_server.yml
        - federate_client.yml
+       - dynamic_file.yml    
+       - dynamic_consul.yml  
+       - simple_consul.yml   
 
 
 ####################################################  symlinks 

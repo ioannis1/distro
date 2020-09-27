@@ -7,8 +7,8 @@ global:
 
   # Labels when communicating with  external systems (federation, remote storage, Alertmanager).
   external_labels:
-      server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
-      hostname : '{{ ansible_hostname }}'
+      host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+      hostname:  '{{ ansible_hostname }}'
 
 #alerting:
 #rule_files:

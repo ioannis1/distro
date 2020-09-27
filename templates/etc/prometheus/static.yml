@@ -8,7 +8,7 @@ global:
 
   # Labels when communicating with  external systems (federation, remote storage, Alertmanager).
   external_labels:
-      server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
+      host_ip:    '{{ ansible_all_ipv4_addresses.0 }}'
       hostname : '{{ ansible_hostname }}'
 
 alerting:
@@ -25,8 +25,8 @@ rule_files:
     static_configs:
       - targets: ['localhost:9100'] 
         labels:
-             server_ip: '{{ ansible_all_ipv4_addresses.0 }}'
-             hostname : '{{ ansible_hostname }}'
+             host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+             hostname:  '{{ ansible_hostname }}'
 
   - job_name: 'apache'
     static_configs:
@@ -79,7 +79,7 @@ rule_files:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 127.0.0.1:9115  #blackbox_export
+        replacement:  127.0.0.1:9115  #blackbox_export
 
 
 
