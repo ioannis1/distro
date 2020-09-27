@@ -18,26 +18,30 @@ scrape_configs:
     honor_labels:  true
     metrics_path:  /federate
 
-  - job_name: dummy
+  - job_name: postgres
     consul_sd_configs:
       - server: 'localhost:8500'
         services:
-          - node-exporter
           - postgres-exporter-5432
-          - grok-exporter-5432
+          - grok-exporter
+          - node-exporter
         refresh_interval: 30s
 
 
     relabel_configs:
-      - source_labels: [__meta_consul_service ]
+      - source_labels: [ __meta_consul_service ]
         regex: '(.*)-exporter'
         replacement: '${1}'
         target_label: job
 
-      - source_labels: [__meta_consul_service,__meta_consul_service_address,__meta_consul_service_id]
-        regex: '(postgres|pgbouncer)-exporter,(.*),(pgbouncer|pgexport)-(.*)' 
-        replacement: '${1}:${2}'
-        target_label: server
+      - source_labels: [ __meta_consul_service_metadata_cluster ]
+        target_label: cluster
+
+      - source_labels: [ __meta_consul_service_metadata_pg_port ]
+        target_label: pg_port
+
+      - source_labels: [ __meta_consul_service_metadata_server_version ]
+        target_label: server_version
 
       - source_labels: [__meta_consul_node]
         target_label: hostname
@@ -46,24 +50,13 @@ scrape_configs:
         regex: '^template[012]'
         action: drop
 
+ #    - source_labels: [__meta_consul_service,__meta_consul_service_address,__meta_consul_service_id]
+ #      regex: '(postgres|pgbouncer)-exporter,(.*),(pgbouncer|pgexport)-(.*)' 
+ #      replacement: '${1}:${2}'
+ #      target_label: server
+
+
 
     # - source_labels: [ __meta_consul_service_id ]
     #   regex: '(apache|push).*'
     #   action: drop
-
-#   services:                    not working
-#      - 'localhost:5432'
-#      - 'localhost:5434'
-#      - 'localhost:6543'
-#      - 'node_bulk'
-
-
-#  file_sd_configs:
-#    - files:
-#      - /etc/prometheus/tgroups/*.yml
-
-
-#remote_write:
-        #- url: "http://localhost:9201/write"
-#write_relabel_configs:
-          #- /etc/prometheus/write_relabel.yml

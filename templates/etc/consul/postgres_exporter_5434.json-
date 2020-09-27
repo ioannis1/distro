@@ -3,9 +3,14 @@
                  "ID"     : "pgexport-{{ ansible_hostname }}-5434",
                  "name"   : "postgres-exporter-5434",
                  "address": "localhost",
-                 "port"   : 9187,
+                 "port"   : 9487,
+		 "token"  : "root",
                  "enable_tag_override" : false,
-                 "tags"   : [ "exporter", "prometheus" ],
+                 "tags"   : [ "exporter", "postgres", "prometheus" ],
+                 "Meta"   : { "cluster": "green",
+                              "pg_port": "5434",
+                              "server_version": "13.BETA4"
+                            },
                  "check"  : {
                               "name"     : "postgres-exporter_check",
                               "tcp"      : "localhost:9187",

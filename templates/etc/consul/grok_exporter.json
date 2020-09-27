@@ -1,12 +1,14 @@
-{
+g
   "service": {
                  "ID"     : "grok-{{ ansible_hostname }}",
                  "name"   : "grok-exporter",
                  "address": "localhost",
-                 "port"   : 9100,
+                 "port"   : 9144,
                  "token"  : "root",
                  "enable_tag_override" : false,
-                 "tags"  : [ "exporter", "prometheus" ],
+                 "tags"   : [ "exporter", "postgres", "prometheus" ],
+                 "Meta"   : { "cluster": "main"
+                            },
                  "check" : {
                              "name"     : "grok-exporter_check",
                              "tcp"      : "localhost:9144",

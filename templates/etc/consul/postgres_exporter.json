@@ -5,8 +5,12 @@
                  "address": "localhost",
                  "port"   : 9187,
                  "enable_tag_override" : false,
-                 "tags"   : [ "exporter", "prometheus" ],
-                 "check"  : {
+                 "tags"   : [ "exporter", "postgres", "prometheus" ],
+                 "Meta"   : { "cluster": "main",
+                              "pg_port": "5432",
+                              "server_version": "11.4"
+                            },
+                "check"  : {
                               "name"     : "postgres-exporter_check",
                               "tcp"      : "localhost:9187",
 			      "timeout"  : "2s",
