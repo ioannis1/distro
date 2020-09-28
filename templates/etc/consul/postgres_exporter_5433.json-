@@ -1,15 +1,15 @@
 {
   "Service": {
-                 "ID"     : "pgexport-{{ ansible_hostname }}-5434",
-                 "name"   : "postgres-exporter-5434",
+                 "ID"     : "pgexport-{{ ansible_hostname }}-5433",
+                 "name"   : "postgres-exporter-5433",
                  "address": "localhost",
-                 "port"   : 9489,
+                 "port"   : 9488,
 		 "token"  : "root",
                  "enable_tag_override" : false,
                  "tags"   : [ "exporter", "postgres", "prometheus" ],
-                 "Meta"   : { "cluster": "green",
-                              "pg_port": "5434",
-                              "server_version": "REL_13_BETA4"
+                 "Meta"   : { "cluster": "karat",
+                              "pg_port": "5433",
+                              "server_version": "REL_12_4"
                             },
                  "check"  : {
                               "name"     : "postgres-exporter_check",

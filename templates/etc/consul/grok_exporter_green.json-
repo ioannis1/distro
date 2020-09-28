@@ -1,17 +1,17 @@
 {
   "service": {
-                 "ID"     : "grok-{{ ansible_hostname }}-main",
-                 "name"   : "grok-exporter",
+                 "ID"     : "grok-{{ ansible_hostname }}-green",
+                 "name"   : "grok-exporter-green",
                  "address": "localhost",
-                 "port"   : 9144,
+                 "port"   : 9146,
                  "token"  : "root",
                  "enable_tag_override" : false,
                  "tags"   : [ "exporter", "postgres", "prometheus" ],
-                 "Meta"   : { "cluster": "main"
+                 "Meta"   : { "cluster": "green"
                             },
                  "check" : {
                              "name"     : "grok-exporter_check",
-                             "tcp"      : "localhost:9144",
+                             "tcp"      : "localhost:9146",
                              "timeout"  : "2s",
                              "interval" : "30s"
                           }

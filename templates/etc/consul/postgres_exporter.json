@@ -8,7 +8,7 @@
                  "tags"   : [ "exporter", "postgres", "prometheus" ],
                  "Meta"   : { "cluster": "main",
                               "pg_port": "5432",
-                              "server_version": "11.4"
+                              "server_version": "REL_11.4"
                             },
                 "check"  : {
                               "name"     : "postgres-exporter_check",

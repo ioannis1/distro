@@ -27,7 +27,6 @@ scrape_configs:
     static_configs:
         - targets: ['{{ ansible_hostname }}:9187'] 
           labels:
-              server:    'localhost:5432'
               host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
               hostname:  '{{ ansible_hostname }}'
               pg_port:   '5432'
@@ -61,7 +60,6 @@ scrape_configs:
 #   static_configs:
 #       - targets: ['{{ ansible_hostname }}:9387'] 
 #         labels:
-#             server :  '{{ ansible_hostname }}:5433'
 #             host_ip:    '{{ ansible_all_ipv4_addresses.0 }}'
 #             hostname : '{{ ansible_hostname }}'
 #             pg_port: '5433'
