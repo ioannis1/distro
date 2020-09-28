@@ -11,7 +11,6 @@
                   - pgbouncer
                   - prometheus-alertmanager
                   - prometheus 
-                  - consul
 
 ####################################################  /etc/prometheus   FILES
 - name:        Files   /etc/prometheus/*
@@ -38,7 +37,8 @@
 
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
-  file:    src='/etc/prometheus/pg.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+  file:    src='/etc/prometheus/simple_consul_fed.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+  #file:    src='/etc/prometheus/pg.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
 
 - name:    symlink  rules/memory_rules.yml
   file:    src="/etc/prometheus/rules/memory_{{ os_family }}.yml"   dest='/etc/prometheus/rules/memory.yml'   state=link  owner=root   force=yes
@@ -71,5 +71,4 @@
       - node
 
 - name:       reload  prometheus 
-  when:  false
   systemd:    name="prometheus"   daemon_reload="yes"  enabled=no

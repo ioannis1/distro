@@ -1,9 +1,18 @@
 ####################################################  packages
+- name:           consul Key
+  apt_key:
+     #id:         '4E40DDF6D76E284A4A6780E48C8C34C524098CB6'
+      url:       https://apt.releases.hashicorp.com/gpg 
+
+
+- name:            consul Hashicorp.com epository
+  apt_repository:  repo="deb [arch=amd64] https://apt.releases.hashicorp.com buster main"
+
+
 - name:          packages consul
   apt:
-     pkg:
-                  - consul
-
+     name:          consul
+     update_cache:  yes
 ####################################################  /etc/consul   FILES
 - name:        Files   /etc/consul.d/*
   synchronize:  src="etc/consul.d/"  dest="/etc/consul.d"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
@@ -14,11 +23,11 @@
   template:    src=etc/consul/{{ item }}      dest="/etc/consul.d/"     owner=root
   with_items:
       -  basic.json  
-      -  pgbouncer_exporter.json  
+      -  pgbouncer_exporter.json-  
       -  postgres_exporter.json
       -  grok_exporter.json  
       -  node_exporter.json  
-      -  postgres_exporter_5434.json
+      -  postgres_exporter_5434.json-
 
 ####################################################  symlinks 
 - name:    data directory 
@@ -28,6 +37,9 @@
 - name:        /etc/default/consul
   copy:       src=etc/default/consul    dest=/etc/default/consul    owner=root   
 ####################################################   reload servers
+- name:        systemd file
+  copy:        src=etc/systemd/system/consul.service     dest="/etc/systemd/system/"     owner=root
+  when:        os_family == 'Linux'
 
 - name:       reload  consul
   when:       os_family  == 'Linux'  

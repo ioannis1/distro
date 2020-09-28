@@ -11,7 +11,7 @@
 - name:   /var  subdirectories
   file:   dest="/var/{{item}}"          state='directory'    owner="ioannis"    mode=750
   with_items:
-      - consul
+      #- consul
       - filebeat
       - elasticsearch
       - grafana

@@ -1,4 +1,4 @@
-g
+{
   "service": {
                  "ID"     : "grok-{{ ansible_hostname }}",
                  "name"   : "grok-exporter",

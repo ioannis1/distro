@@ -1,10 +1,10 @@
 .PHONY: $(shell ls)
 .SILENT:
 .DEFAULT_GOAL = reload
-.DEFAULT_GOAL = test
+.DEFAULT_GOAL = validate
 
 
-bin    = /bin/consul
+bin    = consul
 #LOG    = /tmp/consul.log
 #PID    = /tmp/consul.pid
 #RUNDIR = /var/consul
@@ -31,8 +31,9 @@ nodes n:
 cat log:
 	cat $(LOG)	
 tail :
-	#tail -f $(LOG)	
-	consul monitor
+	@#tail -f $(LOG)	
+	tail -f /var/log/daemon.log
+	@#consul monitor
 ver:
 	consul version
 
