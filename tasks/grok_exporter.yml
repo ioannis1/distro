@@ -26,11 +26,19 @@
 
 
 
-- name:        systemd file
-  copy:        src=etc/systemd/system/grok_exporter.service     dest="/etc/systemd/system/"     owner=root
+####################################################   systemd
+- name:        systemd files
+  copy:        src=etc/systemd/system/{{item}}     dest="/etc/systemd/system/"     owner=root
   when:        os_family == 'Linux'
-####################################################  mkdir
+  with_items:
+      - grok_exporter.service  
+      - grok_exporter_karat.service 
 
-- name:       reload  grok_exporter
+
+- name:       reload  grok
   when:       os_family == 'Linux' 
   systemd:    name="grok_exporter"   daemon_reload="yes"  state=started  enabled=yes
+
+- name:       reload  grok
+  when:       os_family == 'Linux' 
+  systemd:    name="grok_exporter_karat"   daemon_reload="yes"  state=stopped  enabled=no

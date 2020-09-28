@@ -1,5 +1,5 @@
 - type: counter
-  name: pglog_conn_nossl_total
+  name: pglog_conn_nossl
   help: Total number of connections without ssl
   match: 'LOG:  connection authorized: user=%{USER:user} database=%{USER:datname}$' 
   labels:
@@ -7,7 +7,7 @@
       datname: '{{.datname}}'
 
 - type: counter
-  name: pglog_conn_ssl_authorized_total
+  name: pglog_conn_ssl_authorized
   help: Total number of authorized connections using ssl
   match: 'LOG:  connection authorized: user=%{USER:user} database=%{USER:datname} SSL enabled'
   labels:
@@ -15,12 +15,12 @@
       datname: '{{.datname}}'
 
 - type: counter
-  name: pglog_conn_ssl_failed_total
+  name: pglog_conn_ssl_failed
   help: Total number of failed connections using ssl
   match: 'LOG:  could not accept SSL connection'
 
 - type: counter
-  name: pglog_passwd_failed_total
+  name: pglog_passwd_failed
   help: Total number of password attempts
   match: 'user=%{USER:user},db=%{USER:datname} FATAL:  password authentication failed' 
   labels:
@@ -29,7 +29,7 @@
 
  
 - type: counter
-  name: pglog_fatal_total
+  name: pglog_fatal
   help: Total number of FATAL errors 
   match: 'user=%{USER:user},db=%{USER:datname} FATAL::'
   labels:
@@ -37,7 +37,7 @@
       datname: '{{.datname}}'
 
 - type: counter
-  name: pglog_error_total
+  name: pglog_error
   help: Total number of ERROR errors 
   match: 'user=%{USER:user},db=%{USER:datname} ERROR:'
   labels:
@@ -45,7 +45,7 @@
       datname: '{{.datname}}'
 
 - type: counter
-  name: pglog_error_syntax_total
+  name: pglog_error_syntax
   help: Total number of ERROR errors due to syntax
   match: 'user=%{USER:user},db=%{USER:datname} ERROR:  syntax error at or near'
   labels:
