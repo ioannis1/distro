@@ -26,8 +26,8 @@
       -  pgbouncer_exporter.json-  
       -  postgres_exporter.json
       -  grok_exporter.json  
-      -  grok_exporter-karat.json-  
-      -  grok_exporter-green.json-  
+      -  grok_exporter_karat.json-  
+      -  grok_exporter_green.json-  
       -  node_exporter.json  
       -  postgres_exporter_5433.json-
       -  postgres_exporter_5434.json-
