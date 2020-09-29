@@ -126,6 +126,7 @@ sudo add-apt-repository ppa:linuxuprising/java
                    - bc 
                    - nvi
                    - openssh-server
+                   - socat
 
 - name:            xorg
   apt:             
