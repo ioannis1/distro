@@ -18,7 +18,7 @@ scrape_configs:
     honor_labels:  true
     metrics_path:  /federate
 
-  - job_name: postgres
+  - job_name: dummy
     consul_sd_configs:
       - server: 'localhost:8500'
         services:
@@ -30,7 +30,7 @@ scrape_configs:
 
     relabel_configs:
       - source_labels: [ __meta_consul_service ]
-        regex: '(.*)-exporter'
+        regex: '^(.*)-exporter'
         replacement: '${1}'
         target_label: job
 
