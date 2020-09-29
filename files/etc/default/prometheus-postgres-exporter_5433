@@ -9,8 +9,8 @@
 DATA_SOURCE_NAME='user=prometheus password=silver host=localhost port=5433 dbname=ts application_name=promethus-exporter sslmode=disable'
 
 # Set the command-line arguments to pass to the server.
-#ARGS='--extend.query-path=/etc/prometheus/queries/pgqueries.yml --web.listen-address=":9188"'
-ARGS='--web.listen-address=":9188"'
+ARGS='--extend.query-path=/etc/prometheus/queries/pgqueries.yml --web.listen-address=":9188"'
+#ARGS='--web.listen-address=":9188"'
 
 # Available flags:
 #  --web.listen-address=":9187"  Address to listen on for web interface and telemetry.
