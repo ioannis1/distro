@@ -6,6 +6,7 @@
 
 bin    = consul
 #LOG    = /tmp/consul.log
+#CONFDIR= ~ioannis/start-stop/consul/consul.d
 CONFDIR= /etc/consul.d
 
 
