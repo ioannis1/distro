@@ -6,7 +6,6 @@
 
 bin    = consul
 #LOG    = /tmp/consul.log
-#CONFDIR= ~ioannis/start-stop/consul/consul.d
 CONFDIR= /etc/consul.d
 
 
@@ -23,13 +22,15 @@ add_karat add:
 	-@(mv  -f $(CONFDIR)/postgres_exporter_5433.json-  $(CONFDIR)/postgres_exporter_5433.json) 2>/dev/null
 	-@(mv  -f $(CONFDIR)/grok_exporter_karat.json-     $(CONFDIR)/grok_exporter_karat.json ) 2>/dev/null 
 	ls $(CONFDIR)/postgres_exporter_5433.json*         $(CONFDIR)/grok_exporter_karat.json*
-	@service consul restart
+	@#service consul restart
+	@consul services register  /etc/consul.d/postgres_exporter_5433.json
 	@service  prometheus-postgres-exporter_5433 start
 rm_karat  rem:
+	@consul services deregister  /etc/consul.d/postgres_exporter_5433.json
 	-@(mv  -f $(CONFDIR)/postgres_exporter_5433.json  $(CONFDIR)/postgres_exporter_5433.json- ) 2>/dev/null
 	-@(mv  -f $(CONFDIR)/grok_exporter_karat.json     $(CONFDIR)/grok_exporter_karat.json-    ) 2>/dev/null
 	ls $(CONFDIR)/postgres_exporter_5433.json*         $(CONFDIR)/grok_exporter_karat.json*
-	@service consul restart
+	@#service consul restart
 	@service  prometheus-postgres-exporter_5433 stop
 
 
