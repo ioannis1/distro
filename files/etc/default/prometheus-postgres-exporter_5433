@@ -1,0 +1,21 @@
+# Connection string for the PostgreSQL database. You need to either connect as
+# superuser, or create a user with enough rights, as described in
+# /usr/share/doc/prometheus-postgres-exporter/README.Debian
+
+#DATA_SOURCE_NAME='postgresql://login:password@hostname:port/'
+#DATA_SOURCE_NAME=postgresql://postgres_exporter:password@localhost:5432/postgres?sslmode=disable
+#DATA_SOURCE_NAME=postgresql://prometheus:silver@localhost:5432/ts?sslmode=disable
+
+DATA_SOURCE_NAME='user=prometheus password=silver host=localhost port=5433 dbname=ts application_name=promethus-exporter sslmode=disable'
+
+# Set the command-line arguments to pass to the server.
+#ARGS='--extend.query-path=/etc/prometheus/queries/pgqueries.yml --web.listen-address=":9188"'
+ARGS='--web.listen-address=":9188"'
+
+# Available flags:
+#  --web.listen-address=":9187"  Address to listen on for web interface and telemetry.
+#  --web.telemetry-path="/metrics"
+#                                Path under which to expose metrics.
+#  --extend.query-path=""        Path to custom queries to run.
+#  --log.level="info"            Only log messages with the given severity or above. Valid levels: [debug, info, warn, error, fatal]
+#  --log.format="logger:stderr"  Set the log target and format. Example: "logger:syslog?appname=bob&local=7" or "logger:stdout?json=true"
