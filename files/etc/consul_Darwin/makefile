@@ -5,7 +5,8 @@
 
 
 bin     = consul
-#LOG    = /tmp/consul.log
+LOG    = /tmp/consul.log
+LOG    = /var/log/system.log
 #PID    = /tmp/consul.pid
 RUNDIR  =  /var/lib/consul
 CONFDIR = /etc/consul.d
@@ -31,10 +32,9 @@ nodes n:
 cat log:
 	cat $(LOG)	
 less:
-	less /var/log/daemon.log
+	less  $(LOG)
 tail :
-	@#tail -f $(LOG)	
-	tail -f /var/log/daemon.log
+	@tail -f $(LOG)	
 	@#consul monitor
 ver:
 	consul version
@@ -72,7 +72,7 @@ help_start hs:
 	$(bin) agent --help
 r: restart
 start:
-	$(SUDO) $(bin) agent  -dev --data-dir=$(RUNDIR)  --config-dir=$(CONFDIR)  &
+	$(SUDO) $(bin) agent  -dev --data-dir=$(RUNDIR)  --config-dir=$(CONFDIR)   &
 stop:  
 	ps axu|grep consul |egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -TERM
 #reload: 
