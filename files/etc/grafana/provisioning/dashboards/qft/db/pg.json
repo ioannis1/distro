@@ -9,14 +9,24 @@
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
+      },
+      {
+        "datasource": "loki",
+        "enable": false,
+        "expr": "{filename=\"/var/log/postgresql/main-21.log\"} |= \"FATAL\"",
+        "hide": false,
+        "iconColor": "#C4162A",
+        "name": "passwd FATAL",
+        "showIn": 0,
+        "target": {}
       }
     ]
   },
   "editable": true,
   "gnetId": null,
   "graphTooltip": 1,
-  "id": 9,
-  "iteration": 1600209410629,
+  "id": 11,
+  "iteration": 1601445618721,
   "links": [
     {
       "asDropdown": true,
@@ -72,12 +82,16 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "pg_ip"
+              "options": "server_version"
             },
             "properties": [
               {
                 "id": "custom.width",
                 "value": 102
+              },
+              {
+                "id": "unit",
+                "value": "string"
               }
             ]
           },
@@ -101,7 +115,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 234
+                "value": 250
               },
               {
                 "id": "unit",
@@ -118,6 +132,30 @@
               {
                 "id": "custom.width",
                 "value": 76
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hostname"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 36
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "server_version"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 205
               }
             ]
           }
@@ -137,7 +175,7 @@
       "pluginVersion": "7.2.0-040ed969pre",
       "targets": [
         {
-          "expr": "pg_postmaster_start_time_seconds",
+          "expr": "pg_postmaster_start_time_seconds{hostname=\"$host\",cluster=\"$cluster\"}",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -154,9 +192,9 @@
           "options": {
             "include": {
               "names": [
-                "pg_host",
-                "pg_ip",
+                "hostname",
                 "pg_port",
+                "server_version",
                 "Value"
               ]
             }
@@ -317,7 +355,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (datname) ( drg_stat_database_numbackends)",
+          "expr": "sum by (datname) ( drg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
           "format": "table",
           "hide": true,
           "instant": true,
@@ -441,7 +479,7 @@
       "pluginVersion": "7.2.0-040ed969pre",
       "targets": [
         {
-          "expr": "sum (pg_settings_max_connections)  - sum (pg_stat_database_numbackends)",
+          "expr": "sum (pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"})  - sum (pg_stat_database_numbackends{hostname=\"$host\"})",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -516,14 +554,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pg_stat_database_numbackends)",
+          "expr": "sum(pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
           "instant": false,
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         },
         {
-          "expr": "pg_settings_max_connections\n",
+          "expr": "pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"}\n",
           "instant": false,
           "interval": "",
           "legendFormat": "",
@@ -650,10 +688,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pg_stat_database_numbackends{dat=\"$db\"}",
+          "expr": "pg_stat_database_numbackends{hostname=\"$host\",datname=\"$db\"}",
           "format": "time_series",
           "hide": true,
-          "instant": true,
+          "instant": false,
           "interval": "",
           "legendFormat": "",
           "refId": "B"
@@ -732,8 +770,8 @@
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
-            "h": 7,
-            "w": 6,
+            "h": 6,
+            "w": 5,
             "x": 0,
             "y": 14
           },
@@ -765,7 +803,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(pglog_passwd_failed_total[4m])",
+              "expr": "rate(pglog_passwd_failed[4m])",
               "instant": false,
               "interval": "",
               "legendFormat": "rate",
@@ -826,65 +864,164 @@
         },
         {
           "aliasColors": {},
-          "breakPoint": "25%",
-          "cacheTimeout": null,
-          "combine": {
-            "label": "Others",
-            "threshold": 0
-          },
-          "datasource": "$ds",
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "loki",
           "fieldConfig": {
             "defaults": {
-              "custom": {},
-              "unit": "string"
+              "custom": {
+                "align": null
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
             },
             "overrides": []
           },
-          "fontSize": "80%",
-          "format": "short",
+          "fill": 1,
+          "fillGradient": 0,
           "gridPos": {
-            "h": 7,
+            "h": 6,
             "w": 6,
-            "x": 6,
+            "x": 5,
             "y": 14
           },
-          "id": 112,
-          "interval": null,
+          "hiddenSeries": false,
+          "id": 117,
           "legend": {
-            "show": true,
+            "avg": false,
+            "current": false,
+            "max": true,
+            "min": false,
+            "show": false,
+            "total": false,
             "values": true
           },
-          "legendType": "Under graph",
-          "links": [],
-          "nullPointMode": "connected",
-          "pieType": "pie",
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
           "pluginVersion": "7.2.0-040ed969pre",
-          "strokeWidth": 1,
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(pglog_conn_ssl_authorized_total)",
-              "format": "time_series",
+              "expr": "count_over_time({job=\"pglogs\"}|= \"FATAL\" [4m])",
               "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "ssl",
+              "legendFormat": "",
               "refId": "B"
             },
             {
-              "expr": "sum(pglog_conn_nossl_total)",
-              "format": "table",
+              "expr": "count_over_time({job=\"pglogs\"}|= \"FATAL\" |= \"password\" [4m])",
               "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "no _ssl",
+              "legendFormat": "",
               "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "FATAL passwd ",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:476",
+              "decimals": 0,
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:477",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "datasource": "loki",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 11,
+            "y": 14
+          },
+          "id": 121,
+          "options": {
+            "showLabels": false,
+            "showTime": false,
+            "sortOrder": "Descending",
+            "wrapLogMessage": false
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "{job=\"pglogs\",hostname=\"$host\"}",
+              "hide": true,
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": "{job=\"pglogs\",hostname=\"$host\"} |=  \"FATAL\" |= \"password authen\"",
+              "hide": false,
+              "legendFormat": "",
+              "refId": "B"
             }
           ],
           "timeFrom": null,
           "timeShift": null,
-          "title": "auth ",
-          "type": "grafana-piechart-panel",
-          "valueName": "current"
+          "title": "FATAL passwd ",
+          "type": "logs"
         }
       ],
       "title": "connection ERROR",
@@ -898,6 +1035,180 @@
         "w": 24,
         "x": 0,
         "y": 14
+      },
+      "id": 119,
+      "panels": [
+        {
+          "datasource": "loki",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 16,
+            "x": 0,
+            "y": 15
+          },
+          "id": 120,
+          "options": {
+            "showLabels": false,
+            "showTime": false,
+            "sortOrder": "Descending",
+            "wrapLogMessage": false
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "{job=\"pglogs\",hostname=\"$host\"}",
+              "hide": false,
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": "{job=\"pglogs\",hostname=\"$host\"} |=  \"FATAL\" |= \"password authen\"",
+              "hide": true,
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pglogs",
+          "type": "logs"
+        },
+        {
+          "aliasColors": {
+            "Value #A": "dark-red",
+            "ssl": "dark-green"
+          },
+          "bars": true,
+          "cacheTimeout": null,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "string"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 16,
+            "y": 15
+          },
+          "hiddenSeries": false,
+          "id": 112,
+          "interval": null,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(pglog_conn_ssl_authorized{hostname=$host\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "ssl",
+              "refId": "B"
+            },
+            {
+              "expr": "sum(pglog_conn_nossl)",
+              "format": "table",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "no _ssl",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "auth ",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "total"
+            ]
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:426",
+              "format": "string",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:427",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "title": "connection  .log",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
       },
       "id": 105,
       "panels": [
@@ -921,7 +1232,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 22
+            "y": 16
           },
           "hiddenSeries": false,
           "id": 103,
@@ -951,7 +1262,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "(pg_stat_activity_count{datname=\"$db\"})",
+              "expr": "(pg_stat_activity_count{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"})",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -959,7 +1270,7 @@
               "refId": "B"
             },
             {
-              "expr": "avg_over_time(pg_stat_activity_count{datname=\"$db\"}[4m])",
+              "expr": "avg_over_time(pg_stat_activity_count{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"}[4m])",
               "hide": true,
               "instant": false,
               "interval": "",
@@ -973,7 +1284,7 @@
           "timeShift": null,
           "title": "fort \"$db\"  --  avg over [4m] ,",
           "tooltip": {
-            "shared": true,
+            "shared": false,
             "sort": 0,
             "value_type": "individual"
           },
@@ -1049,7 +1360,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 22
+            "y": 16
           },
           "id": 111,
           "interval": null,
@@ -1072,7 +1383,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "sum (pg_settings_max_connections)  - sum (pg_stat_database_numbackends{datname=\"$db\"})",
+              "expr": "sum (pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"})  - sum (pg_stat_database_numbackends{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"})",
               "format": "time_series",
               "hide": false,
               "instant": false,
@@ -1112,7 +1423,7 @@
             "h": 7,
             "w": 8,
             "x": 10,
-            "y": 22
+            "y": 16
           },
           "id": 114,
           "interval": "30s",
@@ -1134,7 +1445,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "sum(pglog_fatal_total{datname=\"$db\"})",
+              "expr": "sum(pglog_fatal{datname=\"$db\"})",
               "hide": false,
               "instant": true,
               "interval": "",
@@ -1143,7 +1454,7 @@
               "refId": "A"
             },
             {
-              "expr": "sum(pglog_error_total{datname=\"$db\"})",
+              "expr": "sum(pglog_error{hostname=\"$host\",datname=\"$db\"})",
               "instant": true,
               "interval": "",
               "legendFormat": "ERROR",
@@ -1175,7 +1486,7 @@
             "h": 6,
             "w": 6,
             "x": 18,
-            "y": 22
+            "y": 16
           },
           "hiddenSeries": false,
           "id": 115,
@@ -1205,7 +1516,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(pglog_error_syntax_total{datname=\"$db\"}[4m])",
+              "expr": "irate(pglog_error_syntax{hostname=\"$host\",datname=\"$db\"}[4m])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -1268,7 +1579,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 16
       },
       "id": 56,
       "panels": [
@@ -1294,7 +1605,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 16
+            "y": 24
           },
           "hiddenSeries": false,
           "id": 53,
@@ -1413,7 +1724,7 @@
             "h": 7,
             "w": 4,
             "x": 12,
-            "y": 16
+            "y": 24
           },
           "id": 52,
           "interval": null,
@@ -1485,7 +1796,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 17
       },
       "id": 58,
       "panels": [
@@ -1512,7 +1823,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 12
+            "y": 18
           },
           "id": 32,
           "interval": "30s",
@@ -1538,7 +1849,7 @@
             {
               "alias": "",
               "dsType": "influxdb",
-              "expr": "pg_database_size_bytes\n",
+              "expr": "pg_database_size_bytes{hostname=\"$host\",cluster=\"$cluster\"}\n",
               "format": "time_series",
               "groupBy": [
                 {
@@ -1626,7 +1937,7 @@
             "h": 7,
             "w": 8,
             "x": 8,
-            "y": 12
+            "y": 18
           },
           "hiddenSeries": false,
           "id": 70,
@@ -1667,7 +1978,7 @@
             {
               "alias": "",
               "dsType": "influxdb",
-              "expr": "pg_database_size_bytes\n",
+              "expr": "pg_database_size_bytes{hostname=\"$host\",cluster=\"$cluster\"}\n",
               "format": "time_series",
               "groupBy": [
                 {
@@ -1797,7 +2108,7 @@
             "h": 7,
             "w": 8,
             "x": 16,
-            "y": 12
+            "y": 18
           },
           "hiddenSeries": false,
           "id": 71,
@@ -1838,7 +2149,7 @@
             {
               "alias": "",
               "dsType": "influxdb",
-              "expr": "sum by (instance) (pg_database_size_bytes)\n",
+              "expr": "sum by (instance) (pg_database_size_bytes{hostname=\"$host\",cluser=\"$cluster\"})\n",
               "format": "time_series",
               "groupBy": [
                 {
@@ -1895,7 +2206,7 @@
             {
               "alias": "",
               "dsType": "influxdb",
-              "expr": "node_filesystem_size_bytes{device=\"$DATA\"}\n",
+              "expr": "node_filesystem_size_bytes{device=\"$DATA\",hostname=\"qft\",cluster=\"$cluster\"}\n",
               "format": "time_series",
               "groupBy": [
                 {
@@ -1952,7 +2263,7 @@
             {
               "alias": "",
               "dsType": "influxdb",
-              "expr": "node_filesystem_size_bytes{device=\"$DATA\"} -      node_filesystem_avail_bytes{device=\"$DATA\"}\n",
+              "expr": "node_filesystem_size_bytes{device=\"$DATA\", hostname=\"qft\"} -      node_filesystem_avail_bytes{device=\"$DATA\", hostname=\"qft\"}\n",
               "format": "time_series",
               "groupBy": [
                 {
@@ -2062,7 +2373,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 18
       },
       "id": 59,
       "panels": [
@@ -2080,7 +2391,8 @@
           "datasource": "$ds",
           "fieldConfig": {
             "defaults": {
-              "custom": {}
+              "custom": {},
+              "unit": "none"
             },
             "overrides": []
           },
@@ -2090,7 +2402,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 13
+            "y": 19
           },
           "hiddenSeries": false,
           "id": 5,
@@ -2132,7 +2444,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "pg_xlog_total",
+              "expr": "pg_xlog_total{hostname=\"$host\",cluster=\"$cluster'}",
               "instant": false,
               "interval": "",
               "legendFormat": "wal",
@@ -2179,7 +2491,8 @@
           "yaxes": [
             {
               "$$hashKey": "object:713",
-              "format": "short",
+              "decimals": 0,
+              "format": "none",
               "label": "num   wals",
               "logBase": 1,
               "max": null,
@@ -2228,7 +2541,7 @@
             "h": 7,
             "w": 8,
             "x": 6,
-            "y": 13
+            "y": 19
           },
           "hiddenSeries": false,
           "id": 42,
@@ -2327,7 +2640,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 19
       },
       "id": 85,
       "panels": [
@@ -2350,7 +2663,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 14
+            "y": 20
           },
           "hiddenSeries": false,
           "id": 94,
@@ -2380,7 +2693,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "pg_logdir_sum",
+              "expr": "pg_logdir_sum{hostname=\"$host\",cluster=\"$cluster\"}",
               "instant": false,
               "interval": "",
               "legendFormat": "logsizes ",
@@ -2417,6 +2730,7 @@
             },
             {
               "$$hashKey": "object:2139",
+              "decimals": 1,
               "format": "short",
               "label": null,
               "logBase": 1,
@@ -2464,7 +2778,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 14
+            "y": 20
           },
           "id": 106,
           "interval": null,
@@ -2487,7 +2801,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "pg_logdir_sum",
+              "expr": "pg_logdir_sum{hostname=\"$host\",cluster=\"$cluster\"}",
               "format": "time_series",
               "hide": false,
               "instant": false,
@@ -2532,7 +2846,7 @@
             "h": 6,
             "w": 6,
             "x": 10,
-            "y": 14
+            "y": 20
           },
           "hiddenSeries": false,
           "id": 92,
@@ -2573,7 +2887,7 @@
             {
               "alias": "",
               "dsType": "influxdb",
-              "expr": "node_filesystem_size_bytes{device=\"$LOGDIR\"}\n",
+              "expr": "node_filesystem_size_bytes{hostname=\"$host\",device=\"$LOGDIR\",cluster=\"$cluster\"}\n",
               "format": "time_series",
               "groupBy": [
                 {
@@ -2630,7 +2944,7 @@
             {
               "alias": "",
               "dsType": "influxdb",
-              "expr": "node_filesystem_size_bytes{device=\"$LOGDIR\"} -      node_filesystem_avail_bytes{device=\"$LOGDIR\"}\n",
+              "expr": "node_filesystem_size_bytes{hostname=\"$host\",device=\"$LOGDIR\"} -      node_filesystem_avail_bytes{hostname=\"$host\",device=\"$LOGDIR\"}\n",
               "format": "time_series",
               "groupBy": [
                 {
@@ -2739,7 +3053,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 20
       },
       "id": 60,
       "panels": [
@@ -2769,7 +3083,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 15
+            "y": 21
           },
           "hiddenSeries": false,
           "id": 1,
@@ -2801,7 +3115,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate (pg_stat_database_xact_commit[5m])",
+              "expr": "rate (pg_stat_database_xact_commit{hostname=\"$host\",cluster=\"$cluster\"}[5m])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -2879,7 +3193,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 15
+            "y": 21
           },
           "id": 33,
           "interval": "30s",
@@ -2901,7 +3215,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "sum by (instance) (irate(pg_stat_database_xact_commit[5m]))",
+              "expr": "sum by (instance) (irate(pg_stat_database_xact_commit{hostname=\"$host\"}[5m]))",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -2925,7 +3239,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 21
       },
       "id": 99,
       "panels": [
@@ -2955,7 +3269,7 @@
             "h": 5,
             "w": 7,
             "x": 0,
-            "y": 16
+            "y": 22
           },
           "hiddenSeries": false,
           "id": 73,
@@ -2987,7 +3301,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate (pg_stat_database_xact_commit{datname=\"$db\"}[5m])",
+              "expr": "rate (pg_stat_database_xact_commit{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"}[5m])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -3065,7 +3379,7 @@
             "h": 5,
             "w": 6,
             "x": 7,
-            "y": 16
+            "y": 22
           },
           "id": 95,
           "interval": "30s",
@@ -3087,7 +3401,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "sum by (instance) (irate(pg_stat_database_xact_commit{datname=\"$db\"}[5m]))",
+              "expr": "sum by (instance) (irate(pg_stat_database_xact_commit{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"}[5m]))",
               "instant": false,
               "interval": "",
               "legendFormat": "$db",
@@ -3126,7 +3440,7 @@
             "h": 5,
             "w": 4,
             "x": 13,
-            "y": 16
+            "y": 22
           },
           "id": 100,
           "interval": "30s",
@@ -3148,7 +3462,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "100*(pg_stat_database_xact_rollback{datname=\"$db\"})/ \n(pg_stat_database_xact_commit{datname=\"$db\"})",
+              "expr": "100*(pg_stat_database_xact_rollback{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"})/ \n(pg_stat_database_xact_commit{datname=\"$db\",cluster=\"$cluster\"})",
               "hide": false,
               "instant": true,
               "interval": "",
@@ -3172,7 +3486,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 22
       },
       "id": 61,
       "panels": [
@@ -3199,7 +3513,7 @@
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 17
+            "y": 23
           },
           "hiddenSeries": false,
           "id": 37,
@@ -3235,7 +3549,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(pg_stat_bgwriter_checkpoint_sync_time[3m])",
+              "expr": "irate(pg_stat_bgwriter_checkpoint_sync_time{hostname=\"$host\",cluster=\"$cluster\"}[3m])",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -3313,7 +3627,7 @@
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 17
+            "y": 23
           },
           "hiddenSeries": false,
           "id": 38,
@@ -3350,7 +3664,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(pg_stat_bgwriter_buffers_backend[3m])",
+              "expr": "irate(pg_stat_bgwriter_buffers_backend{hostname=\"$host\",cluster=\"$cluster\"}[3m])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -3358,7 +3672,7 @@
               "refId": "A"
             },
             {
-              "expr": "irate(pg_stat_bgwriter_buffers_clean[3m])",
+              "expr": "irate(pg_stat_bgwriter_buffers_clean{hostname=\"$host\"}[3m])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -3366,7 +3680,7 @@
               "refId": "B"
             },
             {
-              "expr": "irate(pg_stat_bgwriter_buffers_checkpoint[3m])",
+              "expr": "irate(pg_stat_bgwriter_buffers_checkpoint{hostname=\"$host\"}[3m])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -3394,6 +3708,7 @@
           },
           "yaxes": [
             {
+              "$$hashKey": "object:1143",
               "format": "none",
               "label": "num buffers",
               "logBase": 1,
@@ -3402,6 +3717,7 @@
               "show": true
             },
             {
+              "$$hashKey": "object:1144",
               "format": "short",
               "label": "",
               "logBase": 1,
@@ -3437,7 +3753,7 @@
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 17
+            "y": 23
           },
           "hiddenSeries": false,
           "id": 2,
@@ -3474,7 +3790,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "pg_stat_bgwriter_checkpoints_req",
+              "expr": "pg_stat_bgwriter_checkpoints_req{hostname=\"$host\",cluster=\"$cluster\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "req",
@@ -3508,6 +3824,7 @@
           },
           "yaxes": [
             {
+              "$$hashKey": "object:1253",
               "format": "none",
               "label": "count",
               "logBase": 1,
@@ -3516,6 +3833,7 @@
               "show": true
             },
             {
+              "$$hashKey": "object:1254",
               "format": "short",
               "label": null,
               "logBase": 1,
@@ -3535,264 +3853,265 @@
       "type": "row"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 23
       },
       "id": 62,
-      "panels": [],
+      "panels": [
+        {
+          "aliasColors": {},
+          "breakPoint": "50%",
+          "cacheTimeout": null,
+          "combine": {
+            "label": "Others",
+            "threshold": 0
+          },
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fontSize": "100%",
+          "format": "short",
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 0,
+            "y": 24
+          },
+          "id": 40,
+          "interval": null,
+          "legend": {
+            "percentage": true,
+            "show": false,
+            "values": true
+          },
+          "legendType": "On graph",
+          "links": [],
+          "maxDataPoints": 3,
+          "nullPointMode": "connected",
+          "pieType": "pie",
+          "repeat": null,
+          "strokeWidth": 1,
+          "targets": [
+            {
+              "expr": "pg_stat_bgwriter_buffers_backend{hostname=\"$host\",cluster=\"$cluster\"}",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "backend",
+              "refId": "A"
+            },
+            {
+              "expr": "pg_stat_bgwriter_buffers_checkpoint{hostname=\"$host\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "checkpoint",
+              "refId": "B"
+            },
+            {
+              "expr": "pg_stat_bgwriter_buffers_clean{hostname=\"$host\"}",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "clean",
+              "refId": "C"
+            }
+          ],
+          "title": "Cleaned By",
+          "type": "grafana-piechart-panel",
+          "valueName": "current"
+        },
+        {
+          "cacheTimeout": null,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": null
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "__name__"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 330
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 7,
+            "x": 6,
+            "y": 24
+          },
+          "id": 74,
+          "interval": null,
+          "links": [],
+          "maxDataPoints": 3,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "pg_stat_bgwriter_buffers_backend_fsync{hostname=\"$host\",cluster=\"$cluster\"}",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "fsync",
+              "refId": "A"
+            },
+            {
+              "expr": "pg_stat_bgwriter_maxwritten_clean{host=\"$chost\", cluster=\"$cluster\"}",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "maxwritten_clean",
+              "refId": "B"
+            }
+          ],
+          "title": "Cleaned By",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "__name__",
+                    "Value"
+                  ]
+                }
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "datasource": "$ds",
+          "description": "cummulative  tps  for all databases",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 8,
+            "x": 13,
+            "y": 24
+          },
+          "id": 101,
+          "interval": "30s",
+          "links": [],
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "sum(pg_stat_bgwriter_buffers_backend_fsync{hostname=\"$host\",cluster=\"$cluster\"})",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 2,
+              "legendFormat": "buffers_backend_fsync",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(pg_stat_bgwriter_maxwritten_clean{hostname=\"$host\"})",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "maxwritten_clean",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "tps",
+          "type": "stat"
+        }
+      ],
       "repeat": null,
       "title": "bgwriter",
       "type": "row"
-    },
-    {
-      "aliasColors": {},
-      "breakPoint": "50%",
-      "cacheTimeout": null,
-      "combine": {
-        "label": "Others",
-        "threshold": 0
-      },
-      "datasource": "$ds",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fontSize": "100%",
-      "format": "short",
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 0,
-        "y": 23
-      },
-      "id": 40,
-      "interval": null,
-      "legend": {
-        "percentage": true,
-        "show": false,
-        "values": true
-      },
-      "legendType": "On graph",
-      "links": [],
-      "maxDataPoints": 3,
-      "nullPointMode": "connected",
-      "pieType": "pie",
-      "repeat": null,
-      "strokeWidth": 1,
-      "targets": [
-        {
-          "expr": "pg_stat_bgwriter_buffers_backend",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "backend",
-          "refId": "A"
-        },
-        {
-          "expr": "pg_stat_bgwriter_buffers_checkpoint",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "checkpoint",
-          "refId": "B"
-        },
-        {
-          "expr": "pg_stat_bgwriter_buffers_clean",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "clean",
-          "refId": "C"
-        }
-      ],
-      "title": "Cleaned By",
-      "type": "grafana-piechart-panel",
-      "valueName": "current"
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "$ds",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 100
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "__name__"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 330
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 7,
-        "x": 6,
-        "y": 23
-      },
-      "id": 74,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 3,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name"
-      },
-      "pluginVersion": "7.2.0-040ed969pre",
-      "targets": [
-        {
-          "expr": "pg_stat_bgwriter_buffers_backend_fsync",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "fsync",
-          "refId": "A"
-        },
-        {
-          "expr": "pg_stat_bgwriter_maxwritten_clean",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "maxwritten_clean",
-          "refId": "B"
-        }
-      ],
-      "title": "Cleaned By",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "__name__",
-                "Value"
-              ]
-            }
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": "$ds",
-      "description": "cummulative  tps  for all databases",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 13,
-        "y": 23
-      },
-      "id": 101,
-      "interval": "30s",
-      "links": [],
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name"
-      },
-      "pluginVersion": "7.2.0-040ed969pre",
-      "targets": [
-        {
-          "expr": "sum(pg_stat_bgwriter_buffers_backend_fsync)",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 2,
-          "legendFormat": "buffers_backend_fsync",
-          "refId": "A"
-        },
-        {
-          "expr": "sum(pg_stat_bgwriter_maxwritten_clean)",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "maxwritten_clean",
-          "refId": "B"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "tps",
-      "type": "stat"
     },
     {
       "collapsed": true,
@@ -3801,7 +4120,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 24
       },
       "id": 63,
       "panels": [
@@ -3876,7 +4195,7 @@
             "h": 4,
             "w": 11,
             "x": 0,
-            "y": 29
+            "y": 20
           },
           "id": 35,
           "links": [],
@@ -4006,7 +4325,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 25
       },
       "id": 64,
       "panels": [
@@ -4030,7 +4349,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 23
+            "y": 34
           },
           "id": 43,
           "links": [],
@@ -4096,7 +4415,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 23
+            "y": 34
           },
           "id": 45,
           "links": [],
@@ -4154,7 +4473,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 26
       },
       "id": 65,
       "panels": [
@@ -4177,7 +4496,7 @@
             "h": 5,
             "w": 8,
             "x": 0,
-            "y": 25
+            "y": 27
           },
           "hiddenSeries": false,
           "id": 47,
@@ -4209,7 +4528,7 @@
           "targets": [
             {
               "alias": "",
-              "expr": "sum(pg_replication_lag)",
+              "expr": "sum(pg_replication_lag{host=\"$host\",cluster=\"$cluster\"})",
               "format": "time_series",
               "instant": true,
               "interval": "",
@@ -4286,7 +4605,7 @@
             "h": 5,
             "w": 8,
             "x": 8,
-            "y": 25
+            "y": 27
           },
           "hiddenSeries": false,
           "id": 50,
@@ -4319,7 +4638,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "pg_settings_max_replication_slots      -   pg_replication_slots_available",
+              "expr": "pg_settings_max_replication_slots{host=\"$host\",cluster=\"$cluster\"}      -   pg_replication_slots_available{host=\"$host\",cluster=\"$cluster\"}",
               "instant": true,
               "interval": "",
               "legendFormat": "used",
@@ -4404,7 +4723,7 @@
             "h": 5,
             "w": 8,
             "x": 16,
-            "y": 25
+            "y": 27
           },
           "id": 86,
           "interval": null,
@@ -4443,7 +4762,7 @@
           "tableColumn": "",
           "targets": [
             {
-              "expr": "pg_replication_slots_available",
+              "expr": "pg_replication_slots_available{host=\"$host\",cluster=\"$cluster\"}",
               "instant": true,
               "interval": "",
               "legendFormat": "",
@@ -4476,8 +4795,86 @@
   "templating": {
     "list": [
       {
+        "allValue": null,
         "current": {
           "selected": true,
+          "text": "qft",
+          "value": "qft"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(pg_up,hostname)",
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "host",
+        "options": [],
+        "query": "label_values(pg_up,hostname)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "main",
+          "value": "main"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(pg_up,cluster)",
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "cluster",
+        "options": [],
+        "query": "label_values(pg_up,cluster)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "ts",
+          "value": "ts"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(pg_locks_count{hostname=\"$host\"},datname)",
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "db",
+        "options": [],
+        "query": "label_values(pg_locks_count{hostname=\"$host\"},datname)",
+        "refresh": 1,
+        "regex": "/[^10]$/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
           "text": "prom_qft",
           "value": "prom_qft"
         },
@@ -4498,59 +4895,27 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "/dev/sda6",
-          "value": "/dev/sda6"
+          "text": "5432",
+          "value": "5432"
         },
-        "hide": 0,
+        "datasource": "$ds",
+        "definition": "label_values(pg_up{hostname=\"$host\"},pg_port)",
+        "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
-        "name": "LOGDIR",
-        "options": [
-          {
-            "selected": false,
-            "text": "/dev/sda1",
-            "value": "/dev/sda1"
-          },
-          {
-            "selected": true,
-            "text": "/dev/sda6",
-            "value": "/dev/sda6"
-          }
-        ],
-        "query": "/dev/sda1,/dev/sda6",
-        "queryValue": "",
+        "name": "port",
+        "options": [],
+        "query": "label_values(pg_up{hostname=\"$host\"},pg_port)",
+        "refresh": 1,
+        "regex": "",
         "skipUrlSync": false,
-        "type": "custom"
-      },
-      {
-        "allValue": null,
-        "current": {
-          "selected": true,
-          "text": "/dev/sda6",
-          "value": "/dev/sda6"
-        },
-        "hide": 0,
-        "includeAll": false,
-        "label": null,
-        "multi": false,
-        "name": "DATA",
-        "options": [
-          {
-            "selected": false,
-            "text": "/dev/sda1",
-            "value": "/dev/sda1"
-          },
-          {
-            "selected": true,
-            "text": "/dev/sda6",
-            "value": "/dev/sda6"
-          }
-        ],
-        "query": "/dev/sda1,/dev/sda6",
-        "queryValue": "",
-        "skipUrlSync": false,
-        "type": "custom"
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       },
       {
         "allValue": null,
@@ -4598,36 +4963,54 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "ts",
-          "value": "ts"
+          "selected": false,
+          "text": "/dev/sda1",
+          "value": "/dev/sda1"
         },
+        "datasource": "$ds",
+        "definition": "label_values(node_filesystem_avail_bytes{mountpoint=\"/\",hostname=\"$host\"},device)",
         "hide": 0,
         "includeAll": false,
         "label": null,
         "multi": false,
-        "name": "db",
-        "options": [
-          {
-            "selected": false,
-            "text": "postgres",
-            "value": "postgres"
-          },
-          {
-            "selected": true,
-            "text": "ts",
-            "value": "ts"
-          },
-          {
-            "selected": false,
-            "text": "timescaledb",
-            "value": "timescaledb"
-          }
-        ],
-        "query": "postgres,ts,timescaledb",
-        "queryValue": "",
+        "name": "LOGDIR",
+        "options": [],
+        "query": "label_values(node_filesystem_avail_bytes{mountpoint=\"/\",hostname=\"$host\"},device)",
+        "refresh": 1,
+        "regex": "",
         "skipUrlSync": false,
-        "type": "custom"
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "/dev/sda1",
+          "value": "/dev/sda1"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(node_filesystem_avail_bytes{mountpoint=\"/\",hostname=\"$host\"},device)",
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "DATA",
+        "options": [],
+        "query": "label_values(node_filesystem_avail_bytes{mountpoint=\"/\",hostname=\"$host\"},device)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -4661,7 +5044,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "main_prom",
-  "uid": "IdthhlDGk",
-  "version": 57
+  "title": "pg",
+  "uid": "NPz_1JKGk",
+  "version": 1
 }
