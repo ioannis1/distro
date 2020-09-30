@@ -36,6 +36,9 @@ scrape_configs:
         replacement: '${1}'
         target_label: job
 
+      - source_labels: [ __meta_consul_tagged_address_wan_ipv4 ]
+        target_label: host_ip
+
       - source_labels: [ __meta_consul_service_metadata_cluster ]
         target_label: cluster
 
