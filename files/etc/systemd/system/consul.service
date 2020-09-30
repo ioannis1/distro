@@ -6,9 +6,11 @@ After=network-online.target
 ConditionFileNotEmpty=/etc/consul.d/consul.hcl
 
 [Service]
+#EnvironmentFile=-/etc/default/consul
 User=consul
 Group=consul
 ExecStart=/usr/bin/consul agent -config-dir=/etc/consul.d/ -dev
+#ExecStart=/usr/bin/consul $DAEMON_ARGS
 ExecReload=/usr/bin/consul reload
 ExecStop=/usr/bin/consul leave
 KillMode=process
