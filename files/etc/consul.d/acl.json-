@@ -1,6 +1,0 @@
-{
-  "primary_datacenter"    : "dc1",
-  "acl_master_token"      : "root",
-  "acl_agent_token"       : "4aa9e5ca-90d4-9bb1-b6dc-0051722cdfe8",
-  "acl_default_policy"    : "deny"
-}
