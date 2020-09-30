@@ -1,7 +1,7 @@
 {
   "service": {
                  "ID"     : "grok-{{ ansible_hostname }}-main",
-                 "name"   : "grok-exporter",
+                 "name"   : "grok-exporter-main",
                  "address": "localhost",
                  "port"   : 9144,
                  "token"  : "root",

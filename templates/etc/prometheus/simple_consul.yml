@@ -24,7 +24,7 @@ scrape_configs:
         services:
           - postgres-exporter-5432
         # - postgres-exporter-5433
-          - grok-exporter
+          - grok-exporter-main
         # - grok-exporter-karat
           - node-exporter
         refresh_interval: 30s

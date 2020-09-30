@@ -23,7 +23,9 @@ scrape_configs:
       - server: 'localhost:8500'
         services:
           - postgres-exporter-5432
-          - grok-exporter
+       #  - postgres-exporter-5433
+          - grok-exporter-main
+       #  - grok-exporter-karat
           - node-exporter
         refresh_interval: 30s
 
