@@ -1,0 +1,18 @@
+
+#- include: "Darwin-config.yml"
+
+- include: prometheus-Darwin.yml
+  when:    need_prometheus
+
+- include: loki-Darwin.yml
+  when:    need_loki
+
+- include: promtail-Linux.yml
+  when:    need_promtail
+
+- include: fluent-bit-Darwin.yml
+  when:    need_fluent_bit
+
+- include: consul-Darwin.yml
+  when:    need_consul
+

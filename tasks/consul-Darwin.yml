@@ -1,0 +1,32 @@
+####################################################  packages
+- macports: name="consul"
+
+####################################################  /etc/consul   FILES
+- name:        Files   /etc/consul.d/*
+  synchronize:  src="etc/consul.d/"  dest="/etc/consul.d"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+
+- name:        Files   /etc/consul.d/*  specific to Darwin
+  synchronize:  src="etc/consul_Darwin/"  dest="/etc/consul.d"  copy_links=yes  delete='no'  owner=no  dirs=yes 
+
+
+- name:    copy token (becaue it is ansible-valuted) 
+  when: false
+  copy:    src="etc/consul.d/consul.token"  dest="/etc/consul.d"    owner=root  mode=640
+
+####################################################  /etc/prometheus  TEMPLATES
+#
+- name:        Templates /etc/consul.d/*
+  template:    src=etc/consul/{{ item }}      dest="/etc/consul.d/"     owner=root
+  with_items:
+      -  basic.json  
+      -  pgbouncer_exporter.json-  
+      -  postgres_exporter_5432.json
+      -  grok_exporter_main.json  
+      -  grok_exporter_karat.json-  
+      -  node_exporter.json  
+      -  postgres_exporter_5433.json-
+
+####################################################  symlinks 
+- name:    data directory 
+  file:    path="/var/lib/consul"    state=directory   owner=ioannis   force=yes
+  #  when:    os_family  == 'Darwin'  
