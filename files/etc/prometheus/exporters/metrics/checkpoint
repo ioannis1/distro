@@ -35,7 +35,7 @@
   labels:
       user: '{{.user}}'
       datname: '{{.datname}}'
-      serverity: '{{.severity}}'
+      severity: '{{.severity}}'
 
 
 - type: counter
