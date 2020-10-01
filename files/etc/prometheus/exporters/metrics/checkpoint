@@ -29,20 +29,14 @@
 
  
 - type: counter
-  name: pglog_fatal
-  help: Total number of FATAL errors 
-  match: 'user=%{USER:user},db=%{USER:datname} FATAL::'
-  labels:
-      user: '{{.user}}'
-      datname: '{{.datname}}'
-
-- type: counter
   name: pglog_error
-  help: Total number of ERROR errors 
-  match: 'user=%{USER:user},db=%{USER:datname} ERROR:'
+  help: Total number of FATAL errors 
+  match: 'user=%{USER:user}?,db=%{USER:datname}? %{PG_LOGLEVEL:severity}:'
   labels:
       user: '{{.user}}'
       datname: '{{.datname}}'
+      serverity: '{{.severity}}'
+
 
 - type: counter
   name: pglog_error_syntax
@@ -52,3 +46,9 @@
       user: '{{.user}}'
       datname: '{{.datname}}'
 
+- type: counter
+  name: pglog_user_activity
+  help: user activity in any database
+  match: "user=%{USER:user}"
+  labels:
+      user :  '{{ .user }}'

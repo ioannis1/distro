@@ -6,3 +6,5 @@
 
 #2020-09-16 03:45:00 EDT [12133,[unknown]]: [3-1] user=ioannis,db=fsd FATAL:  database "fsd" does not exist
 #main-15.log:2020-09-15 20:21:34 EDT [28618,psql]: [3-1] user=postgres,db=ioannis ERROR:  syntax error at or near ":"
+PG_LOGLEVEL  (LOG|FATAL|WARNING|DETAIL)
+

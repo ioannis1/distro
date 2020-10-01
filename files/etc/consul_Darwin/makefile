@@ -5,8 +5,8 @@
 
 
 bin     = consul
-LOG    = /tmp/consul.log
-LOG    = /var/log/system.log
+#LOG    = /var/log/consul.log
+LOG     = /tmp/consul.log
 #PID    = /tmp/consul.pid
 RUNDIR  =  /var/lib/consul
 CONFDIR = /etc/consul.d
@@ -17,6 +17,14 @@ CONFDIR = /etc/consul.d
 #copt +=  -log-rotate-bytes=<value>
 #copt +=  -log-rotate-duration=
 
+r: restart
+start:
+	$(SUDO) $(bin) agent  -dev --data-dir=$(RUNDIR)  --config-dir=$(CONFDIR) 1>$(LOG) 2>&1  &
+
+stop:  
+	ps axu|grep consul |egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -TERM
+#reload: 
+	#ps axu|grep bin/consul|egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -HUP 
 telemetry tel: 
 	ps axu|grep bin/consul|egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -USR1 
 members m:
@@ -70,10 +78,3 @@ help:
 	$(bin) --help
 help_start hs:
 	$(bin) agent --help
-r: restart
-start:
-	$(SUDO) $(bin) agent  -dev --data-dir=$(RUNDIR)  --config-dir=$(CONFDIR)   &
-stop:  
-	ps axu|grep consul |egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -TERM
-#reload: 
-	#ps axu|grep bin/consul|egrep -v grep| perl -ae 'print "@F[1]\n"' | xargs  kill -HUP 
