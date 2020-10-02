@@ -20,6 +20,11 @@
   match: 'LOG:  could not accept SSL connection'
 
 - type: counter
+  name: pglog_ssl_cert_failed
+  help: Total connections failed due to ssl certificate authentication 
+  match: 'FATAL:  certificate authentication failure
+
+- type: counter
   name: pglog_passwd_failed
   help: Total number of password attempts
   match: 'user=%{USER:user},db=%{USER:datname} FATAL:  password authentication failed' 

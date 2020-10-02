@@ -22,6 +22,11 @@ scrape_configs:
     static_configs:
         - targets: ['{{ ansible_hostname }}:9144'] 
 
+  - job_name: grok_karat
+    honor_labels: true
+    static_configs:
+        - targets: ['{{ ansible_hostname }}:9145'] 
+
   - job_name: postgres
     honor_labels: true
     static_configs:
@@ -46,6 +51,29 @@ scrape_configs:
           regex: '^template[012]'
           action: drop
 
+  - job_name: postgres4
+    honor_labels: true
+    static_configs:
+        - targets: ['{{ ansible_hostname }}:9188'] 
+          labels:
+              host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+              hostname:  '{{ ansible_hostname }}'
+              pg_port:   '5433'
+              cluster:   'karat'
+    metric_relabel_configs:
+     #  - source_labels: [__name__]
+     #    regex: 'pg_settings_[^nps].*'
+     #    action: drop
+     #  - source_labels: [__name__]
+     #    regex: 'pg_settings_.*t?'
+     #    action: drop
+
+        - source_labels: [__name__]
+          regex: 'pg_settings_s[ysqtu].*'
+          action: drop
+        - source_labels: [datname]
+          regex: '^template[012]'
+          action: drop
 
 
   - job_name: node
@@ -56,9 +84,26 @@ scrape_configs:
              host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
              hostname:  '{{ ansible_hostname }}'
 
+# - job_name: postgres_5433
+#   honor_labels: true
+#   static_configs:
+#       - targets: ['{{ ansible_hostname }}:9387'] 
+#         labels:
+#             host_ip:    '{{ ansible_all_ipv4_addresses.0 }}'
+#             hostname : '{{ ansible_hostname }}'
+#             pg_port: '5433'
+#   metric_relabel_configs:
+#       - source_labels: [__name__]
+#         regex: 'pg_settings_s[ysqtu].*'
+#         action: drop
+#       - source_labels: [datname]
+#         regex: '^template[012]'
+#         action: drop
 
 # - job_name: 'pgbounce'
 #   honor_labels: true
 #   static_configs:
 #       - targets: ['{{ ansible_hostname }}:9911'] 
 
+#remote_write:
+#       - url: http://localhost:9201/write
