@@ -76,6 +76,7 @@ ioannis ALL=(ALL)  NOPASSWD: /opt/local/bin/make
 ioannis ALL=(ALL)  NOPASSWD: /bin/launchctl, /opt/local/bin/vi /Library/LaunchAgents/*
 ioannis ALL=(ALL) NOPASSWD: /usr/bin/killall
 ioannis ALL=(ALL)  NOPASSWD: /opt/collectd/bin/collectdctl , /opt/collectd/sbin/collectdmon, /opt/collectd/sbin/coll
+ioannis  ALL=(ALL) NOPASSWD: /usr/local/bin/grok_exporter
 nagios  ALL=(ALL) NOPASSWD: /bin/launchctl, /usr/bin/vim
 postgres ALL=(ALL) NOPASSWD: /bin/systemctl
 postgres ALL=(ALL) NOPASSWD: /usr/bin/bash, /usr/bin/vim
