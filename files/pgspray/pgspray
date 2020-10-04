@@ -3,9 +3,13 @@
 ## pgspray  $(conn)    -a pgspray  -e aft  -c karat  -f /tmp/pgspray_out
 #
 # then query from prometheus:
-# histogram_quantile(.95,sum by (le) (avg_over_time(pgspray_response_msec_bucket[5m])))
+# histogram_quantile(.95,sum by (le) (increase(pgspray_response_msec_bucket[5m])))
 #
 # NOTE: bucket boundaries are forever fixed at  5, 6, 7, 8, 10, 15, 25, 50, and 100  msec
+#
+# You could also picture this histogram data as a heatmap by using the query: sum(increase(http_request_duration_seconds_bucket[10m])) by (le), making sure to set the format as "heatmap," the legend format as {{ le }}, and setting the visualization in the panel settings to "heatmap."
+
+
 
 
 
