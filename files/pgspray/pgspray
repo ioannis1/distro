@@ -77,7 +77,7 @@ while (1) {
 sub collect_samples {
         my ($start_time, $end_time, $dbh, $elapsed, $sleep, @result);
 
-        for (1..SAMPLES+1) {
+        for (1..SAMPLES) {
                 $start_time = time();
                 $dbh = DBI->connect($DSN, $user,$passwd, $att) or die "Oops\n";
                 $dbh->do($sql);
