@@ -1,4 +1,4 @@
-ARGS=" -U prometheus -h localhost -p 5432  -d postgres -a pgspray -e qft -c main  -l prefer  -o /var/lib/prometheus/node-exporter/node_dat/pgspray_out -F /etc/prometheus/exporters/secret"
+ARGS=" -U prometheus -h localhost -p 5432  -d postgres -a pgspray -e qft -c main  -l prefer  -o /var/lib/prometheus/node-exporter/node_dat/pgspray.prom -F /etc/prometheus/exporters/secret"
 
 
 # -p port                default:  5432

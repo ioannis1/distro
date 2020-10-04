@@ -58,7 +58,6 @@ if ( defined $passwdfile) {
 	$passwd = read_file($passwdfile) || die;
 	warn "password from file \"".  $passwdfile. "\"\n";
 	chomp($passwd);
-	say 'secret=',$passwd;
 }
 
 
@@ -121,14 +120,14 @@ sub collect_samples {
 
 
         for (@sorted_keys) {
-            $msg .=  sprintf qq(%s{hostname=%s,host_ip=%s,pg_port=%d,cluster=%s,le="%s"}   %d\n) , 
-                         $metric_name, $hostname,$host, $port ,$cluster, $_,$bucket{$_}||'NaN'  ;
+            $msg .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",le="%s"} %d\n) , 
+                         $metric_name, $hostname,$host, $port ,$cluster, $_,$bucket{$_}|| 0  ;
         }    
 
-        $msg .= sprintf qq({%s{hostname=%s,host_ip=%s,pg_port=%d,cluster=%s}   %d\n),
-                     $metric_name, $hostname,$host, $port ,$cluster, $count         ;
-        $msg  .=  sprintf qq(%s{hostname=%s,host_ip=%s,pg_port=%d,cluster=%s}   %4f\n),
-                     $metric_name, $hostname,$host, $port ,$cluster, $sum           ;
+        $msg .= sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %d\n),
+                     $metric_name.'_count', $hostname,$host, $port ,$cluster, $count         ;
+        $msg  .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %4f\n),
+                     $metric_name.'_sum', $hostname,$host, $port ,$cluster, $sum           ;
              
         ################################## send OUTPUT
         $outfile || say $msg;
