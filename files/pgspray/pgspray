@@ -10,6 +10,7 @@
 
 
 
+
 use strict;
 use v5.10;
 use warnings;
@@ -60,6 +61,7 @@ if ( defined $passwdfile) {
 	chomp($passwd);
 }
 
+$main::bucket{ (sprintf "%d",$_) } = undef  for (4, 6, 7, 8, 10, 15, 25, 50, 100, '+Inf');
 
 my $att = { AutoCommit => 0, ReadOnly => 1};
 my $DSN = "dbi:Pg:host=$host;port=$port;dbname=$db;sslmode=$ssl;connect_timeout=${timeout}s application_name=$app" ;
@@ -92,23 +94,20 @@ sub collect_samples {
         }  
 
 
-        my %bucket;
-        $bucket{ (sprintf "%d",$_) } = undef  for (5, 6, 7, 8, 10, 15, 25, 50, 100);
 
 
         # insert values into buckets
         for  (@result)  {
                 $count++;
                 $sum += $_;
-
-                for my $i   (keys %bucket)  {
-                          ( $_ <= $i ) &&   $bucket{$i} ++ 
+        
+                for my $i   (keys %main::bucket)  {
+                          ( $_ <= $i ) &&   $main::bucket{$i} ++ 
                 }
         }
 
-        my @sorted_keys = sort {$a<=>$b} (keys %bucket);
-        $bucket{'+Inf'} = scalar @result;
-        push @sorted_keys , '+Inf';
+        my @sorted_keys = sort {$a<=>$b} (keys %main::bucket);
+        say 'sorted_keys' ,"@sorted_keys";
 
         ################################## form OUTPUT
         my $msg="";
@@ -121,7 +120,7 @@ sub collect_samples {
 
         for (@sorted_keys) {
             $msg .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",le="%s"} %d\n) , 
-                         $metric_name, $hostname,$host, $port ,$cluster, $_,$bucket{$_}|| 0  ;
+                         $metric_name, $hostname,$host, $port ,$cluster, $_,$main::bucket{$_}|| 0  ;
         }    
 
         $msg .= sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %d\n),
