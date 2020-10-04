@@ -1,0 +1,136 @@
+#!/usr/bin/env perl
+######################### Sample invocation
+## pgspray  $(conn)    -a pgspray  -e aft  -c karat  -f /tmp/pgspray_out
+#
+# then query from prometheus:
+# histogram_quantile(0.95, sum(rate(pgspray_response[5m])) by (le))
+#
+# NOTE: bucket boundaries are forever fixed at  5, 6, 7, 8, 10, 15, 25, 50, and 100  msec
+
+
+
+
+use strict;
+use v5.10;
+use warnings;
+use DBI;
+use Time::HiRes qw( time usleep );
+use Getopt::Std ;
+use Data::Dumper;
+use File::Slurp; 
+#use HTTP::Date qw(time2iso time2str) ;
+
+use constant {
+             OVER_PERIOD  =>  3 ,  # 30 secs
+             SAMPLES      =>  20 ,  # 10
+};
+
+
+my $msec_BETWEEN_SAMPLES   =  1_000 * OVER_PERIOD / SAMPLES ;
+#say "msec=",$msec_BETWEEN_SAMPLES;
+
+### GLOBALS
+
+my %o ;
+
+###  Process Options
+getopts('o:a:h:p:s:l:U:d:W:m:f:e:c:F:b:', \%o);
+
+#say Dumper(\%o);
+
+my  $host        =  $o{h} || $ENV{PGHOST}    || 'localhost' ;
+my  $hostname    =  $o{e} || 'qft'                          ;
+my  $port        =  $o{p} || $ENV{PGPORT}    || 5432        ;
+my  $ssl         =  $o{l} || $ENV{PGSSLMODE} || 'disable'   ;
+my  $user        =  $o{U} || $ENV{PGUSER}    ||  $ENV{USER} ;
+my  $db          =  $o{d} || $ENV{PGDATABASE}|| 'postgres'  ;
+my  $app         =  $o{a} || $ENV{PGAPPNAME} || 'pgspray'   ;
+my  $cluster     =  $o{c} || 'main'                         ;
+my  $sql         =  $o{s} || q(SELECT 'response time')      ;
+my  $passwd      =  $o{W} || undef                          ;
+my  $passwdfile  =  $o{F} || undef                          ;
+my  $outfile     =  $o{o} || undef                          ;
+my  $timeout     =  $o{t} || 3                              ;
+my  $between_hist=  $o{b} || 10                             ;
+
+
+if ( defined $passwdfile) {
+	$passwd = read_file($passwdfile) || die;
+	warn "password from file \"".  $passwdfile. "\"\n";
+	chomp($passwd);
+	say 'secret=',$passwd;
+}
+
+
+my $att = { AutoCommit => 0, ReadOnly => 1};
+my $DSN = "dbi:Pg:host=$host;port=$port;dbname=$db;sslmode=$ssl;connect_timeout=${timeout}s application_name=$app" ;
+
+my ($sum,$count) = (0,0);
+
+sub collect_samples ;
+
+while (1) {
+        collect_samples;
+        sleep( $between_hist );
+}
+###################################################################################
+
+sub collect_samples {
+        my ($start_time, $end_time, $dbh, $elapsed, $sleep, @result);
+
+        for (1..SAMPLES+1) {
+                $start_time = time();
+                $dbh = DBI->connect($DSN, $user,$passwd, $att) or die "Oops\n";
+                $dbh->do($sql);
+                #say $dbh->selectall_arrayref($sql)->[0]->[0], "\n";
+                $end_time = time();
+                $elapsed = ($end_time - $start_time)*1000;   # in mill seconds
+                #say sprintf qq(pg_response_msec{hostname="%s",port=%s, host_ip="%s"} %s), 
+                #	  $hostname, $port, $host, $elapsed;
+                usleep( $msec_BETWEEN_SAMPLES  * 1_000 );
+                push @result, $elapsed;
+                $dbh->rollback();
+        }  
+
+
+        my %bucket;
+        $bucket{ (sprintf "%d",$_) } = undef  for (5, 6, 7, 8, 10, 15, 25, 50, 100);
+
+
+        # insert values into buckets
+        for  (@result)  {
+                $count++;
+                $sum += $_;
+
+                for my $i   (keys %bucket)  {
+                          ( $_ <= $i ) &&   $bucket{$i} ++ 
+                }
+        }
+
+        my @sorted_keys = sort {$a<=>$b} (keys %bucket);
+        $bucket{'+Inf'} = scalar @result;
+        push @sorted_keys , '+Inf';
+
+        ################################## form OUTPUT
+        my $msg="";
+
+        my $metric_name = 'pgspray_response_msec';
+
+        $msg .= "# HELP ${metric_name} Time or posgresqlrequest in msec.\n" ;
+        $msg .= "# TYPE ${metric_name} histogram\n"                         ;
+
+
+        for (@sorted_keys) {
+            $msg .=  sprintf qq(%s{hostname=%s,host_ip=%s,pg_port=%d,cluster=%s,le="%s"}   %d\n) , 
+                         $metric_name, $hostname,$host, $port ,$cluster, $_,$bucket{$_}||'NaN'  ;
+        }    
+
+        $msg .= sprintf qq({%s{hostname=%s,host_ip=%s,pg_port=%d,cluster=%s}   %d\n),
+                     $metric_name, $hostname,$host, $port ,$cluster, $count         ;
+        $msg  .=  sprintf qq(%s{hostname=%s,host_ip=%s,pg_port=%d,cluster=%s}   %4f\n),
+                     $metric_name, $hostname,$host, $port ,$cluster, $sum           ;
+             
+        ################################## send OUTPUT
+        $outfile || say $msg;
+        $outfile && write_file($outfile, $msg);
+}

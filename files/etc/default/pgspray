@@ -1,0 +1,18 @@
+ARGS=" -U prometheus -h localhost -p 5432  -d postgres -a pgspray -e qft -c main  -l prefer  -o /var/lib/prometheus/node-exporter/node_dat/pgspray_out -F /etc/prometheus/exporters/secret"
+
+
+# -p port                default:  5432
+# -l ssl                 default:  disable
+# -U user                default:  $USER 
+# -d db                  default:  postgres
+# -a application_name    default:  pgspreay
+# -c cluster             default:  main
+# -s sql                 default:  SELECT 'response time'
+# -W passwd             default:   undef 
+# -f password_file      default:   undef
+# -o outfile            default:   undef
+# -t timeout            default:       3
+# -b sleep betwen       histograms:   10
+
+
+

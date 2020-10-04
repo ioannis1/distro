@@ -1,0 +1,33 @@
+####################################################  packages
+- name:          packages DBI, Getopts-Std, Timehires
+  apt:
+     pkg:
+        - libdbi-perl
+        - libtime-hires-perl
+        - libdbd-pg-perl
+####################################################  /etc/consul   FILES
+#- name:        Files   /etc/prometheus/exporters/pgspray/*
+#  synchronize:  src="pgspray"  dest="/etc/prometheus/exporters"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+
+- name:        /usr/local/bin/pgspray
+  copy:       src=pgspray/pgspray   dest=/usr/local/bin/pgspray    owner=root   mode=775
+
+####################################################  /etc/prometheus/exporters
+- name:       secret file
+  copy:       src=pgspray/secret    dest=/etc/prometheus/exporters/    owner=prometheus    mode=420
+
+####################################################  symlinks 
+#- name:    data directory 
+#  when:    os_family  == 'Darwin'  
+#  file:    path="/var/lib/consul"    state=directory   owner=ioannis   force=yes
+####################################################  /etc/default
+- name:        /etc/default/pgspray
+  copy:       src=etc/default/pgspray    dest=/etc/default/pgspray    owner=root   
+####################################################   reload servers
+- name:        systemd file
+  copy:        src=etc/systemd/system/pgspray.service     dest="/etc/systemd/system/"     owner=root
+  when:        os_family == 'Linux'
+
+- name:       reload  pgspray
+  when:       os_family  == 'Linux'  
+  systemd:    name="pgspray"   daemon_reload="yes"  state=stopped  enabled=no

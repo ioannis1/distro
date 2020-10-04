@@ -1,0 +1,33 @@
+[Unit]
+Description= spray postgres with quries and record time of responces
+After = prometheus.target
+ConditionPathExists=/etc/default/pgspray
+
+#WorkingDirectory=/home/postgres/main
+
+#KillUserProcesses=yes
+
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/default/pgspray
+ExecStart=/usr/local/bin/pgspray   $ARGS
+ExecStop=/bin/kill -TERM  $MAINPID
+ExecReload=/bin/kill -HUP  $MAINPID
+WorkingDirectory=/etc/prometheus/exporters
+#ExecStartPre=/bin/sleep 1
+User=prometheus
+#Restart=on-failure
+#RestartSec=5
+#TimeoutStartSeca=0
+
+#OOMScoreAdjust=-900
+#Environment=PGDATA=/home/postgres/main
+#Environment=PGCONFIG=/home/postgres/dist-main/bin/pg_config
+
+RemoveIPC=no
+
+#RemainAfterExit=on
+
+[Install]
+WantedBy=multi-user.target
