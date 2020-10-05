@@ -14,7 +14,6 @@
 
 
 
-
 use strict;
 use v5.10;
 use warnings;
@@ -25,21 +24,14 @@ use Data::Dumper;
 use File::Slurp; 
 #use HTTP::Date qw(time2iso time2str) ;
 
-use constant {
-             OVER_PERIOD  =>  3 ,  # 30 secs
-             SAMPLES      =>  20 ,  # 10
-};
 
-
-my $msec_BETWEEN_SAMPLES   =  1_000 * OVER_PERIOD / SAMPLES ;
-#say "msec=",$msec_BETWEEN_SAMPLES;
 
 ### GLOBALS
 
 my %o ;
 
 ###  Process Options
-getopts('o:a:h:p:s:l:U:d:W:m:f:e:c:F:b:', \%o);
+getopts('o:a:h:p:s:l:U:d:W:m:f:e:c:F:m:i:', \%o);
 
 #say Dumper(\%o);
 
@@ -56,8 +48,12 @@ my  $passwd      =  $o{W} || undef                          ;
 my  $passwdfile  =  $o{F} || undef                          ;
 my  $outfile     =  $o{o} || undef                          ;
 my  $timeout     =  $o{t} || 3                              ;
-my  $between_hist=  $o{b} || 10                             ;
+my  $samples_per_minute  =  $o{m} || 200                    ;
+my  $output_interval     =  $o{i} || 50                     ;
 
+my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $samples_per_minute         ;
+
+#say 'msec_BETWEEN_SAMPLES = '. $msec_BETWEEN_SAMPLES  ;
 
 if ( defined $passwdfile) {
 	$passwd = read_file($passwdfile) || die;
@@ -65,74 +61,57 @@ if ( defined $passwdfile) {
 	chomp($passwd);
 }
 
-$main::bucket{ (sprintf "%d",$_) } = undef  for (4, 6, 7, 8, 10, 15, 25, 50, 100, '+Inf');
+$main::bucket{ (sprintf "%s",$_) } = undef  for  qw/ 4  6  7  8  10 15  25  50  90  +Inf /;
+my @sorted_keys = sort {$a<=>$b} (keys %main::bucket);
 
 my $att = { AutoCommit => 0, ReadOnly => 1};
 my $DSN = "dbi:Pg:host=$host;port=$port;dbname=$db;sslmode=$ssl;connect_timeout=${timeout}s application_name=$app" ;
 
-my ($sum,$count) = (0,0);
-
-sub collect_samples ;
-
-while (1) {
-        collect_samples;
-        sleep( $between_hist );
-}
-###################################################################################
-
-sub collect_samples {
-        my ($start_time, $end_time, $dbh, $elapsed, $sleep, @result);
-
-        for (1..SAMPLES) {
-                $start_time = time();
-                $dbh = DBI->connect($DSN, $user,$passwd, $att) or die "Oops\n";
-                $dbh->do($sql);
-                #say $dbh->selectall_arrayref($sql)->[0]->[0], "\n";
-                $end_time = time();
-                $elapsed = ($end_time - $start_time)*1000;   # in mill seconds
-                #say sprintf qq(pg_response_msec{hostname="%s",port=%s, host_ip="%s"} %s), 
-                #	  $hostname, $port, $host, $elapsed;
-                usleep( $msec_BETWEEN_SAMPLES  * 1_000 );
-                push @result, $elapsed;
-                $dbh->rollback();
-        }  
 
 
+my ($sum,$count, @result, $dbh) = (0,0);
+while(1) {
+        eval { 
+                local $SIG{ALRM} = sub { die "timeout" }; 
+                alarm $output_interval; 
 
-
-        # insert values into buckets
-        for  (@result)  {
-                $count++;
-                $sum += $_;
-        
-                for my $i   (keys %main::bucket)  {
-                          ( $_ <= $i ) &&   $main::bucket{$i} ++ 
-                }
-        }
-
-        my @sorted_keys = sort {$a<=>$b} (keys %main::bucket);
-        say 'sorted_keys' ,"@sorted_keys";
-
-        ################################## form OUTPUT
-        my $msg="";
-
-        my $metric_name = 'pgspray_response_msec';
-
-        $msg .= "# HELP ${metric_name} Time or posgresqlrequest in msec.\n" ;
-        $msg .= "# TYPE ${metric_name} histogram\n"                         ;
-
-
-        for (@sorted_keys) {
-            $msg .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",le="%s"} %d\n) , 
-                         $metric_name, $hostname,$host, $port ,$cluster, $_,$main::bucket{$_}|| 0  ;
-        }    
-
-        $msg .= sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %d\n),
-                     $metric_name.'_count', $hostname,$host, $port ,$cluster, $count         ;
-        $msg  .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %4f\n),
-                     $metric_name.'_sum', $hostname,$host, $port ,$cluster, $sum           ;
+                my ($start_time, $end_time,  $elapsed);
+                while(1) {
+                        $start_time = time();
+                        $dbh = DBI->connect($DSN, $user,$passwd, $att) or die "Oops\n";
+                        $dbh->do($sql);
+                        $end_time = time();
+                        $elapsed  = ($end_time - $start_time)*1000;   # in mill seconds
+                        $dbh->rollback;
+                        push @result, $elapsed;
+                        usleep( $msec_BETWEEN_SAMPLES * 1_000); 
+            }
+        }; 
+        alarm 0; # cancel the alarm 
+        if ($@ =~ /timeout/) {
+                 $dbh->rollback;
+                # insert values into buckets
+                for  (@result)  {
+                        $count++;
+                        $sum += $_;
+                        for my $i   (keys %main::bucket)  { ( $_ <= $i ) &&   $main::bucket{$i} ++ } 
+               }
+               @result = ();
+               my $msg;
+               my $metric_name = 'pgspray_response_msec';
+               $msg .= "# HELP ${metric_name} Time or posgresqlrequest in msec.\n" ;
+               $msg .= "# TYPE ${metric_name} histogram\n"                         ;
+              for (@sorted_keys) {
+                      $msg .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",le="%s"} %d\n) , 
+                                    $metric_name, $hostname,$host, $port ,$cluster, $_,$main::bucket{$_}|| 0  ;
+              }    
+             $msg .= sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %d\n),
+                     $metric_name.'_count', $hostname,$host, $port ,$cluster, $count      ;
+             $msg  .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %4f\n),
+                    $metric_name.'_sum', $hostname,$host, $port ,$cluster, $sum           ;
              
-        ################################## send OUTPUT
-        $outfile || say $msg;
-        $outfile && write_file($outfile, $msg);
-}
+              ################################## send OUTPUT
+              $outfile || say $msg;
+              $outfile && write_file($outfile, $msg);
+        }
+}; 
