@@ -1,0 +1,126 @@
+#!/usr/bin/env perl
+######################### Sample invocation
+#./pgspray.pl  -d postgres -U prometheus  -h localhost -p 5432  -l disable  -a pgspray -e qft  -c karat   -i 5 -m 200 -F secret  -g 
+# Where: -l = sslmode
+#        -g = push to gateway
+#        -m = samples/minute
+#        -i = output after that many seconds
+#
+# then query from prometheus:
+# histogram_quantile(.95,sum by (le) (increase(pgspray_response_msec_bucket[5m])))
+#
+# NOTE: bucket boundaries are forever fixed at  5, 6, 7, 8, 10, 15, 25, 50, and 100  msec
+#
+# You could also picture this histogram data as a heatmap by using the query: sum(increase(http_request_duration_seconds_bucket[10m])) by (le), making sure to set the format as "heatmap," the legend format as {{ le }}, and setting the visualization in the panel settings to "heatmap."
+
+
+
+
+use strict;
+use v5.10;
+use warnings;
+use DBI;
+use Time::HiRes qw( time usleep );
+use Getopt::Std ;
+use Data::Dumper;
+use Net::Prometheus;
+use LWP::UserAgent;
+use File::Slurp; 
+#use HTTP::Date qw(time2iso time2str) ;
+
+
+
+### GLOBALS
+
+my %o ;
+
+###  Process Options
+getopts('o:a:h:p:s:l:U:d:W:m:f:e:c:F:m:i:g', \%o);
+
+#say Dumper(\%o);
+
+my  $host        =  $o{h} || $ENV{PGHOST}    || 'localhost' ;
+my  $hostname    =  $o{e} || 'qft'                          ;
+my  $port        =  $o{p} || $ENV{PGPORT}    || 5432        ;
+my  $ssl         =  $o{l} || $ENV{PGSSLMODE} || 'disable'   ;
+my  $user        =  $o{U} || $ENV{PGUSER}    ||  $ENV{USER} ;
+my  $db          =  $o{d} || $ENV{PGDATABASE}|| 'postgres'  ;
+my  $app         =  $o{a} || $ENV{PGAPPNAME} || 'pgspray'   ;
+my  $cluster     =  $o{c} || 'main'                         ;
+my  $sql         =  $o{s} || q(SELECT 'response time')      ;
+my  $passwd      =  $o{W} || undef                          ;
+my  $passwdfile  =  $o{F} || undef                          ;
+my  $outfile     =  $o{o} || undef                          ;
+my  $pushgateway =  $o{g} || undef                          ;
+my  $timeout     =  $o{t} || 3                              ;
+my  $samples_per_minute  =  $o{m} || 200                    ;
+my  $output_interval     =  $o{i} || 50                     ;
+
+my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $samples_per_minute         ;
+
+#say 'msec_BETWEEN_SAMPLES = '. $msec_BETWEEN_SAMPLES  ;
+
+if ( defined $passwdfile) {
+	$passwd = read_file($passwdfile) || die;
+	warn "password from file \"".  $passwdfile. "\"\n";
+	chomp($passwd);
+}
+
+#############################################  Globals
+my $metric_name = 'pgspray';
+my $labels      = { hostname=> $hostname, host_ip=>$host, port=>$port, cluster=>$cluster };
+my $prom = Net::Prometheus->new( disable_process_collector => 1,
+                                disable_perl_collector     => 1,
+);
+my $hist = $prom->new_histogram ( name    => $metric_name,
+                                  help    =>  'Time responce of posgresql request (in msec).', 
+                                  labels  => [qw/hostname host_ip port  cluster /] ,
+                                  buckets =>  [qw/ 4 6 7 8 10 25 50 90 /]);
+
+my ($sum,$count, @result, $dbh) = (0,0);
+my $att = { AutoCommit => 0, ReadOnly => 1};
+my $DSN = "dbi:Pg:host=$host;port=$port;dbname=$db;sslmode=$ssl;connect_timeout=${timeout}s application_name=$app" ;
+
+my $url =  'http://qft:9091'. '/metrics/job/pgspray';
+######################################################
+sub send_to_prometheus {
+    my ($content, $url) = @_;
+    my $request = HTTP::Request->new('POST', $url);
+    my $ua      = LWP::UserAgent->new();
+    $request ->content($content);
+    my $r       = $ua->request($request);
+    return 1 if ($r->is_success);
+    #croak "Can't send POST request to '${'url'}'. MSG: " . $response->decoded_content . " Code: " . $response->code;
+    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
+}
+
+
+while(1) {
+        eval { 
+                local $SIG{ALRM} = sub { die "timeout" }; 
+                alarm $output_interval; 
+
+                my ($start_time, $end_time,  $elapsed);
+                while(1) {
+                        $start_time = time();
+                        $dbh = DBI->connect($DSN, $user,$passwd, $att) or die "Oops\n";
+                        $dbh->do($sql);
+                        $end_time = time();
+                        $elapsed  = ($end_time - $start_time)*1000;   # in mill seconds
+                        $dbh->rollback;
+                        $hist->observe( $labels, $elapsed );
+                        usleep( $msec_BETWEEN_SAMPLES * 1_000); 
+            }
+        }; 
+        alarm 0; # cancel the alarm 
+        if ($@ =~ /timeout/) {
+               $dbh->rollback;
+              ################################## send OUTPUT
+              if ($pushgateway) {
+                       send_to_prometheus( $prom->render, $url);
+               }else{
+                      $outfile || say $prom->render;
+                      $outfile && write_file($outfile, $prom->render);
+              }
+        }
+}; 

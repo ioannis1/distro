@@ -1,4 +1,4 @@
-ARGS=" -U prometheus -h localhost -p 5432  -d postgres -a pgspray -e qft -c main  -l prefer  -o /var/lib/prometheus/node-exporter/node_dat/pgspray.prom -F /etc/prometheus/exporters/secret -m 20  -i 60"
+ARGS=" -U prometheus -h localhost -p 5432  -d postgres -a pgspray -e qft -c main  -l prefer  -o /var/lib/prometheus/node-exporter/node_dat/pgspray.prom -F /etc/prometheus/exporters/secret -m 20  -i 60  -g"
 
 
 # -p port                     default:  5432
@@ -14,5 +14,6 @@ ARGS=" -U prometheus -h localhost -p 5432  -d postgres -a pgspray -e qft -c main
 # -t timeout                 default:       3
 # -m samples_per_minute      default:  200
 # -i output flash_interval  default:    50
+# -g  send output to pushgateway 
 
 

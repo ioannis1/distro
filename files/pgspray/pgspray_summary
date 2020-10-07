@@ -1,0 +1,128 @@
+#!/usr/bin/env perl
+######################### Sample invocation
+## pgspray_summary  $(conn)    -a pgspray  -e aft  -c karat  -f /tmp/pgspray_out
+#
+
+
+use strict;
+use v5.10;
+use warnings;
+use DBI;
+use Time::HiRes qw( time usleep );
+use Getopt::Std ;
+use Data::Dumper;
+use Net::Prometheus;
+use File::Slurp; 
+use LWP::UserAgent;
+#use HTTP::Date qw(time2iso time2str) ;
+
+
+
+### GLOBALS
+
+my %o ;
+
+###  Process Options
+getopts('o:a:h:p:s:l:U:d:W:m:f:e:c:F:m:i:p:g', \%o);
+
+#say Dumper(\%o);
+
+my  $host        =  $o{h} || $ENV{PGHOST}    || 'localhost' ;
+my  $hostname    =  $o{e} || 'qft'                          ;
+my  $port        =  $o{p} || $ENV{PGPORT}    || 5432        ;
+my  $ssl         =  $o{l} || $ENV{PGSSLMODE} || 'disable'   ;
+my  $user        =  $o{U} || $ENV{PGUSER}    ||  $ENV{USER} ;
+my  $db          =  $o{d} || $ENV{PGDATABASE}|| 'postgres'  ;
+my  $app         =  $o{a} || $ENV{PGAPPNAME} || 'pgspray'   ;
+my  $cluster     =  $o{c} || 'main'                         ;
+my  $sql         =  $o{s} || q(SELECT 'response time')      ;
+my  $passwd      =  $o{W} || undef                          ;
+my  $passwdfile  =  $o{F} || undef                          ;
+my  $outfile     =  $o{o} || undef                          ;
+my  $timeout     =  $o{t} || 3                              ;
+my  $pushgateway =  $o{g} || undef                          ;
+my  $samples_per_minute  =  $o{m} || 200                    ;
+my  $output_interval     =  $o{i} || 50                     ;
+my  $percentile =  $o{r} || 95                             ;
+
+
+
+my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $samples_per_minute         ;
+
+if ( defined $passwdfile) {
+	$passwd = read_file($passwdfile) || die;
+	warn "password from file \"".  $passwdfile. "\"\n";
+	chomp($passwd);
+}
+
+sub calc_percentile {
+        my ($per, $vals) = @_;
+        my $pindex = ($per < 100) ? int(1+(($per/100)*scalar @$vals)) : scalar @$vals;
+        $vals->[$pindex-1];
+}
+
+#############################################  Globals
+my $metric_name = 'pgspray';
+my $labels      = { hostname=> $hostname, host_ip=>$host, port=>$port, cluster=>$cluster };
+my $prom = Net::Prometheus->new( disable_process_collector => 1,
+                                disable_perl_collector     => 1,
+);
+my $summa = $prom->new_summary ( name    =>  $metric_name,
+                                 help    =>  'Time responce of posgresql request (in msec).', 
+                                 labels  => [qw/hostname host_ip port  cluster /]);
+
+my ( @result, $dbh) = (0,0);
+my $att = { AutoCommit => 0, ReadOnly => 1};
+my $DSN = "dbi:Pg:host=$host;port=$port;dbname=$db;sslmode=$ssl;connect_timeout=${timeout}s application_name=$app" ;
+
+my $url =  'http://qft:9091'. '/metrics/job/pgspray';
+######################################################
+sub send_to_prometheus {
+    my ($content, $url) = @_;
+    my $request = HTTP::Request->new('POST', $url);
+    my $ua      = LWP::UserAgent->new();
+    $request ->content($content);
+    my $r       = $ua->request($request);
+    return 1 if ($r->is_success);
+    #croak "Can't send POST request to '${'url'}'. MSG: " . $response->decoded_content . " Code: " . $response->code;
+    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
+}
+
+while(1) {
+        eval { 
+                local $SIG{ALRM} = sub { die "timeout" }; 
+                alarm $output_interval; 
+
+                my ($start_time, $end_time,  $elapsed);
+                while(1) {
+                        $start_time = time();
+                        $dbh = DBI->connect($DSN, $user,$passwd, $att) or die "Oops\n";
+                        $dbh->do($sql);
+                        $end_time = time();
+                        $elapsed  = ($end_time - $start_time)*1000;   # in mill seconds
+                        $dbh->rollback;
+                        push @result, $elapsed;
+                        $summa->observe( $labels, $elapsed );
+                        usleep( $msec_BETWEEN_SAMPLES * 1_000); 
+            }
+        }; 
+        alarm 0; # cancel the alarm 
+        if ($@ =~ /timeout/) {
+               $dbh->rollback;
+               my @res = sort {$a<=>$b } @result;
+               my $msg;
+               for (qw/ 0.5  0.9  0.99/  ) {
+                   $msg .=sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",quantile="%s"} %4f\n), 
+                             $metric_name, $hostname,$host, $port ,$cluster, $_, calc_percentile( $_*100 ,\@res);
+              }    
+              @result = ();
+              #################################` send OUTPUT
+              $msg = $prom->render . $msg;
+              if ($pushgateway) {
+                       send_to_prometheus(  $msg, $url);
+               }else{
+                      $outfile || say  $msg ;
+                      $outfile && write_file($outfile, $msg);
+              }
+        }
+}; 
