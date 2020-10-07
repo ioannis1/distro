@@ -8,62 +8,81 @@ use strict;
 use v5.10;
 use warnings;
 use DBI;
-use Time::HiRes qw( time usleep );
+use feature qw( switch );
 use Getopt::Std ;
+no if $] >= 5.018, warnings => qw( experimental::smartmatch );
+use Time::HiRes qw( time usleep );
 use Data::Dumper;
 use Net::Prometheus;
-use File::Slurp; 
 use LWP::UserAgent;
+use Config::INI::Reader;
+use File::Slurp; 
 #use HTTP::Date qw(time2iso time2str) ;
 
+use constant DEFAULTS => {  
+           host_ip            => $ENV{PGHOST}     || 'localhost', 
+           hostname           => 'localhost', 
+           port               => $ENV{PGPORT}     ||  5332,
+           sslmode            => $ENV{PGSSLMODE}  || 'prefer',
+           user               => $ENV{PGUSER}     ||'prometheus',
+           database           => $ENV{PGDATABASE} || 'postgres',
+           password           => $ENV{PGPASSWORD} ||  undef,
+           timeout            => 4,
+           push_gateway       =>  undef,
+           #secret_file        => '/etc/prometheus/exporters/secret',
+           output_interval    =>  60,
+           outfile            => undef, 
+           samples_per_minute =>  20 ,
+           sql                =>  "SELECT 'response_tme'" ,
+          #outfile            => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
+          #sql                =>  "SELECT current_setting('server_version')",
+     }; 
 
 
-### GLOBALS
+sub read_config {
+        my ($defaults, $file) = @_;
+        my $in = Config::INI::Reader->read_file( $file );
+        my $result;
+        for my $k (keys %$in) {
+            next  if $k =~ /^common$/i ;
+            my $tmp = DEFAULTS();
+            $tmp->{$_} = $in->{common}{$_} for (keys %{$in->{common}}) ; 
 
-my %o ;
-
-###  Process Options
-getopts('o:a:h:p:s:l:U:d:W:m:f:e:c:F:m:i:p:g', \%o);
-
-#say Dumper(\%o);
-
-my  $host        =  $o{h} || $ENV{PGHOST}    || 'localhost' ;
-my  $hostname    =  $o{e} || 'qft'                          ;
-my  $port        =  $o{p} || $ENV{PGPORT}    || 5432        ;
-my  $ssl         =  $o{l} || $ENV{PGSSLMODE} || 'disable'   ;
-my  $user        =  $o{U} || $ENV{PGUSER}    ||  $ENV{USER} ;
-my  $db          =  $o{d} || $ENV{PGDATABASE}|| 'postgres'  ;
-my  $app         =  $o{a} || $ENV{PGAPPNAME} || 'pgspray'   ;
-my  $cluster     =  $o{c} || 'main'                         ;
-my  $sql         =  $o{s} || q(SELECT 'response time')      ;
-my  $passwd      =  $o{W} || undef                          ;
-my  $passwdfile  =  $o{F} || undef                          ;
-my  $outfile     =  $o{o} || undef                          ;
-my  $timeout     =  $o{t} || 3                              ;
-my  $pushgateway =  $o{g} || undef                          ;
-my  $samples_per_minute  =  $o{m} || 200                    ;
-my  $output_interval     =  $o{i} || 50                     ;
-my  $percentile =  $o{r} || 95                             ;
-
-
-
-my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $samples_per_minute         ;
-
-if ( defined $passwdfile) {
-	$passwd = read_file($passwdfile) || die;
-	warn "password from file \"".  $passwdfile. "\"\n";
-	chomp($passwd);
+            $tmp->{$_} = $in->{$k}{$_} for (keys %{$in->{$k}}) ; 
+           $result->{$k} = { %$tmp };
+        }
+        return $result;
 }
-
+sub calc_passwd {
+       my $o = shift;
+        if ( $o->{secret_file}) {
+                my $passwd = read_file($o->{secret_file} ) || die;
+                warn "password from file \"".  $o->{secret_file}. "\"\n";
+                chomp $passwd ;
+                return $passwd ;
+        }
+        return $o->{password} ;
+}
 sub calc_percentile {
         my ($per, $vals) = @_;
         my $pindex = ($per < 100) ? int(1+(($per/100)*scalar @$vals)) : scalar @$vals;
         $vals->[$pindex-1];
 }
+############################################## Process ARGV
+my %arg ;
+getopts('a:f:', \%arg);
+
+my $aim  = $arg{a}  || 'main' ;
+my $ini  = $arg{f}  || '/etc/default/pgspray' ;
+#############################################  Read Config
+my $conf     =  read_config( DEFAULTS, $ini);
+my $o        =  $conf->{$aim};
+my $passwd   =  calc_passwd $o;
+my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $o->{samples_per_minute}         ;
 
 #############################################  Globals
 my $metric_name = 'pgspray';
-my $labels      = { hostname=> $hostname, host_ip=>$host, port=>$port, cluster=>$cluster };
+my $labels      = { hostname=> $o->{hostname}, host_ip=>$o->{host_ip}, port=>$o->{port}, cluster=>$o->{cluster} };
 my $prom = Net::Prometheus->new( disable_process_collector => 1,
                                 disable_perl_collector     => 1,
 );
@@ -73,7 +92,7 @@ my $summa = $prom->new_summary ( name    =>  $metric_name,
 
 my ( @result, $dbh) = (0,0);
 my $att = { AutoCommit => 0, ReadOnly => 1};
-my $DSN = "dbi:Pg:host=$host;port=$port;dbname=$db;sslmode=$ssl;connect_timeout=${timeout}s application_name=$app" ;
+my $DSN = "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" ;
 
 my $url =  'http://qft:9091'. '/metrics/job/pgspray';
 ######################################################
@@ -87,17 +106,23 @@ sub send_to_prometheus {
     #croak "Can't send POST request to '${'url'}'. MSG: " . $response->decoded_content . " Code: " . $response->code;
     die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
 }
+sub calc_mode {
+        my ($push, $outfile) = @_;
+        $push    && return 'pushgateway_exporter';
+        $outfile && return 'node_exporter';
+        return 'stdout';
+}
 
 while(1) {
         eval { 
                 local $SIG{ALRM} = sub { die "timeout" }; 
-                alarm $output_interval; 
+                alarm $o->{output_interval}; 
 
                 my ($start_time, $end_time,  $elapsed);
                 while(1) {
                         $start_time = time();
-                        $dbh = DBI->connect($DSN, $user,$passwd, $att) or die "Oops\n";
-                        $dbh->do($sql);
+                        $dbh = DBI->connect($DSN, $o->{user},$passwd, $att) or die "@_\n" ;
+                        $dbh->do($o->{sql});
                         $end_time = time();
                         $elapsed  = ($end_time - $start_time)*1000;   # in mill seconds
                         $dbh->rollback;
@@ -113,16 +138,18 @@ while(1) {
                my $msg;
                for (qw/ 0.5  0.9  0.99/  ) {
                    $msg .=sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",quantile="%s"} %4f\n), 
-                             $metric_name, $hostname,$host, $port ,$cluster, $_, calc_percentile( $_*100 ,\@res);
+                             $metric_name, $o->{hostname},$o->{host_ip}, $o->{port} ,
+                             $o->{cluster}, $_, calc_percentile( $_*100 ,\@res);
               }    
               @result = ();
               #################################` send OUTPUT
-              $msg = $prom->render . $msg;
-              if ($pushgateway) {
-                       send_to_prometheus(  $msg, $url);
-               }else{
-                      $outfile || say  $msg ;
-                      $outfile && write_file($outfile, $msg);
-              }
+                $dbh->rollback;
+                $msg = $prom->render . $msg;
+                my $mode =  calc_mode( $o->{push_gateway}, $o->{outfile});
+                given ($mode) {
+                        when  ('pushgateway_exporter')   { send_to_prometheus( $msg, $url) }
+                        when  ('node_exporter')          { write_file($o->{outfile}, $msg) }
+                        default                          { say $msg                        }
+                }
         }
 }; 

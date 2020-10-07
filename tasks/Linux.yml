@@ -224,4 +224,9 @@ sudo add-apt-repository ppa:linuxuprising/java
      pkg:
                   - libfile-slurp-perl
                   - libdata-show-perl
+                  - perl-doc
+                  - libconfig-ini-perl
+                  - liblist-allutils-perl    # List::Util and List::MoreUtils
+                  - libhash-merge-simple-perl
+
 
