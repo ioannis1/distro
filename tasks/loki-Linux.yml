@@ -52,14 +52,13 @@
   file:    src='/usr/local/bin/logcli-linux-amd64'   dest='/usr/local/bin/logcli'   state=link  owner=root   force=yes
 ####################################################  config files 
 - name:         config files
-  synchronize:  src=etc/loki    dest="/etc/"    owner=root  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+  synchronize:  src=etc/loki    dest="/etc/"    owner=root   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 
+####################################################  systemd
 - name:        systemd file
   copy:        src=etc/systemd/system/loki.service     dest="/etc/systemd/system/"     owner=root
   when:        os_family == 'Linux'
-
-####################################################  systemd
 
 - name:       reload  loki
   when:       os_family == 'Linux' 

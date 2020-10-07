@@ -3,10 +3,10 @@
 
 ####################################################  /etc/consul   FILES
 - name:        Files   /etc/consul.d/*
-  synchronize:  src="etc/consul.d/"  dest="/etc/consul.d"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+  synchronize:  src="etc/consul.d/"  dest="/etc/consul.d"   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 - name:        Files   /etc/consul.d/*  specific to Darwin
-  synchronize:  src="etc/consul_Darwin/"  dest="/etc/consul.d"  copy_links=yes  delete='no'  owner=no  dirs=yes 
+  synchronize:  src="etc/consul_Darwin/"  dest="/etc/consul.d"    delete='no'  owner=no  dirs=yes 
 
 
 - name:    copy token (becaue it is ansible-valuted) 

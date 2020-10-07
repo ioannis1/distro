@@ -15,7 +15,7 @@
      update_cache:  yes
 ####################################################  /etc/consul   FILES
 - name:        Files   /etc/consul.d/*
-  synchronize:  src="etc/consul.d/"  dest="/etc/consul.d"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+  synchronize:  src="etc/consul.d/"  dest="/etc/consul.d"    delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 - name:    copy token (becaue it is ansible-valuted) 
   copy:    src="etc/consul.d/consul.token"  dest="/etc/consul.d"    owner=root  mode=640

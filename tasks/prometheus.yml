@@ -14,7 +14,7 @@
 
 ####################################################  /etc/prometheus   FILES
 - name:        Files   /etc/prometheus/*
-  synchronize:  src="etc/prometheus/"  dest="/etc/prometheus"  copy_links=yes  delete='no'  owner=no  dirs=yes #rsync_opts=--ignore-existing
+  synchronize:  src="etc/prometheus/"  dest="/etc/prometheus"   delete='no'  owner=no  dirs=yes #rsync_opts=--ignore-existing
 
 ####################################################  /etc/prometheus  TEMPLATES
 #
@@ -49,11 +49,10 @@
   with_items:
       - prometheus
       - prometheus-node-exporter
+      - prometheus-postgres-exporter
+      - prometheus-postgres-exporter-5433
 
-- name:        default templates /etc/default
-  template:    src=etc/default/prometheus-{{ item }}-exporter      dest="/etc/default/"     owner=root
-  with_items:
-      - postgres
+
 ####################################################  other exporters
 - name:   grok_exporter
   when:   need_grok_exporter
@@ -73,3 +72,11 @@
 
 - name:       reload  prometheus 
   systemd:    name="prometheus"   daemon_reload="yes"  enabled=no
+####################################################  systemd
+- name:        systemd file
+  copy:        src=etc/systemd/system/prometheus-postgres-exporter_5433.service     dest="/etc/systemd/system/"     owner=root
+  when:        os_family == 'Linux'
+
+- name:       reload  postgres-exporter_5433
+  when:       os_family == 'Linux' 
+  systemd:    name="prometheus-postgres-exporter_5433"   daemon_reload="yes"  state=stopped  enabled=no

@@ -19,7 +19,7 @@
                  - td-agent-bit
 ####################################################  config files 
 - name:         config files
-  synchronize:  src=etc/td-agent-bit    dest="/etc/"    owner=root  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+  synchronize:  src=etc/td-agent-bit    dest="/etc/"    owner=root   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 
 - name:        systemd file

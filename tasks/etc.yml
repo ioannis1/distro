@@ -58,12 +58,12 @@
   when: os_family == 'Linux'
 
 - name: journald  d.conf
-  synchronize:  src="etc/systemd/journald.conf.d"  dest="/etc/systemd/"  copy_links='yes' delete='no'  owner='no'   dirs=yes rsync_opts=--ignore-existing
+  synchronize:  src="etc/systemd/journald.conf.d"  dest="/etc/systemd/"   delete='no'  owner='no'   dirs=yes rsync_opts=--ignore-existing
 
   when: os_family == 'Linux'
 
 - name: ansible config and roles
-  synchronize:  src="etc/ansible"  dest="/etc/"  copy_links='yes' delete='no'  owner='no'
+  synchronize:  src="etc/ansible"  dest="/etc/"   delete='no'  owner='no'
   when: false
 
 
@@ -81,7 +81,7 @@
   copy:  src="etc/lightdm"  dest="/etc/" owner='root' mode='0644'    force='yes' 
   when: os_family == 'Linux'
 
-- synchronize:  src="etc/lynx/lynx.cfg"  dest="/etc/"  copy_links='yes' 
+- synchronize:  src="etc/lynx/lynx.cfg"  dest="/etc/" owner=no delete=no 
 
 
 - name: apache

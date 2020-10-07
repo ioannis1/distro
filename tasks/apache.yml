@@ -1,5 +1,5 @@
 
-- synchronize:  src="etc/apache2/"  dest="/etc/apach2/"  copy_links='yes'  owner=root
+- synchronize:  src="etc/apache2/"  dest="/etc/apach2/"   owner=root
 
 - name: htpasswd.users
   copy:  src="etc/apache2/htpasswd.users"  dest="/etc/apache2" owner='root' mode='0644'    force='yes' 

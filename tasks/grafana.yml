@@ -49,7 +49,7 @@
 
 
 - name:    provisioning
-  synchronize:  src="etc/grafana"  dest="/etc/"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+  synchronize:  src="etc/grafana"  dest="/etc/"   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 - name:    chown -R grafana:grafana
   file:   recurse=yes  owner=grafana group=grafana  path=/etc/grafana
