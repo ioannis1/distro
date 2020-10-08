@@ -4,15 +4,17 @@ hostname           =   qft
 database           =   postgres
 user               =   prometheus 
 appname            =   pgspray 
-sslmode            =  prefer  
-push_gateway       =  1
+sslmode            =   prefer  
+#push_gateway      =   1
 password           =  
-samples_per_minute =  20 
-secret_file        = /etc/prometheus/exporters/secret
-output_interval    =  6
-#outfile           =  /var/lib/prometheus/node-exporter/node_dat/pgspray.prom 
-#sql               = SELECT current_setting('server_version')
-
+#secret_file       =   /etc/prometheus/exporters/secret
+samples_per_minute =   20 
+output_interval    =   6
+#outdir             =  /var/lib/prometheus/node-exporter/node_dat
+outdir             =  /tmp
+outmode            =  push             # stdout, push, file
+#sql               =  SELECT current_setting('server_version')
+chmod              =  440
 
 [main]
 port          =   5432  

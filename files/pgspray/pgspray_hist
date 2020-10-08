@@ -154,11 +154,11 @@ sub main_work  {
                         my $msg = $prom->render ;
                         my $outfile = ($o->{outdir}||"") . '/pgspray-'. $o->{cluster}. '.prom' ;
                         given ($o->{outmode}) {
-                            when  ('push')     { send_to_prometheus( $msg, $url)    }
-                            when  ('file')     { write_file($outfile, $msg);
+                            when  (/push/i)     { send_to_prometheus( $msg, $url)    }
+                            when  (/file/i)     { write_file($outfile, $msg);
                                                  chmod $o->{chmod}, $outfile        }
-                            when  ('stdout')   {  say $msg                          }
-                            default            {  die "no default for 'mode'\n"     }
+                            when  (/stdout/i)   {  say $msg                          }
+                            default             {  die "no default for 'mode'\n"     }
                        }
 		}
 	} # while
