@@ -38,7 +38,6 @@ use constant DEFAULTS => {
            password           => $ENV{PGPASSWORD} ||  undef,
            chmod              =>  0640 ,
            timeout            =>  4,
-           push_gateway       =>  undef,
 	   #secret_file        => '/etc/prometheus/exporters/secret',
            output_interval    =>  60,
            outdir             =>  '/var/lib/prometheus/node-exporter/node_dat',
@@ -122,12 +121,6 @@ sub main_work  {
 	    my $r       = $ua->request($request);
 	    return 1 if ($r->is_success);
 	    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
-	}
-	sub calc_mode {
-		my ($push, $outfile) = @_;
-		$push    && return 'pushgateway_exporter';
-		$outfile && return 'node_exporter';
-		return 'stdout';
 	}
 
 	while(1) {

@@ -114,12 +114,6 @@ sub main_work {
         #croak "Can't send POST request to '${'url'}'. MSG: " . $response->decoded_content . " Code: " . $response->code;
         die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
     }
-    sub calc_mode {
-            my ($push, $outfile) = @_;
-            $push    && return 'pushgateway_exporter';
-            $outfile && return 'node_exporter';
-            return 'stdout';
-    }
 
     while(1) {
             eval { 
