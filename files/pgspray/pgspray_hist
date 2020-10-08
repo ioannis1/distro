@@ -1,10 +1,6 @@
 #!/usr/bin/env perl
 ######################### Sample invocation
-#./pgspray.pl  -d postgres -U prometheus  -h localhost -p 5432  -l disable  -a pgspray -e qft  -c karat   -i 5 -m 200 -F secret  -g 
-# Where: -l = sslmode
-#        -g = push to gateway
-#        -m = samples/minute
-#        -i = output after that many seconds
+#./pgspray_hist  -f /etc/default/pgspray  -a karat
 #
 # then query from prometheus:
 # histogram_quantile(.95,sum by (le) (increase(pgspray_response_msec_bucket[5m])))
@@ -81,6 +77,7 @@ sub calc_percentile {
         my $pindex = ($per < 100) ? int(1+(($per/100)*scalar @$vals)) : scalar @$vals;
         $vals->[$pindex-1];
 }
+sub main_work ;
 ############################################## Process ARGV
 my %arg ;
 getopts('a:f:', \%arg);
@@ -88,70 +85,76 @@ getopts('a:f:', \%arg);
 my $aim  = $arg{a}  || 'main' ;
 my $ini  = $arg{f}  || '/etc/default/pgspray' ;
 #############################################  Read Config
-my $conf     =  read_config( DEFAULTS, $ini);
-my $o        =  $conf->{$aim};
-my $passwd   =  calc_passwd $o;
-my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $o->{samples_per_minute}         ;
+my $conf          =  read_config( DEFAULTS, $ini);
+my $o             =  $conf->{$aim};
+   $o->{password} =  calc_passwd $o;
 
-#############################################  Globals
 
-my $metric_name = 'pgspray';
-my $labels      = { hostname=> $o->{hostname}, host_ip=>$o->{host_ip}, port=>$o->{port}, cluster=>$o->{cluster} };
-my $prom = Net::Prometheus->new( disable_process_collector => 1,
-                                disable_perl_collector     => 1,
-);
-my $hist = $prom->new_histogram ( name    => $metric_name,
-                                  help    =>  'Time responce of posgresql request (in msec).', 
-                                  labels  => [qw/hostname host_ip port  cluster /] ,
-                                  buckets =>  [qw/ 4 6 7 8 10 25 50 90 /]);
+main_work( $o);
 
-my ($sum,$count, @result, $dbh) = (0,0);
-my $att = { AutoCommit => 0, ReadOnly => 1};
-my $DSN = "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" ;
-my $url =  'http://qft:9091'. '/metrics/job/pgspray';
-######################################################
-sub send_to_prometheus {
-    my ($content, $url) = @_;
-    my $request = HTTP::Request->new('POST', $url);
-    my $ua      = LWP::UserAgent->new();
-    $request ->content($content);
-    my $r       = $ua->request($request);
-    return 1 if ($r->is_success);
-    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
+sub main_work  {
+     my $o = shift;
+     my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $o->{samples_per_minute}         ;
+     #############################################  MAIN
+
+	my $metric_name = 'pgspray';
+	my $labels      = { hostname=> $o->{hostname}, host_ip=>$o->{host_ip}, port=>$o->{port}, cluster=>$o->{cluster} };
+	my $prom = Net::Prometheus->new( disable_process_collector => 1,
+					disable_perl_collector     => 1,
+	);
+	my $hist = $prom->new_histogram ( name    => $metric_name,
+					  help    =>  'Time responce of posgresql request (in msec).', 
+					  labels  => [qw/hostname host_ip port  cluster /] ,
+					  buckets =>  [qw/ 4 6 7 8 10 25 50 90 /]);
+
+	my ($sum,$count, @result, $dbh) = (0,0);
+	my $att = { AutoCommit => 0, ReadOnly => 1};
+	my $DSN = "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" ;
+	my $url =  'http://qft:9091'. '/metrics/job/pgspray';
+	######################################################
+	sub send_to_prometheus {
+	    my ($content, $url) = @_;
+	    my $request = HTTP::Request->new('POST', $url);
+	    my $ua      = LWP::UserAgent->new();
+	    $request ->content($content);
+	    my $r       = $ua->request($request);
+	    return 1 if ($r->is_success);
+	    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
+	}
+	sub calc_mode {
+		my ($push, $outfile) = @_;
+		$push    && return 'pushgateway_exporter';
+		$outfile && return 'node_exporter';
+		return 'stdout';
+	}
+
+	while(1) {
+		eval { 
+			local $SIG{ALRM} = sub { die "timeout" }; 
+			alarm $o->{output_interval}; 
+			my ($start_time, $end_time,  $elapsed);
+			while(1) {
+				 $start_time = time();
+				$dbh = DBI->connect($DSN, $o->{user},$o->{password}, $att) or die "@_\n" ;
+				#$dbh->do("SELECT 3");
+				$dbh->do( $o->{sql} );
+
+				$end_time = time();
+				$elapsed  = ($end_time - $start_time)*1000;   # in mill seconds
+				$dbh->rollback;
+				$hist->observe( $labels, $elapsed );
+				usleep( $msec_BETWEEN_SAMPLES * 1_000); 
+		    }
+		}; 
+		alarm 0; # cancel the alarm 
+		if ($@ =~ /timeout/) {
+			$dbh->rollback;
+			my $mode =  calc_mode( $o->{push_gateway}, $o->{outfile});
+			given ($mode) {
+				when  ('pushgateway_exporter')   { send_to_prometheus( $prom->render, $url) }
+				when  ('node_exporter')          { write_file($o->{outfile}, $prom->render) }
+				default                          { say $prom->render                        }
+			}
+		}
+	} # while
 }
-sub calc_mode {
-        my ($push, $outfile) = @_;
-        $push    && return 'pushgateway_exporter';
-        $outfile && return 'node_exporter';
-        return 'stdout';
-}
-
-while(1) {
-        eval { 
-                local $SIG{ALRM} = sub { die "timeout" }; 
-                alarm $o->{output_interval}; 
-                my ($start_time, $end_time,  $elapsed);
-                while(1) {
-                         $start_time = time();
-                        $dbh = DBI->connect($DSN, $o->{user},$passwd, $att) or die "@_\n" ;
-                        #$dbh->do("SELECT 3");
-                        $dbh->do( $o->{sql} );
-
-                        $end_time = time();
-                        $elapsed  = ($end_time - $start_time)*1000;   # in mill seconds
-                        $dbh->rollback;
-                        $hist->observe( $labels, $elapsed );
-                        usleep( $msec_BETWEEN_SAMPLES * 1_000); 
-            }
-        }; 
-        alarm 0; # cancel the alarm 
-        if ($@ =~ /timeout/) {
-                $dbh->rollback;
-                my $mode =  calc_mode( $o->{push_gateway}, $o->{outfile});
-                given ($mode) {
-                        when  ('pushgateway_exporter')   { send_to_prometheus( $prom->render, $url) }
-                        when  ('node_exporter')          { write_file($o->{outfile}, $prom->render) }
-                        default                          { say $prom->render                        }
-                }
-        }
-}; 
