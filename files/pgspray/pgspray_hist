@@ -36,11 +36,13 @@ use constant DEFAULTS => {
            user               => $ENV{PGUSER}     ||'prometheus',
            database           => $ENV{PGDATABASE} || 'postgres',
            password           => $ENV{PGPASSWORD} ||  undef,
-           timeout            => 4,
+           chmod              =>  0640 ,
+           timeout            =>  4,
            push_gateway       =>  undef,
 	   #secret_file        => '/etc/prometheus/exporters/secret',
            output_interval    =>  60,
-           outfile            => undef, 
+           outdir             =>  '/var/lib/prometheus/node-exporter/node_dat',
+           out_mode           =>  'stdout',        #  push, file, stdout
            samples_per_minute =>  20 ,
            sql                =>  "SELECT 'response_tme'" ,
           #outfile            => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
@@ -148,13 +150,16 @@ sub main_work  {
 		}; 
 		alarm 0; # cancel the alarm 
 		if ($@ =~ /timeout/) {
-			$dbh->rollback;
-			my $mode =  calc_mode( $o->{push_gateway}, $o->{outfile});
-			given ($mode) {
-				when  ('pushgateway_exporter')   { send_to_prometheus( $prom->render, $url) }
-				when  ('node_exporter')          { write_file($o->{outfile}, $prom->render) }
-				default                          { say $prom->render                        }
-			}
+                        $dbh->rollback;
+                        my $msg = $prom->render ;
+                        my $outfile = ($o->{outdir}||"") . '/pgspray-'. $o->{cluster}. '.prom' ;
+                        given ($o->{outmode}) {
+                            when  ('push')     { send_to_prometheus( $msg, $url)    }
+                            when  ('file')     { write_file($outfile, $msg);
+                                                 chmod $o->{chmod}, $outfile        }
+                            when  ('stdout')   {  say $msg                          }
+                            default            {  die "no default for 'mode'\n"     }
+                       }
 		}
 	} # while
 }
