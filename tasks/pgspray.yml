@@ -5,12 +5,16 @@
         - libdbi-perl
         - libtime-hires-perl
         - libdbd-pg-perl
+        - libnet-prometheus-perl
+          #- libplack-perl
+          # libparallel-forkmanager-perl
+        #plus   LWP::Useragent
+
 ####################################################  /etc/consul   FILES
 #- name:        Files   /etc/prometheus/exporters/pgspray/*
-#  synchronize:  src="pgspray"  dest="/etc/prometheus/exporters"  copy_links=yes  delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
-- name:        /usr/local/bin/pgspray
-  copy:       src=pgspray/pgspray   dest=/usr/local/bin/pgspray    owner=root   mode=775
+- name:            /usr/local/bin/pgspray
+  synchronize:     src=pgspray/ dest=/usr/local/bin/   delete=no  owner=no  rsync_opts=--exclude=secret
 
 ####################################################  /etc/prometheus/exporters
 - name:       secret file

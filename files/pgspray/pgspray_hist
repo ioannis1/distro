@@ -21,6 +21,7 @@ use feature qw( switch );
 use Getopt::Std ;
 no if $] >= 5.018, warnings => qw( experimental::smartmatch );
 use Data::Dumper;
+use Parallel::ForkManager;
 use Net::Prometheus;
 use LWP::UserAgent;
 use Config::INI::Reader;
@@ -38,13 +39,13 @@ use constant DEFAULTS => {
            password           => $ENV{PGPASSWORD} ||  undef,
            chmod              =>  0640 ,
            timeout            =>  4,
-	   #secret_file        => '/etc/prometheus/exporters/secret',
+	   secret_file        => '/etc/prometheus/exporters/secret',
            output_interval    =>  60,
            outdir             =>  '/var/lib/prometheus/node-exporter/node_dat',
            out_mode           =>  'stdout',        #  push, file, stdout
            samples_per_minute =>  20 ,
            sql                =>  "SELECT 'response_tme'" ,
-          #outfile            => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
+          outfile             => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
           #sql                =>  "SELECT current_setting('server_version')",
      }; 
 
@@ -55,11 +56,23 @@ sub read_config {
         my $result;
         for my $k (keys %$in) {
             next  if $k =~ /^common$/i ;
-            my $tmp = DEFAULTS();
-            $tmp->{$_} = $in->{common}{$_} for (keys %{$in->{common}}) ; 
+            next  if $k =~ /^#/        ;
+            my $tmp = DEFAULTS()       ;
+            my $entry;
+            for (keys %{$in->{common}}) { 
+                $entry     = $in->{common}{$_}            ;
+                $entry     =~ s/\s+[#].*$//               ;
+                $entry     =~ s/^\s*[#]//                 ;
+                $tmp->{$_} = $entry    unless /^\s*[#]/   ;
+            }
 
-            $tmp->{$_} = $in->{$k}{$_} for (keys %{$in->{$k}}) ; 
-           $result->{$k} = { %$tmp };
+            for (keys %{$in->{$k}})   {
+                $entry     = $in->{$k}{$_}                ;
+                $entry     =~ s/\s*[#].*$//               ;
+                $entry     =~ s/^\s*[#]//                 ;
+                $tmp->{$_} = $entry    unless /^\s*[#]/   ;
+            }
+            $result->{$k} = { %$tmp };
         }
         return $result;
 }
@@ -79,22 +92,30 @@ sub calc_percentile {
         $vals->[$pindex-1];
 }
 sub main_work ;
+my $pm   = new Parallel::ForkManager( 3 );
 ############################################## Process ARGV
 my %arg ;
-getopts('a:f:', \%arg);
+getopts('f:', \%arg);
 
-my $aim  = $arg{a}  || 'main' ;
 my $ini  = $arg{f}  || '/etc/default/pgspray' ;
+my $conf =  read_config( DEFAULTS, $ini);
 #############################################  Read Config
-my $conf          =  read_config( DEFAULTS, $ini);
-my $o             =  $conf->{$aim};
-   $o->{password} =  calc_passwd $o;
 
+DATA_LOOP:
+foreach my $cluster (keys %$conf) {
+  # Forks and returns the pid for the child:
+  my $pid = $pm->start and next DATA_LOOP;
 
-main_work( $o);
+         main_work ($conf->{$cluster});
+
+  $pm->finish; # Terminates the child process
+}
+#############################################  MAIN
+
 
 sub main_work  {
      my $o = shift;
+        $o->{password} =  calc_passwd $o;
      my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $o->{samples_per_minute}         ;
      #############################################  MAIN
 
