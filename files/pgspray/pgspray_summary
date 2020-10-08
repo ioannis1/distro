@@ -174,7 +174,7 @@ sub main_work {
                             default             {  die "no default for 'mode'\n"     }
                   }
             }
-
+           exit if $o->{one_shot} ;
    } # while
 } # sub
 __DATA__

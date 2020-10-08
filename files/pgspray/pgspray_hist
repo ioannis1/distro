@@ -43,6 +43,7 @@ use constant DEFAULTS => {
            output_interval    =>  60,
            outdir             =>  '/var/lib/prometheus/node-exporter/node_dat',
            out_mode           =>  'stdout',        #  push, file, stdout
+           one_shot           =>  undef,
            samples_per_minute =>  20 ,
            sql                =>  "SELECT 'response_tme'" ,
           outfile             => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
@@ -144,7 +145,7 @@ sub main_work  {
 	    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
 	}
 
-	while(1) {
+	while( 1 ) {
 		eval { 
 			local $SIG{ALRM} = sub { die "timeout" }; 
 			alarm $o->{output_interval}; 
@@ -175,5 +176,6 @@ sub main_work  {
                             default             {  die "no default for 'mode'\n"     }
                        }
 		}
+               exit if $o->{one_shot} ;
 	} # while
 }
