@@ -9,9 +9,10 @@ ConditionPathExists=/etc/default/pgspray
 
 
 [Service]
-Type=simple
+#Type=simple
+Type=forking
 #EnvironmentFile=-/etc/default/pgspray
-ExecStart=/usr/local/bin/pgspray -f /etc/default/pgspray  -a main
+ExecStart=/usr/local/bin/pgspray -f /etc/default/pgspray  
 ExecStop=/bin/kill -TERM  $MAINPID
 ExecReload=/bin/kill -HUP  $MAINPID
 WorkingDirectory=/etc/prometheus/exporters

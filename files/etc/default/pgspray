@@ -14,7 +14,7 @@ output_interval    =   6
 outdir             =  /tmp
 outmode            =  push             # stdout, push, file
 #sql               =  SELECT current_setting('server_version')
-chmod              =  440
+chmod              =  444
 #one_shot           =  undef
 
 [main]
@@ -28,4 +28,4 @@ cluster       =   karat
 
 [#green]
 port          =   5434  
-cluster       =   karat
+cluster       =   green

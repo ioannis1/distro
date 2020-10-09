@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 ######################### Sample invocation
-#./pgspray_hist  -f /etc/default/pgspray  -a karat
+#./pgspray_hist  -f /etc/default/pgspray  -f /path/to/config  
+# 
 #
 # then query from prometheus:
 # histogram_quantile(.95,sum by (le) (increase(pgspray_response_msec_bucket[5m])))
@@ -28,8 +29,8 @@ use Config::INI::Reader;
 use File::Slurp; 
 #use HTTP::Date qw(time2iso time2str) ;
 
-
-use constant DEFAULTS => {  
+use constant MAX_FORKS => 8 ;
+use constant DEFAULTS  => {  
            host_ip            => $ENV{PGHOST}     || 'localhost', 
            hostname           => 'localhost', 
            port               => $ENV{PGPORT}     ||  5332,
@@ -93,16 +94,26 @@ sub calc_percentile {
         my $pindex = ($per < 100) ? int(1+(($per/100)*scalar @$vals)) : scalar @$vals;
         $vals->[$pindex-1];
 }
+	sub send_to_prometheus {
+	    my ($content, $url) = @_;
+	    my $request = HTTP::Request->new('POST', $url);
+	    my $ua      = LWP::UserAgent->new();
+	    $request ->content($content);
+	    my $r       = $ua->request($request);
+	    return 1 if ($r->is_success);
+	    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
+	}
 sub main_work ;
-my $pm   = new Parallel::ForkManager( 3 );
 ############################################## Process ARGV
 my %arg ;
 getopts('f:1', \%arg);
 
-
-my $ini   =  $arg{f}  || '/etc/default/pgspray' ;
-my $once  =  $arg{1}                            ;
-my $conf  =  read_config( DEFAULTS, $ini)       ;
+my $ini      =  $arg{f}  || '/etc/default/pgspray'         ;
+my $once     =  $arg{1}                                    ;
+my $conf     =  read_config( DEFAULTS, $ini)               ;
+my $numforks = scalar keys %$conf                          ;
+   $numforks > MAX_FORKS and die "MAX_FORKS exeeded.\n"    ;
+my $pm      = new Parallel::ForkManager( $numforks)        ;
 
 #############################################  Read Config
 
@@ -139,15 +150,6 @@ sub main_work  {
 	my $DSN = "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" ;
 	my $url =  'http://qft:9091'. '/metrics/job/pgspray';
 	######################################################
-	sub send_to_prometheus {
-	    my ($content, $url) = @_;
-	    my $request = HTTP::Request->new('POST', $url);
-	    my $ua      = LWP::UserAgent->new();
-	    $request ->content($content);
-	    my $r       = $ua->request($request);
-	    return 1 if ($r->is_success);
-	    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
-	}
 
 	while( 1 ) {
 		eval { 
