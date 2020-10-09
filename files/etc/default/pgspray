@@ -15,6 +15,7 @@ outdir             =  /tmp
 outmode            =  push             # stdout, push, file
 #sql               =  SELECT current_setting('server_version')
 chmod              =  440
+#one_shot           =  undef
 
 [main]
 port          =   5432  
@@ -23,4 +24,8 @@ cluster       =   main
 
 [karat]
 port          =   5433  
+cluster       =   karat
+
+[#green]
+port          =   5434  
 cluster       =   karat

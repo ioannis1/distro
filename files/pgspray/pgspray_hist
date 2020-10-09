@@ -47,6 +47,7 @@ use constant DEFAULTS => {
            samples_per_minute =>  20 ,
            sql                =>  "SELECT 'response_tme'" ,
           outfile             => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
+          once_shot           =>  undef,
           #sql                =>  "SELECT current_setting('server_version')",
      }; 
 
@@ -96,10 +97,13 @@ sub main_work ;
 my $pm   = new Parallel::ForkManager( 3 );
 ############################################## Process ARGV
 my %arg ;
-getopts('f:', \%arg);
+getopts('f:1', \%arg);
 
-my $ini  = $arg{f}  || '/etc/default/pgspray' ;
-my $conf =  read_config( DEFAULTS, $ini);
+
+my $ini   =  $arg{f}  || '/etc/default/pgspray' ;
+my $once  =  $arg{1}                            ;
+my $conf  =  read_config( DEFAULTS, $ini)       ;
+
 #############################################  Read Config
 
 DATA_LOOP:
@@ -107,7 +111,7 @@ foreach my $cluster (keys %$conf) {
   # Forks and returns the pid for the child:
   my $pid = $pm->start and next DATA_LOOP;
 
-         main_work ($conf->{$cluster});
+         main_work ($conf->{$cluster}, $once);
 
   $pm->finish; # Terminates the child process
 }
@@ -115,7 +119,7 @@ foreach my $cluster (keys %$conf) {
 
 
 sub main_work  {
-     my $o = shift;
+     my ($o, $one) = @_;
         $o->{password} =  calc_passwd $o;
      my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $o->{samples_per_minute}         ;
      #############################################  MAIN
@@ -176,6 +180,6 @@ sub main_work  {
                             default             {  die "no default for 'mode'\n"     }
                        }
 		}
-               exit if $o->{one_shot} ;
+               exit if $o->{one_shot} || $one ;
 	} # while
 }
