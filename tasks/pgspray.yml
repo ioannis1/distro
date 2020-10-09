@@ -32,6 +32,14 @@
   copy:        src=etc/systemd/system/pgspray.service     dest="/etc/systemd/system/"     owner=root
   when:        os_family == 'Linux'
 
+- name:        systemd file
+  copy:        src=etc/systemd/system/pgspray_psgi.service     dest="/etc/systemd/system/"     owner=root
+  when:        os_family == 'Linux'
+
 - name:       reload  pgspray
   when:       os_family  == 'Linux'  
   systemd:    name="pgspray"   daemon_reload="yes"  state=stopped  enabled=no
+
+- name:       reload  pgspray_psgi
+  when:       os_family  == 'Linux'  
+  systemd:    name="pgspray_psgi"   daemon_reload="yes"  state=stopped  enabled=no

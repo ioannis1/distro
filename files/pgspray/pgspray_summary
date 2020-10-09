@@ -17,7 +17,6 @@ use Net::Prometheus;
 use LWP::UserAgent;
 use Config::INI::Reader;
 use File::Slurp; 
-#use HTTP::Date qw(time2iso time2str) ;
 
 use constant MAX_FORKS => 8 ;
 use constant DEFAULTS  => {  
