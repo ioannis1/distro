@@ -20,18 +20,17 @@ use feature qw( switch );
 use Getopt::Std ;
 no if $] >= 5.018, warnings => qw( experimental::smartmatch );
 use Data::Dumper;
-use Parallel::ForkManager;
 use Net::Prometheus;
-use LWP::UserAgent;
 use Config::INI::Reader;
 use File::Slurp; 
 #use HTTP::Date qw(time2iso time2str) ;
 
 
+use constant RC_FILES  => qw( ini pgspray.ini  /etc/default/pgspray /etc/default/pgspray.ini  ); 
 use constant DEFAULTS => {  
            host_ip            => $ENV{PGHOST}     || 'localhost', 
            hostname           => 'localhost', 
-           port               => $ENV{PGPORT}     ||  5332,
+           port               => $ENV{PGPORT}     ||  5432,
            sslmode            => $ENV{PGSSLMODE}  || 'prefer',
            user               => $ENV{PGUSER}     ||'prometheus',
            database           => $ENV{PGDATABASE} || 'postgres',
@@ -51,6 +50,9 @@ use constant DEFAULTS => {
      }; 
 
 #############  Read Config
+sub find_config { 
+    -r $_ && return $_  for RC_FILES  
+}
 sub read_config {
         my ($defaults, $file) = @_;
         my $in = Config::INI::Reader->read_file( $file );
@@ -94,15 +96,6 @@ sub calc_percentile {
         my $pindex = ($per < 100) ? int(1+(($per/100)*scalar @$vals)) : scalar @$vals;
         $vals->[$pindex-1];
 }
-	sub send_to_prometheus {
-	    my ($content, $url) = @_;
-	    my $request = HTTP::Request->new('POST', $url);
-	    my $ua      = LWP::UserAgent->new();
-	    $request ->content($content);
-	    my $r       = $ua->request($request);
-	    return 1 if ($r->is_success);
-	    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
-	}
 sub main_work ;
 #my $pm   = new Parallel::ForkManager( 3 );
 ############################################## Process ARGV
@@ -110,7 +103,7 @@ my %arg ;
 getopts('f:1', \%arg);
 
 
-my $ini   =  $arg{f}  || '/etc/default/pgspray' ;
+my $ini   =  $arg{f}  || find_config()          ;
 my $once  =  $arg{1}                            ;
 my $conf  =  read_config( DEFAULTS, $ini)       ;
 

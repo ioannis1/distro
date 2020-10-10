@@ -19,10 +19,11 @@ use Config::INI::Reader;
 use File::Slurp; 
 
 use constant MAX_FORKS => 8 ;
+use constant RC_FILES  => qw( ini pgspray.ini  /etc/default/pgspray /etc/default/pgspray.ini  ); 
 use constant DEFAULTS  => {  
            host_ip            => $ENV{PGHOST}     || 'localhost', 
            hostname           => 'localhost', 
-           port               => $ENV{PGPORT}     ||  5332,
+           port               => $ENV{PGPORT}     ||  5432,
            sslmode            => $ENV{PGSSLMODE}  || 'prefer',
            user               => $ENV{PGUSER}     ||'prometheus',
            database           => $ENV{PGDATABASE} || 'postgres',
@@ -42,6 +43,9 @@ use constant DEFAULTS  => {
      }; 
 
 
+sub find_config { 
+    -r $_ && return $_  for RC_FILES  
+}
 sub read_config {
         my ($defaults, $file) = @_;
         my $in = Config::INI::Reader->read_file( $file );
@@ -97,7 +101,7 @@ sub main_work ;
 my %arg ;
 getopts('f:1', \%arg);
 
-my $ini      =  $arg{f}  || '/etc/default/pgspray'         ;
+my $ini      =  $arg{f}  || find_config()                  ;
 my $once     =  $arg{1}                                    ;
 my $conf     =  read_config( DEFAULTS, $ini)               ;
 my $numforks = scalar keys %$conf                          ;
@@ -136,7 +140,7 @@ sub main_work {
     my $att = { AutoCommit => 0, ReadOnly => 1};
     my $DSN = "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" ;
 
-    my $url =  'http://qft:9091'. '/metrics/job/pgspray';
+    my $url =  'http://localhost:9091'. '/metrics/job/pgspray';
     ######################################################
 
     while(1) {
