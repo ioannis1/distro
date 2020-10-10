@@ -37,9 +37,11 @@
   when:        os_family == 'Linux'
 
 - name:       reload  pgspray
+  no_log:     true
   when:       os_family  == 'Linux'  
   systemd:    name="pgspray"   daemon_reload="yes"  state=stopped  enabled=no
 
 - name:       reload  pgspray_psgi
+  no_log:     true
   when:       os_family  == 'Linux'  
   systemd:    name="pgspray_psgi"   daemon_reload="yes"  state=stopped  enabled=no
