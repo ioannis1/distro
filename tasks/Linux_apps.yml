@@ -16,6 +16,9 @@
 - include: fluentd.yml
   when:    need_fluentd
 
+- include: pgspray.yml
+  when:    need_pgspray
+
 - include: fluent-bit-Linux.yml
   when:    need_fluent_bit
 
