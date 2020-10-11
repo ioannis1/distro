@@ -6,13 +6,24 @@
         - libtime-hires-perl
         - libdbd-pg-perl
         - libnet-prometheus-perl
-          #- libplack-perl
-          # libparallel-forkmanager-perl
-        #plus   LWP::Useragent
+        - libplack-perl
+        - libparallel-forkmanager-perl
 
 ####################################################  /etc/consul   FILES
-#- name:        Files   /etc/prometheus/exporters/pgspray/*
+- name:    verify perl prereqs 
+  command: perl -m{{item}} -e 'print 1'
+  with_items:
+            - Time::HiRes
+            - DBI
+            - DBD::Pg
+            - Net::Prometheus
+            - Parallel::ForkManager
+            - LWP::UserAgent
+            - Config::INI::Reader
+            - File::Slurp
+            - Plack
 
+####################################################  /etc/consul   FILES
 - name:            /usr/local/bin/pgspray
   synchronize:     src=pgspray/ dest=/usr/local/bin/   delete=no  owner=no  rsync_opts=--exclude=secret
 
