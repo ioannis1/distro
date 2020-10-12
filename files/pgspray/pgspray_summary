@@ -104,14 +104,18 @@ sub calc_percentile {
 	    return 1 if ($r->is_success);
 	    die 'POST failed. '. 'MSG: '. $r->decoded_content ; #. '(code'. $r->code. ")\n";
 	}
+sub show_settings {
+    say Dumper (shift);
+}
 sub main_work ;
 ############################################## Process ARGV
 my %arg ;
-getopts('f:1', \%arg);
+getopts('yf:1', \%arg);
 
 my $ini      =  $arg{f}  || find_config()                  ;
 my $once     =  $arg{1}                                    ;
 my $conf     =  read_config( DEFAULTS, $ini)               ;
+my $show     =  $arg{y}  && show_settings( $conf) && exit  ;
 my $numforks = scalar keys %$conf                          ;
    $numforks > MAX_FORKS and die "MAX_FORKS exeeded.\n"    ;
 my $pm      = new Parallel::ForkManager( $numforks)        ;
