@@ -10,12 +10,12 @@ password           =
 secret_file        =   /etc/prometheus/exporters/secret
 samples_per_minute =   20 
 output_interval    =   6
-#outdir             =  /var/lib/prometheus/node-exporter/node_dat
-outdir             =  /tmp
-outmode            =  push             # stdout, push, file
+#out_dir           =  /var/lib/prometheus/node-exporter/node_dat
+out_dir            =  /tmp
+out_mode           =  push             # stdout, push, file
 #sql               =  SELECT current_setting('server_version')
 chmod              =  444
-#one_shot           =  undef
+#one_shot          =  undef
 
 [main]
 port          =   5432  

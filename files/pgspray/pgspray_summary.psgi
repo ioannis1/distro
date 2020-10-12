@@ -33,13 +33,11 @@ use constant DEFAULTS => {
            timeout            =>  4,
 	   secret_file        => '/etc/prometheus/exporters/secret',
            output_interval    =>  60,
-           outdir             =>  '/var/lib/prometheus/node-exporter/node_dat',
+           out_dir            =>  '/var/lib/prometheus/node-exporter/node_dat',
            out_mode           =>  'stdout',        #  push, file, stdout
-           one_shot           =>  undef,
            samples_per_minute =>  20 ,
            sql                =>  "SELECT 'response_tme'" ,
           outfile             => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
-          once_shot           =>  undef,
           #sql                =>  "SELECT current_setting('server_version')",
      }; 
 
@@ -72,6 +70,14 @@ sub read_config {
             $result->{$k} = { %$tmp };
         }
         return $result;
+}
+sub calc_truth_false {
+       my $val = shift;
+       return undef unless $val;
+       return undef if $val =~ '^\s*$';
+       return undef if $val =~ '^(undef|none|na)$';
+       return undef if $val =~ /^(no|false|0)$/i;
+       return $val;
 }
 sub calc_passwd {
        my $o = shift;
@@ -118,7 +124,9 @@ $summa->{$_} = $prom->{$_}->new_summary ( name    => $metric_name,
                                           labels  => [qw/hostname host_ip port  cluster /] )  for (@clusters);
 my $app = sub {
      #############################################  MAIN
-        $conf->{$_}{password} =  calc_passwd $conf->{$_}    for (@clusters);
+     #############################################  MAIN
+        $conf->{$_}{password}   =  calc_truth_false $conf->{$_}{password}   for(@clusters)  ;
+        $conf->{$_}{password}   =  calc_passwd $conf->{$_}                  for (@clusters);
      my ($msec_BETWEEN_SAMPLES, $result, $dbh, $labels, $DSN);
      my $att = { AutoCommit => 0, ReadOnly => 1};
      my $url =  'http://qft:9091'. '/metrics/job/pgspray';

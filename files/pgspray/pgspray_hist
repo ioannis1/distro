@@ -43,13 +43,12 @@ use constant DEFAULTS  => {
            timeout            =>  4,
 	   secret_file        => '/etc/prometheus/exporters/secret',
            output_interval    =>  60,
-           outdir             =>  '/var/lib/prometheus/node-exporter/node_dat',
+           out_dir            =>  '/var/lib/prometheus/node-exporter/node_dat',
            out_mode           =>  'stdout',        #  push, file, stdout
            one_shot           =>  undef,
            samples_per_minute =>  20 ,
            sql                =>  "SELECT 'response_tme'" ,
           outfile             => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
-          once_shot           =>  undef,
           #sql                =>  "SELECT current_setting('server_version')",
      }; 
 
@@ -82,6 +81,14 @@ sub read_config {
             $result->{$k} = { %$tmp };
         }
         return $result;
+}
+sub calc_truth_false {
+       my $val = shift;
+       return undef unless $val;
+       return undef if $val =~ '^\s*$';
+       return undef if $val =~ '^(undef|none|na)$';
+       return undef if $val =~ /^(no|false|0)$/i;
+       return $val;
 }
 sub calc_passwd {
        my $o = shift;
@@ -135,8 +142,11 @@ foreach my $cluster (keys %$conf) {
 
 sub main_work  {
      my ($o, $one) = @_;
-        $o->{password} =  calc_passwd $o;
-     my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $o->{samples_per_minute}         ;
+        $o->{password}    =  calc_truth_false $o->{password}               ;
+        $o->{password}    =  calc_passwd $o                                ;
+        $o->{one_shot}    =  calc_truth_false $o->{one_shot}               ;
+        $o->{secret_file} =  calc_truth_false $o->{secret_file}            ;
+     my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $o->{samples_per_minute}   ;
      #############################################  MAIN
 
 	my $metric_name = 'pgspray';
@@ -177,8 +187,8 @@ sub main_work  {
 		if ($@ =~ /timeout/) {
                         $dbh->rollback;
                         my $msg = $prom->render ;
-                        my $outfile = ($o->{outdir}||"") . '/pgspray-'. $o->{cluster}. '.prom' ;
-                        given ($o->{outmode}) {
+                        my $outfile = ($o->{out_dir}||"") . '/pgspray-'. $o->{cluster}. '.prom' ;
+                        given ($o->{out_mode}) {
                             when  (/push/i)     { send_to_prometheus( $msg, $url)    }
                             when  (/file/i)     { write_file($outfile, $msg);
                                                  chmod $o->{chmod}, $outfile        }

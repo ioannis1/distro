@@ -1,0 +1,14 @@
+ARGS='--config.file /etc/prometheus/exporters/blackbox.yml'
+
+# preferred_ip_protocol: "ip4" 
+
+
+
+# Usage of prometheus-blackbox-exporter:
+#   --config.file="blackbox.yml"
+#                         Blackbox exporter configuration file.
+#   --web.listen-address=":9115"
+#                         The address to listen on for HTTP requests.
+#   --timeout-offset=0.5  Offset to subtract from timeout in seconds.
+#   --log.level=info      Only log messages with the given severity or above.
+#                         One of: [debug, info, warn, error]
