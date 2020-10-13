@@ -4,7 +4,7 @@
 - include: grafana.yml
   when:    need_grafana
 
-- include: prometheus.yml
+- include: prometheus-Linux.yml
   when:    need_prometheus
 
 - include: loki-Linux.yml

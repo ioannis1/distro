@@ -2,7 +2,7 @@
 
 ####################################################  /etc/prometheus   FILES
 - name:        Files   /etc/prometheus/*
-  synchronize:  src="etc/prometheus/"  dest="/etc/prometheus"  copy_links=yes  delete='no'  owner=no  dirs=yes #rsync_opts=--ignore-existing
+  synchronize:  src="etc/prometheus/"  dest="/etc/prometheus"    delete='no'  owner=no  dirs=yes #rsync_opts=--ignore-existing
 
 ####################################################  /etc/prometheus  TEMPLATES
 #
@@ -20,11 +20,13 @@
        - dynamic_consul.yml  
        - simple_consul.yml   
        - simple_consul_fed.yml   
+       - pg_both_fed.yml     
+       - pg_both.yml           
 
 
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
-  file:    src='/etc/prometheus/pg.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+  file:    src='/etc/prometheus/pg_both_fed.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
 
 - name:    symlink  rules/memory_rules.yml
   file:    src="/etc/prometheus/rules/memory_{{ os_family }}.yml"   dest='/etc/prometheus/rules/memory.yml'   state=link  owner=root   force=yes

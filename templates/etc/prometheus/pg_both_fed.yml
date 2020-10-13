@@ -25,19 +25,33 @@ scrape_configs:
     static_configs:
     - targets:
          - 127.0.0.1:9100  # node
-         - 127.0.0.1:9144 # grok
-         - 127.0.0.1:9145  # greok karat
-         - 127.0.0.1:9187  # postgres 
-         - 127.0.0.1:9188  # postgres karat
-         - 127.0.0.1:5000  # pgspray
-         - 127.0.0.1:2180  # consul
+         - 127.0.0.1:9144  # grok
+         - 127.0.0.1:9145  # grok karat  
+         - 127.0.0.1:9187  # postgres main  exporter
+         - 127.0.0.1:9188  # postgres karat exporter
+         - 127.0.0.1:5432  # main
+         - 127.0.0.1:5433  # karat
+         - 127.0.0.1:6543  # pgbouncer
+         - 127.0.0.1:8500  # consul http
     relabel_configs:
     - source_labels: [__address__]
       target_label: __param_target
+    - source_labels: [__address__]
+      regex:         '(.*):.*'
+      replacement:   $1 
+      target_label:  hostname
+    - source_labels: [hostname]
+      regex:         '127.0.0.1'
+      replacement:   '{{ ansible_hostname }}'
+      target_label:  hostname
+    - source_labels: [__address__]
+      regex:         '.*:(.*)'
+      replacement:   $1 
+      target_label:  port
     - source_labels: [__param_target]
       target_label: instance
     - target_label: __address__
-      replacement: '{{ ansible_all_ipv4_addresses.0 }}':9115 # The blackbox exporter.
+      replacement: '{{ ansible_hostname }}:9115' # The blackbox exporter.
       # replacement: 127.0.0.1:9115 # The blackbox exporter.
 
 
