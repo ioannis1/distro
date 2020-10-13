@@ -34,7 +34,7 @@ scrape_configs:
                  #- '{__name__=~"job:.*"}'
 
     static_configs:
-        - targets:    ['<client-servername>:9090']    #TODO: MUST changeme
+        - targets:    ['{{ federate_client1 }}:9090']    #TODO: MUST changeme
 
   - job_name: node
     static_configs:

@@ -24,6 +24,7 @@
        - pg_both.yml           
 
 
+
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
   file:    src='/etc/prometheus/pg_both_fed.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes

@@ -6,7 +6,7 @@
 #DATA_SOURCE_NAME=postgresql://postgres_exporter:password@localhost:5432/postgres?sslmode=disable
 #DATA_SOURCE_NAME=postgresql://prometheus:silver@localhost:5432/ts?sslmode=disable
 
-DATA_SOURCE_NAME='user=prometheus password=silver host=localhost port=5433 dbname=ts application_name=promethus-exporter sslmode=disable'
+DATA_SOURCE_NAME='user=prometheus password={{ postgres_passwd}} host=localhost port=5433 dbname=ts application_name=promethus-exporter sslmode=disable'
 
 # Set the command-line arguments to pass to the server.
 ARGS='--extend.query-path=/etc/prometheus/queries/pgqueries.yml --web.listen-address=":9188"'

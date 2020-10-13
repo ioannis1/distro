@@ -51,10 +51,12 @@
   with_items:
       - prometheus
       - prometheus-node-exporter
-      - prometheus-postgres-exporter
-      - prometheus-postgres-exporter-5433
 
-
+- name:        Templates /etc/default/
+  template:    src=etc/default/{{ item }}      dest="/etc/default/"     owner=root
+  with_items:
+       - prometheus-postgres-exporter      
+       - prometheus-postgres-exporter-5433
 ####################################################  other exporters
 - name:   grok_exporter
   when:   need_grok_exporter

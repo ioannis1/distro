@@ -2,3 +2,4 @@ scrape_interval:      60s      # Default is every 1 minute.
 scrape_timeout:       10s      # Default 10s
 evaluation_interval:  3m       # Default is every 1 minute.      Evaluates rules
 need_grok_exporter:   true     # valid only when need_prometheus already chosen 
+federate_client1:     bulk     # You CERTAINLY need t change it to your federate target (clinet).
