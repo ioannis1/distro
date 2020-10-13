@@ -20,6 +20,7 @@
             - Parallel::ForkManager
             - LWP::UserAgent
             - Config::INI::Reader
+            - Getopt::Compact
             - File::Slurp
             - Plack
 
