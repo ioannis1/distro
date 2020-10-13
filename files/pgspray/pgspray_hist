@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 ######################### Sample invocation
-#./pgspray_hist  -f /etc/default/pgspray  -f /path/to/config  
+#./pgspray_hist   -c /path/to/config   -1
 # 
 #
 # then query from prometheus:
@@ -19,7 +19,7 @@ use warnings;
 use DBI;
 use Time::HiRes qw( time usleep );
 use feature qw( switch );
-use Getopt::Std ;
+use Getopt::Compact ;
 no if $] >= 5.018, warnings => qw( experimental::smartmatch );
 use Data::Dumper;
 use Parallel::ForkManager;
@@ -117,20 +117,37 @@ sub send_to_prometheus {
 sub show_settings {
     say Dumper (shift);
 }
+sub form_dsn {
+        my $o = shift;
+        "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" 
+}
 sub main_work ;
 ############################################## Process ARGV
-my %arg ;
-getopts('yf:1', \%arg);
-
-my $ini      =  $arg{f}  || find_config()                  ;
-my $once     =  $arg{1}                                    ;
+my $opt = new Getopt::Compact
+              args   => '',
+              modes  => [qw (verbose )],
+              struct =>  [ [ [qw(c config)],   'config file'    , '=s' ],
+		   	   [ [qw(1 once)],     'run only once'         ],
+		   	   [ [qw(s show)],     'show parameters'       ],
+		   	   [ [qw(dsn)],        'show DSN'             ],
+	];
+my $arg  = $opt->opts;
+my $ini      =  $arg->{conf}  || find_config()             ;
 my $conf     =  read_config( DEFAULTS, $ini)               ;
-my $show     =  $arg{y}  && show_settings( $conf) && exit  ;
+my $once     =  $arg->{once}                               ; 
+$arg->{show}  && show_settings( $conf) && exit             ;
 my $numforks = scalar keys %$conf                          ;
    $numforks > MAX_FORKS and die "MAX_FORKS exeeded.\n"    ;
 my $pm       = new Parallel::ForkManager( $numforks)       ;
 
-#############################################  Read Config
+############################################################ show DSN
+if ($arg->{dsn}) {
+        for my $cluster (keys %$conf) {
+            say form_dsn( $conf->{$cluster} )              ; 
+        }
+        exit;
+} # if
+############################################################ 
 
 DATA_LOOP:
 foreach my $cluster (keys %$conf) {
