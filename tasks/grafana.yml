@@ -45,7 +45,9 @@
       - grafana-piechart-panel    
       - grafana-worldmap-panel
       - farski-blendstat-panel
+      - michaeldmoore-multistat-panel
       - yesoreyeram-boomtable-panel
+      - vonage-status-panel
 
 
 - name:    provisioning
@@ -65,8 +67,10 @@
   args:
      chdir: /usr/share/grafana
   
+################################################################  systemd
 
-- name: restart grafana server
-  systemd:    name="grafana-server"   daemon_reload="yes"   
+-  systemd:    name="grafana-server"   daemon_reload="yes"   enabled=no  state="stopped"  
+   when:  ansible_facts.services["grafana-server.service"].state  == 'disabled'
 
-
+-  systemd:    name="grafana-server"   daemon_reload="yes"   enabled=no  state="restarted"  
+   when:  ansible_facts.services["grafana-server.service"].state  == 'running'
