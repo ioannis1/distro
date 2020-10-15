@@ -94,10 +94,6 @@ scrape_configs:
       replacement:   'consul http'
       target_label: service
     - source_labels: [port]
-      regex:         '8500'
-      replacement:   'consul http'
-      target_label: service
-    - source_labels: [port]
       regex:         '5000'
       replacement:   'plack'
       target_label: service
