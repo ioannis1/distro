@@ -166,6 +166,10 @@ scrape_configs:
           regex: '^template[012]'
           action: drop
 
+  - job_name: pgspray
+    scrape_interval:  30s
+    static_configs:
+      - targets: ['localhost:5000']
 
   - job_name: node
     scrape_interval:  10s
