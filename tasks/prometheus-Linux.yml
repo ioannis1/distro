@@ -79,8 +79,19 @@
 ####################################################  systemd
 - name:        systemd file
   copy:        src=etc/systemd/system/prometheus-postgres-exporter_5433.service     dest="/etc/systemd/system/"     owner=root
-  when:        os_family == 'Linux'
+
+- name:       reload  postgres-exporter
+  systemd:    name="prometheus-postgres-exporter"   daemon_reload="yes"  state=stopped  enabled=no
+  when:       ansible_facts.services["prometheus-postgres-exporter.service"].state  == 'disabled'
 
 - name:       reload  postgres-exporter_5433
-  when:       os_family == 'Linux' 
   systemd:    name="prometheus-postgres-exporter_5433"   daemon_reload="yes"  state=stopped  enabled=no
+  when:       ansible_facts.services["prometheus-postgres-exporter_5433.service"].state  == 'disabled'
+
+- name:       reload  postgres-exporter_5433
+  systemd:    name="prometheus-postgres-exporter"   daemon_reload="yes"  state=restarted  enabled=no
+  when:       ansible_facts.services["prometheus-postgres-exporter.service"].state  == 'running'
+
+- name:       reload  postgres-exporter_5433
+  systemd:    name="prometheus-postgres-exporter_5433"   daemon_reload="yes"  state=restarted  enabled=no
+  when:       ansible_facts.services["prometheus-postgres-exporter_5433.service"].state  == 'running'

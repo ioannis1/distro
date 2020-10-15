@@ -24,7 +24,7 @@ datasources:
   # <bool> enable/disable with credentials headers
   withCredentials:
   # <bool> mark as default datasource. Max one per org
-  isDefault: false
+  isDefault: true
   jsonData:
      graphiteVersion: "1.1"
      tlsAuth: false

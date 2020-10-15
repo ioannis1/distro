@@ -39,21 +39,31 @@
 ####################################################  /etc/default
 - name:        /etc/default/pgspray
   copy:       src=etc/default/pgspray    dest=/etc/default/pgspray    owner=root   
-####################################################   reload servers
-- name:        systemd file
+####################################################   systemd
+- name:        install systemd file
   copy:        src=etc/systemd/system/pgspray.service     dest="/etc/systemd/system/"     owner=root
-  when:        os_family == 'Linux'
 
-- name:        systemd file
+- name:        install systemd file  
   copy:        src=etc/systemd/system/pgspray_psgi.service     dest="/etc/systemd/system/"     owner=root
-  when:        os_family == 'Linux'
 
+####################################################   reload servers
 - name:       reload  pgspray
   no_log:     true
-  when:       os_family  == 'Linux'  
   systemd:    name="pgspray"   daemon_reload="yes"  state=stopped  enabled=no
+  when:       ansible_facts.services["pgspray.service"].state  == 'disabled'
 
 - name:       reload  pgspray_psgi
   no_log:     true
-  when:       os_family  == 'Linux'  
   systemd:    name="pgspray_psgi"   daemon_reload="yes"  state=stopped  enabled=no
+  when:       ansible_facts.services["pgspray_psgi.service"].state  == 'disabled'
+
+- name:       reload  pgspray
+  no_log:     true
+  systemd:    name="pgspray"   daemon_reload="yes"  state=restarted  enabled=no
+  when:       ansible_facts.services["pgspray.service"].state  == 'running'
+
+- name:       reload  pgspray_psgi
+  no_log:     true
+  systemd:    name="pgspray_psgi"   daemon_reload="yes"  state=restarted  enabled=no
+  when:       ansible_facts.services["pgspray_psgi.service"].state  == 'running'
+  #

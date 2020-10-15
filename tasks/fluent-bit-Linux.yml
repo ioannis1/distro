@@ -22,16 +22,21 @@
   synchronize:  src=etc/td-agent-bit    dest="/etc/"    owner=root   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 
+####################################################  systemd
 - name:        systemd file
   copy:        src=etc/systemd/system/td-agent-bit.service     dest="/etc/systemd/system/"     owner=root
-  when:       
-    - false
-    - os_family == 'Linux' 
+  when:       false
 
-####################################################  systemd
+####################################################  reload servers
 
 - name:       reload  td-agent
+  systemd:    name="td-agent-bit"   daemon_reload="yes"  state=stopped  enabled=no
   when:       
     - false
-    - os_family == 'Linux' 
-  systemd:    name="td-agent-biti"   daemon_reload="yes"  state=stopped  enabled=no
+    - ansible_facts.services["td-agent-bit.service"].state  == 'disabled'
+
+- name:       reload  td-agent
+  systemd:    name="td-agent-bit"   daemon_reload="yes"  state=restarted  enabled=no
+  when:       
+    - false
+    - ansible_facts.services["td-agent-bit.service"].state  == 'running'

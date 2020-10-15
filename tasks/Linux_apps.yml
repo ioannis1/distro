@@ -16,11 +16,14 @@
 - include: fluentd.yml
   when:    need_fluentd
 
-- include: pgspray.yml
+- include: pgspray-Linux.yml
   when:    need_pgspray
 
 - include: fluent-bit-Linux.yml
   when:    need_fluent_bit
+
+- include: grok_exporter-Linux.yml
+  when:    need_grok_exporter
 
 - include: consul-Linux.yml
   when:    need_consul

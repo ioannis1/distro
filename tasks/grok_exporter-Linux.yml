@@ -24,21 +24,28 @@
 - name:         chmod 755 usr/local/bin/grok_exporter
   file:         path=/usr/local/bin/grok_exporter  mode=755
 
-
-
 ####################################################   systemd
 - name:        systemd files
   copy:        src=etc/systemd/system/{{item}}     dest="/etc/systemd/system/"     owner=root
-  when:        os_family == 'Linux'
   with_items:
       - grok_exporter.service  
       - grok_exporter_karat.service 
 
 
+####################################################   reload servers
 - name:       reload  grok
-  when:       os_family == 'Linux' 
-  systemd:    name="grok_exporter"   daemon_reload="yes"  state=started  enabled=yes
+  systemd:    name="grok_exporter"   daemon_reload="yes"  state=stopped  enabled=no
+  when:       ansible_facts.services["grok_exporter.service"].state  == 'disabled'
+
+
+- name:       reload  grok karat
+  systemd:    name="grok_exporter_karat"   daemon_reload="yes"  state=stopped  enabled=no
+  when:       ansible_facts.services["grok_exporter_karat.service"].state  == 'disabled'
 
 - name:       reload  grok
-  when:       os_family == 'Linux' 
-  systemd:    name="grok_exporter_karat"   daemon_reload="yes"  state=stopped  enabled=no
+  systemd:    name="grok_exporter"   daemon_reload="yes"  state=restarted  enabled=no
+  when:       ansible_facts.services["grok_exporter.service"].state  == 'running'
+
+- name:       reload  grok karat
+  systemd:    name="grok_exporter_karat"   daemon_reload="yes"  state=restarted  enabled=no
+  when:       ansible_facts.services["grok_exporter_karat.service"].state  == 'running'
