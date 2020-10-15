@@ -3,7 +3,8 @@
 # them (\\d for \d). If running under systemd, you need to double them again
 # (\\\\d to mean \d), and escape newlines too.
 #ARGS=""
-ARGS=" --collector.textfile.directory=/var/lib/prometheus/node-exporter/node_dat --web.disable-exporter-metrics --no-collector.buddyinfo --no-collector.ntp --no-collector.netdev --no-collector.supervisord"
+ARGS=" --collector.textfile.directory=/var/lib/prometheus/node-exporter/node_dat --web.disable-exporter-metrics --no-collector.buddyinfo --no-collector.ntp --no-collector.netdev --no-collector.supervisord --collector.systemd "
+#dARGS=" --collector.textfile.directory=/var/lib/prometheus/node-exporter/node_dat --web.disable-exporter-metrics --no-collector.buddyinfo --no-collector.ntp --no-collector.netdev --no-collector.supervisord --collector.systemd.unit-whitelist='pgspary' "
 
 
 
