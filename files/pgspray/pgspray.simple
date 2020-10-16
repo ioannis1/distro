@@ -1,0 +1,144 @@
+#!/usr/bin/env perl
+######################### Sample invocation
+## pgspray  $(conn)    -a pgspray  -e aft  -c karat  -f /tmp/pgspray_out
+#
+# then query from prometheus:
+# histogram_quantile(.95,sum by (le) (increase(pgspray_response_msec_bucket[5m])))
+#
+# NOTE: bucket boundaries are forever fixed at  5, 6, 7, 8, 10, 15, 25, 50, and 100  msec
+#
+# You could also picture this histogram data as a heatmap by using the query: sum(increase(http_request_duration_seconds_bucket[10m])) by (le), making sure to set the format as "heatmap," the legend format as {{ le }}, and setting the visualization in the panel settings to "heatmap."
+
+
+
+
+use strict;
+use v5.10;
+use warnings;
+use DBI;
+use Time::HiRes qw( time usleep );
+use Getopt::Std ;
+use Data::Dumper;
+
+use constant {
+             OVER_PERIOD  =>  10 ,  # 30 secs
+             SAMPLES      =>  30 ,  # 10
+};
+
+
+my $msec_BETWEEN_SAMPLES   =  1_000 * OVER_PERIOD / SAMPLES ;
+#say "msec=",$msec_BETWEEN_SAMPLES;
+
+sub show_settings {
+    say Dumper (shift);
+}
+### GLOBALS
+
+my %o ;
+
+###  Process Options
+getopts('ya:h:p:s:l:U:d:W:m:f:e:c:b:', \%o);
+
+#say Dumper(\%o);
+my  $conf;
+$conf->{host_ip}      =  $o{h} || $ENV{PGHOST}     || 'localhost' ;
+$conf->{hostname}     =  $o{e} || 'qft'                           ;
+$conf->{port}         =  $o{p} || $ENV{PGPORT}     || 5432        ;
+$conf->{sslmode}      =  $o{l} || $ENV{PGSSLMODE}  || 'prefer'    ;
+$conf->{user}         =  $o{U} || $ENV{PGUSER}     ||  $ENV{USER} ;
+$conf->{database}     =  $o{d} || $ENV{PGDATABASE} || 'postgres'  ;
+$conf->{appname}      =  $o{a} || $ENV{PGAPPNAME}  || 'pgspray'   ;
+$conf->{cluster}      =  $o{c} || 'main'                          ;
+$conf->{sql}          =  $o{s} || q(SELECT 'response time')       ;
+$conf->{passwd}       =  $o{W} || $ENV{PGPASSWORD} || undef       ;
+$conf->{timeout}      =  $o{t} || 3                               ;
+$conf->{between_hist} =  $o{b} || 10                              ;
+my  $show             =  $o{y} && show_settings($conf)  && exit   ;
+
+sub calc_percentile {
+        my ($per, $vals) = @_;
+        my $pindex = ($per < 100) ? int(1+(($per/100)*scalar @$vals)) : scalar @$vals;
+        $vals->[$pindex-1];
+}
+sub form_dsn {
+        my $o = shift;
+        "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" 
+}
+my $metric_name       = 'pgspray';
+my $metric_name_summa = 'pgspray_response';
+$main::bucket{ (sprintf "%s",$_) } = undef  for  qw/ 4  6  7  8  10 15  25  50  90  +Inf /;
+
+my $att = { AutoCommit => 0, ReadOnly => 1};
+my $DSN = form_dsn($conf);
+
+my ($sum,$count) = (0,0);
+
+sub collect_samples ;
+
+while (1) {
+        collect_samples;
+        sleep( $conf->{between_hist});
+}
+###################################################################################
+sub summary_output {
+        my ($metric, $o , $result, $sum, $count) = @_;
+        my @res = sort {$a<=>$b } @$result;
+	my $msg = sprintf "# HELP %s Postgresql query reponse time (msec)\n# TYPE %s summary\n", $metric, $metric;
+         $msg  .= sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %d\n),
+                        $metric, $o->{hostname},$o->{host_ip}, $o->{port} ,$o->{cluster}, $count;
+         $msg  .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %4f\n),
+                      $metric, $o->{hostname},$o->{host_ip}, $o->{port} ,$o->{cluster}, $sum;
+         for (qw/ 0.5  0.8 0.9  0.95/  ) {
+		$msg .= sprintf 
+			qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",quantile="%s"} %4f\n), 
+                        $metric, $o->{hostname},$o->{host_ip}, $o->{port} ,$o->{cluster}, $_, calc_percentile( $_*100 ,\@res);
+         }  #for 
+         $msg;
+}
+ sub histogram_output {
+     my ($metric, $o, $sum , $count) = @_;
+     my @sorted_keys = sort {$a<=>$b} (keys %main::bucket);
+     my $msg  = sprintf "# HELP %s Time or posgresql request in msec.\n# TYPE %s histogram\n" , $metric, $metric;
+     for (@sorted_keys) {
+            $msg .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",le="%s"} %d\n) , 
+                         $metric, $o->{hostname},$o->{host_ip}, $o->{port} ,$o->{cluster}, $_,$main::bucket{$_}|| 0  ;
+        }    
+     $msg .= sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %d\n),
+                     $metric.'_count', $o->{hostname},$o->{host_ip}, $o->{port} ,$o->{cluster}, $count;
+     $msg .=  sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s"} %4f\n),
+                     $metric.'_sum', $o->{hostname},$o->{host_ip}, $o->{port} ,$o->{cluster}, $sum ;
+
+ }
+sub collect_samples {
+        my ($start_time, $end_time, $dbh, $elapsed, $sleep, @result);
+
+        for (1..SAMPLES) {
+                $start_time = time();
+                eval {
+		        local $SIG{ALRM} = sub { die "timeout" }; 
+                        alarm $conf->{timeout} ;
+                        $dbh = DBI->connect($DSN, $conf->{user},$conf->{passwd}, $att) or die "Oops\n";
+                };
+                alarm  0 ;
+                $dbh->do($conf->{sql});
+                $end_time = time();
+                $elapsed = ($end_time - $start_time)*1000;   # in mill seconds
+                usleep( $msec_BETWEEN_SAMPLES  * 1_000 );
+                push @result, $elapsed;
+                $dbh->rollback();
+        }  
+        # insert values into buckets
+        for  (@result)  {
+                $count++;
+                $sum += $_;
+        
+                for my $i   (keys %main::bucket)  {
+                          ( $_ <= $i ) &&   $main::bucket{$i} ++ 
+                }
+        }
+        ################################## histogram OUTPUT
+        my $msg_hist = histogram_output( $metric_name, $conf, $sum, $count);
+        my $msg_summa =  summary_output( $metric_name_summa, $conf, \@result, $sum, $count);
+        ################################## send OUTPUT
+        say $msg_hist . $msg_summa ;
+}
