@@ -21,3 +21,4 @@ oracle_java:                true
 thinkorswim:                false
 need_consul:                false
 need_pgspray:               false
+need_grok:                  false

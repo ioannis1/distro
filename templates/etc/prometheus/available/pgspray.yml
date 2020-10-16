@@ -1,0 +1,5 @@
+- targets: ['localhost:5000'] 
+  labels:
+     job:       pgspray
+     host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+     hostname:  '{{ ansible_hostname }}'

@@ -16,18 +16,41 @@
        - static_write-pg.yml
        - federate_server.yml
        - federate_client.yml
-       - dynamic_file.yml    
+       - dynamic_file_fed.yml    
        - dynamic_consul.yml  
        - simple_consul.yml   
        - simple_consul_fed.yml   
        - pg_both_fed.yml     
        - pg_both.yml           
+       - tgroups/blackbox.yml           
 
 
+- name:        Templates /etc/prometheus/available/*
+  template:    src=etc/prometheus/available/{{ item }}      dest="/etc/prometheus/available/"     owner=root
+  with_items:
+       - node.yml
+       - pgspray.yml
+       - grok_main.yml
+       - grok_karat.yml
+       - postgres_5432.yml
+       - postgres_5433.yml
+
+- name:  rm -f /etc/prometheus/enabled
+  file:  dest="/etc/prometheus/enabled"  state=absent   owner=root  force=yes 
+
+- name:  mkdir /etc/prometheus/enabled
+  file:  dest="/etc/prometheus/enabled"  state=directory   owner=root  force=yes 
+
+- name:      symlinks    /etc/prometheus/enabled/*
+  command:   /bin/ln -sf    "../available/{{ item | basename}}"  
+  args:
+     chdir:    /etc/prometheus/enabled/
+  with_fileglob:
+     - "templates/etc/prometheus/enabled/*.yml"
 
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
-  file:    src='/etc/prometheus/pg_both_fed.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+  file:    src='/etc/prometheus/dynamic_file_fed.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
 
 - name:    symlink  rules/memory_rules.yml
   file:    src="/etc/prometheus/rules/memory_{{ os_family }}.yml"   dest='/etc/prometheus/rules/memory.yml'   state=link  owner=root   force=yes
@@ -35,11 +58,6 @@
 - name:    symlink  /etc/prometheus/makefile
   file:    src='/etc/prometheus/validate/makefile_Darwin'   dest='/etc/prometheus/makefile'   state=link  owner=root   force=yes
 
-####################################################  /etc/default
-####################################################  other exporters
-- name:   grok_exporter
-  when:   need_grok_exporter
-  include:  grok_exporter.yml
 ####################################################  mkdir
 - name:    mkdir  node_dat
   file:    dest='/var/lib/prometheus/node_dat'    state=directory  owner=root   force=yes

@@ -1,0 +1,6 @@
+- targets: ['localhost:9144'] 
+  labels:
+     job:       grok
+     cluster:   main
+     host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+     hostname:  '{{ ansible_hostname }}'

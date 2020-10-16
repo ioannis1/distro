@@ -4,7 +4,7 @@ global:
   scrape_interval:      {{ scrape_interval     | default( '1m'  )  }}
   scrape_timeout:       {{ scrape_timeout      | default( '10s' )  }} 
   evaluation_interval:  {{ evaluation_interval | default( '1m'  )  }}
-  # sample_limit:       {{ sample_limit        | default( '10000' )  }}
+  # sample_limit:       {{ sample_limit        | default( '10000' )}}
 
   # Labels when communicating with  external systems (federation, remote storage, Alertmanager).
   external_labels:

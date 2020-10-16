@@ -1,0 +1,133 @@
+#https://github.com/prometheus/prometheus/blob/master/config/testdata/conf.good.yml#L32-L39
+ 
+global:
+  scrape_interval:      {{ scrape_interval     | default( '1m'  )  }}
+  scrape_timeout:       {{ scrape_timeout      | default( '10s' )  }} 
+  evaluation_interval:  {{ evaluation_interval | default( '1m'  )  }}
+  # sample_limit:       {{ sample_limit       | default( '10000' ) }}
+  external_labels:
+      host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
+      hostname:  '{{ ansible_hostname }}'
+
+#alerting:
+# alertmanagers:
+#   - static_configs:
+#       - targets: ['localhost:9093']
+
+rule_files:
+   - "rules/memory.yml"
+ 
+scrape_configs:
+- job_name: 'overwritten-default'
+  scrape_timeout:       30s 
+  file_sd_configs:
+    - files:
+      - /etc/prometheus/enabled/*.yml
+      refresh_interval: 5m
+
+  relabel_configs:
+     - source_labels: [__name__]
+       regex: 'pg_settings_s[ysqtu].*'
+       action: drop
+     - source_labels: [datname]
+       regex: '^template[012]'
+       action: drop
+
+       #
+#https://s.natalian.org/2016-04-13/prometheus.yml
+- job_name: blackbox
+  metrics_path: /probe
+  params:
+       module: ['tcp_connect']
+       #module: ['http_2xx']
+  file_sd_configs:
+    - files:
+      - /etc/prometheus/tgroups/blackbox.yml
+      refresh_interval: 5m
+  relabel_configs:
+  - source_labels: [__address__]
+    target_label: __param_target
+  - source_labels: [__address__]
+    regex:         '(.*):.*'
+    replacement:   $1 
+    target_label:  hostname
+  - source_labels: [hostname]
+    regex:         '127.0.0.1'
+    replacement:   'qft'
+    target_label:  hostname
+  - source_labels: [__address__]
+    regex:         '.*:(.*)'
+    replacement:   $1 
+    target_label:  port
+  - source_labels: [__param_target]
+    target_label: instance
+  - target_label: __address__
+    replacement: 'qft:9115' # The blackbox exporter.
+      # replacement: 127.0.0.1:9115 # The blackbox exporter.
+      ####################
+  - source_labels: [port]
+    regex:         '9100'
+    replacement:   'node-exporter'
+    target_label: service
+  - source_labels: [port]
+    regex:         '9144'
+    replacement:   'grok-exporter-main'
+    target_label: service
+  - source_labels: [port]
+    regex:         '9145'
+    replacement:   'grok-exporter-karat'
+    target_label: service
+  - source_labels: [port]
+    regex:         '9187'
+    replacement:   'postgres-exporter-main'
+    target_label: service
+  - source_labels: [port]
+    regex:         '9188'
+    replacement:   'postgres-exporter-karat'
+    target_label: service
+  - source_labels: [port]
+    regex:         '6543'
+    replacement:   'pgbounce'
+    target_label: service
+  - source_labels: [port]
+    regex:         '5432'
+    replacement:   'pg server main'
+    target_label: service
+  - source_labels: [port]
+    regex:         '5433'
+    replacement:   'pg server karat'
+    target_label: service
+  - source_labels: [port]
+    regex:         '8500'
+    replacement:   'consul http'
+    target_label: service
+  - source_labels: [port]
+    regex:         '5000'
+    replacement:   'plack'
+    target_label: service
+  - source_labels: [port]
+    regex:         '9115'
+    replacement:   'blackbox-exporter'
+    target_label: service
+  - source_labels: [port]
+    regex:         '9091'
+    replacement:   'pushgateway-exporter'
+    target_label: service
+      ####################
+
+
+- job_name:       'federate'
+  scrape_interval: 15s
+  honor_labels:   true
+  metrics_path:   '/federate'
+  params:
+       'match[]':
+               - '{job="prometheus"}'
+               - '{job="node"}'
+               - '{job=~"postgres.*"}'
+               - '{job="grok"}'
+                 #- '{job="node"}'
+                 #- '{__name__=~"job:.*"}'
+
+  static_configs:
+        - targets:    ['{{ federate_client1 }}:9090']    #TODO: MUST changeme
