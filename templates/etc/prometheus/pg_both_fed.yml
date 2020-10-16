@@ -106,6 +106,18 @@ scrape_configs:
       replacement:   'pushgateway-exporter'
       target_label: service
       ####################
+    - source_labels: [port]
+      regex:         '2020'
+      replacement:   'fluent-bit'
+      target_label:  service
+    - source_labels: [port]
+      regex:         '3100'
+      replacement:   'loki'
+      target_label:  service
+    - source_labels: [port]
+      regex:         '9080'
+      replacement:   'promtail'
+      target_label:  service
 
 
   - job_name: grok
