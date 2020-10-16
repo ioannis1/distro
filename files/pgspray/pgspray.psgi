@@ -112,9 +112,34 @@ getopts('f:1', \%arg);
 my $ini   =  $arg{f}  || find_config()          ;
 my $once  =  $arg{1}                            ;
 my $conf  =  read_config( DEFAULTS, $ini)       ;
-
-#############################################  Read Config
 my $one = 'yes';
+
+########## Global
+my $dbh;
+#############################################  Read Config
+sub form_dsn {
+        my $o = shift;
+        "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" 
+}
+sub calc_between_samples {
+        my $o = shift;
+	1_000 * 60 / $o->{samples_per_minute} ;
+}
+sub form_labels {
+        my $o = shift;
+        { hostname=> $o->{hostname}, host_ip=>$o->{host_ip}, port=>$o->{port}, cluster=>$o->{cluster} }  ;
+}
+sub take_observation {
+        my ($o, $dsn, $att) = @_ ;
+        my ($start_time, $end_time);
+        $start_time = time();
+        $dbh        = DBI->connect($dsn, $o->{user},$o->{password}, $att) or die "@_\n" ;
+        #$dbh->do("SELECT 3");
+        $dbh->do( $o->{sql} );
+        $end_time   = time();
+        $dbh->rollback;
+       ($end_time - $start_time)*1000;   # in mill seconds
+}
 
 my @clusters          = keys %$conf;
 my $metric_name       = 'pgspray';
@@ -137,6 +162,17 @@ my $summa;
 $summa->{$_} = $prom_summa->{$_}->new_summary ( name    => $metric_name_summa,
                                                 help    =>  'Time responce of posgresql request (in msec).', 
                                                 labels  => [qw/hostname host_ip port  cluster /] )  for (@clusters);
+sub output_qsummary {
+        my ($metric,$o, $result) = @_ ;
+        my $msg ;
+        my $res =  [ sort {$a<=>$b } (@{$result}) ];
+        for my $quantile (qw/ 0.5 0.8  0.9  0.95/  ) {
+                $msg .=sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",quantile="%s"} %4f\n), 
+                $metric, $o->{hostname},$o->{host_ip}, $o->{port} ,
+                $o->{cluster}, $quantile,  calc_percentile( $quantile*100 , $res);
+        } # for quantile
+	$msg;
+}
 my $app = sub {
      #############################################  MAIN
         $conf->{$_}{password}   =  calc_truth_false $conf->{$_}{password}   for(@clusters)  ;
@@ -145,10 +181,9 @@ my $app = sub {
      my $att = { AutoCommit => 0, ReadOnly => 1};
      my $url =  'http://qft:9091'. '/metrics/job/pgspray';
         for (@clusters) {
-                $msec_BETWEEN_SAMPLES->{$_}   =  1_000 * 60 / $conf->{$_}{samples_per_minute} ;
-                $labels->{$_} = { hostname=> $conf->{$_}{hostname}, host_ip=>$conf->{$_}{host_ip}, 
-                                port=>$conf->{$_}{port}, cluster=>$conf->{$_}{cluster} }  ;
-                $DSN->{$_}    = "dbi:Pg:host=$conf->{$_}{host_ip};port=$conf->{$_}{port};dbname=$conf->{$_}{database};sslmode=$conf->{$_}{sslmode};application_name=$conf->{$_}{appname}"   for (@clusters);
+                $msec_BETWEEN_SAMPLES->{$_}   =  calc_between_samples($conf->{$_});
+                $labels->{$_}                 =  form_labels($conf->{$_}) ;
+                $DSN->{$_}                    =  form_dsn($conf->{$_})    ;
         }
 	######################################################
 		eval { 
@@ -157,14 +192,7 @@ my $app = sub {
 			my ($start_time, $end_time,  $elapsed);
 			while(1) {
                                  for (@clusters) {
-                                         $start_time->{$_} = time()    for (@clusters);
-                                         $dbh->{$_} = DBI->connect($DSN->{$_}, $conf->{$_}{user},
-                                                                   $conf->{$_}{password}, $att) or die "@_\n" ;
-                                         $dbh->{$_}->do( $conf->{$_}{sql} );
-
-                                         $end_time->{$_} = time();
-                                         $elapsed->{$_}  = ($end_time->{$_} - $start_time->{$_})*1000;   # mill sec
-                                         $dbh->{$_}->rollback;
+                                         $elapsed->{$_}  = take_observation($conf->{$_}, $DSN->{$_}, $att);  
                                          $hist->{$_}->observe( $labels->{$_}, $elapsed->{$_} );
 					 push @{$result->{$_}}, $elapsed->{$_};
 					 $summa->{$_}->observe( $labels->{$_}, $elapsed->{$_} );
@@ -174,28 +202,22 @@ my $app = sub {
 		};  # eval
 		alarm 0; # cancel the alarm 
 #############  SUMMARY  OUTPUT
-                my ($res,$msg_summa);
+                my $msg_summa;
 		for (@clusters) {
-                                $dbh->{$_}->rollback;
-                                $res->{$_}= [ sort {$a<=>$b } (@{$result->{$_}}) ];
-
-			        for my $quantile (qw/ 0.5  0.9  0.99/  ) {
-			                $msg_summa->{$_} .=sprintf qq(%s{hostname="%s",host_ip="%s",pg_port="%d",cluster="%s",quantile="%s"} %4f\n), 
-			                $metric_name_summa, $conf->{$_}{hostname},$conf->{$_}{host_ip}, $conf->{$_}{port} ,
-			   	        $conf->{$_}{cluster}, $quantile,  calc_percentile( $quantile*100 ,$res->{$_});
-			        } # for quantile
-                                $msg_summa->{$_} =  $prom_summa->{$_}->render . $msg_summa->{$_} ;
+			        #$dbh->{$_}->rollback;
+				$msg_summa->{$_} =  $prom_summa->{$_}->render  
+			                    .  output_qsummary($metric_name_summa, $conf->{$_}, $result->{$_});
                 } # for clusters    
                 my $msg = join("\n",values %$msg_summa)    ; 
 #############  HISTOOGRAM  OUTPUT
                 for (@clusters) {
-                                $dbh->{$_}->rollback;
+			#$dbh->{$_}->rollback;
 				$msg .= $prom->{$_}->render ;
                 }
 ##################################  OUPUT
                 return [
                         '200',
                         [ 'Content-Type' => 'text/plain' ],
-                        [ $msg ],
+			[ $msg ],
                  ];
 }
