@@ -6,6 +6,13 @@ groups:
        - record: node_memory_ioannis_MemFree
          expr:   node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Cached_bytes - node_memory_Buffers_bytes
 
+  - name: MemUsed
+    #interval: <duration> | default = global.evaluation_interval ]
+    interval: 10s
+    rules:
+       - record: node_memory_ioannis_MemUsed
+         expr:   node_memory_ioannis_MemTotal - node_memory_ioannis_MemFree
+
   - name: MemBufCach
     #interval: <duration> | default = global.evaluation_interval ]
     interval: 10s

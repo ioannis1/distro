@@ -127,6 +127,9 @@ scrape_configs:
     replacement:   'promtail'
     target_label:  service
   - source_labels: [port]
+    regex:         '9090'
+    replacement:   'prometheus'
+    target_label:  service
 
 
 - job_name:       'federate'
