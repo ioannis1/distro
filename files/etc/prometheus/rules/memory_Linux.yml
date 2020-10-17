@@ -16,5 +16,5 @@ groups:
   - name: MemTotal
     interval: 10s
     rules:
-       - record: node_memory_ioannis_MemaTotal
+       - record: node_memory_ioannis_MemTotal
          expr:   node_memory_MemTotal_bytes
