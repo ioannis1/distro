@@ -9,24 +9,14 @@
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
-      },
-      {
-        "datasource": "loki",
-        "enable": false,
-        "expr": "{filename=\"/var/log/postgresql/main-21.log\"} |= \"FATAL\"",
-        "hide": false,
-        "iconColor": "#C4162A",
-        "name": "passwd FATAL",
-        "showIn": 0,
-        "target": {}
       }
     ]
   },
   "editable": true,
   "gnetId": null,
   "graphTooltip": 1,
-  "id": 11,
-  "iteration": 1601445618721,
+  "id": 2,
+  "iteration": 1603048897453,
   "links": [
     {
       "asDropdown": true,
@@ -252,8 +242,11 @@
       "targets": [
         {
           "alias": "",
+          "expr": "",
           "format": "table",
           "hide": false,
+          "interval": "",
+          "legendFormat": "",
           "rawSql": "SELECT * FROM (\nVALUES ('conflicts',  (SELECT conflicts FROM pg_stat_database WHERE datname = $db))\n       , ('temp_files', (SELECT temp_files FROM pg_stat_database WHERE datname = $db))\n      -- , ('numbackends', (SELECT numbackends FROM pg_stat_database WHERE datname = $db))\n      -- , ('temp_bytes', (SELECT temp_bytes FROM pg_stat_database WHERE datname = $db))\n      ,  ('deadlocks', (SELECT deadlocks FROM pg_stat_database WHERE datname = $db))\n      -- ('blk_read_time', (SELECT blk_read_time FROM pg_stat_database WHERE datname = $db))\n     ) i(metric,value)\n     \nunion\nSELECT  'months until AV_FREEZE_MAX_AGE'\n      , (diff/(7*24*60*60*xact/epoch)/4 ::int)::int    AS  \"weeks remain\"\nFROM (\n    SELECT  S.datname\n       , extract (epoch from (now()-pg_stat_get_db_stat_reset_time(datid)))  AS epoch\n       , xact_commit + xact_rollback                                         AS xact\n       , current_setting('autovacuum_freeze_max_age')::int  - age(datfrozenxid)       AS diff\n    FROM pg_stat_database S JOIN pg_database D  ON (S.datname = D.datname)\n        WHERE D.datname = $db \n)i\n\n",
           "refId": "A"
         }
@@ -263,13 +256,1855 @@
       "type": "table-old"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 7
+      },
+      "id": 155,
+      "panels": [
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "description": "pgspray via systemd(5)",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 0,
+            "y": 8
+          },
+          "id": 142,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "repeat": null,
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "systemd",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"pgspray.service\"}",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "systemd",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pgspray",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "description": "pgspray via systemd(5)",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 3,
+            "y": 8
+          },
+          "id": 166,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "systemd",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"apache2.service\"}",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "systemd",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "apache2",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "description": "pgspray via systemd(5)",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 6,
+            "y": 8
+          },
+          "id": 167,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "systemd",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"postfix.service\"}",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "systemd",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "postfix",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "description": "psgi via plack(5)",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 9,
+            "y": 8
+          },
+          "id": 164,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "fluent-bit",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"fluent-bit\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "fluent-bit",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            },
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "aa",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "Never",
+              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+              "hide": true,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "aa",
+              "refId": "B",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "fluent-bit",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 12,
+            "y": 8
+          },
+          "id": 159,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "blackbox",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"blackbox-exporter\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "blackbox",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "blackbox",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 15,
+            "y": 8
+          },
+          "id": 150,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "pg server",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"pg server $cluster\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "pg server",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pg server $cluster",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 18,
+            "y": 8
+          },
+          "id": 153,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "pgexporter",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"postgres-exporter-$cluster\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "pgexporter",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pgexporter-$cluster",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 21,
+            "y": 8
+          },
+          "id": 158,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "grok",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"grok-exporter-$cluster\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "grok",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "grok-exporter-$cluster",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "description": "psgi via plack(5)",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 3,
+            "y": 11
+          },
+          "id": 161,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "plack",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"plack\"}",
+              "format": "time_series",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "plack",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            },
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "aa",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "Never",
+              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+              "hide": true,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "aa",
+              "refId": "B",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pgspray ",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "description": "psgi via plack(5)",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 6,
+            "y": 11
+          },
+          "id": 163,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "loki",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"loki\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "loki",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            },
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "aa",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "Never",
+              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+              "hide": true,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "aa",
+              "refId": "B",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "loki",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 9,
+            "y": 11
+          },
+          "id": 156,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "blackbox",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"blackbox-exporter\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "blackbox",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "blackbox",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 12,
+            "y": 11
+          },
+          "id": 157,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "consul http",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"consul http\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "consul http",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "consul http",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 15,
+            "y": 11
+          },
+          "id": 165,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "prometheus",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"prometheus\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "prometheus",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "prometheus",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "description": "psgi via plack(5)",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 18,
+            "y": 11
+          },
+          "id": 162,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "promtail",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"promtail\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "promtail",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            },
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "aa",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "Never",
+              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+              "hide": true,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "aa",
+              "refId": "B",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "promtail",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 90,
+          "datasource": "$ds",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 21,
+            "y": 11
+          },
+          "id": 146,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:571",
+              "aggregation": "Last",
+              "alias": "pushgateway",
+              "crit": "0",
+              "decimals": 2,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"pushgateway-exporter\"}",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "pushgateway",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pushgateway",
+          "type": "vonage-status-panel"
+        }
+      ],
+      "title": "blackbox tcp",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 140,
+      "panels": [
+        {
+          "Aggregate": "last",
+          "BarPadding": 10,
+          "BaseLineColor": "#ff0000",
+          "BaseLineValue": null,
+          "BaseLineWidth": 1,
+          "CurveType": "Monotone",
+          "DateFormat": "YYYY-MM-DD HH:mm:ss",
+          "DateTimeColName": "date",
+          "DotColor": "white",
+          "DotSize": 10,
+          "EvenRowColor": "rgba(61, 61, 64, 0.78)",
+          "FlashHighLimitBar": false,
+          "FlashLowLimitBar": false,
+          "GroupCols": 0,
+          "GroupGap": 5,
+          "GroupLabelColor": "#ffffff",
+          "GroupLabelFontSize": "200%",
+          "GroupNameFilter": "",
+          "GroupSortString": "",
+          "HighAxisColor": "#ffffff",
+          "HighAxisWidth": 1,
+          "HighBarColor": "rgb(120, 128, 0)",
+          "HighLimitBarColor": "#ff0000",
+          "HighLimitBarFlashColor": "#ffa500",
+          "HighLimitBarFlashTimeout": 1000,
+          "HighLimitLineColor": "#ff0000",
+          "HighLimitValue": null,
+          "HighLmitLineWidth": 1,
+          "HighSideMargin": 22,
+          "Horizontal": true,
+          "LabelColName": "service",
+          "LabelColor": "#ffffff",
+          "LabelFontSize": "100%",
+          "LabelMargin": null,
+          "LabelNameFilter": "",
+          "LableAngle": 0,
+          "LineColor": "blue",
+          "LineWidth": 5,
+          "Links": [],
+          "LowAxisColor": "#ffffff",
+          "LowAxisWidth": 1,
+          "LowBarColor": "#C4162A",
+          "LowLimitBarColor": "#ff0000",
+          "LowLimitBarFlashColor": "#ffa500",
+          "LowLimitBarFlashTimeout": 200,
+          "LowLimitLineColor": "#ff0000",
+          "LowLimitValue": null,
+          "LowLmitLineWidth": 1,
+          "LowSideMargin": 11,
+          "MaxLineColor": "rgb(74, 232, 12)",
+          "MaxLineValue": null,
+          "MaxLineWidth": 1,
+          "MinLineColor": "#ff0000",
+          "MinLineValue": null,
+          "MinLineWidth": 1,
+          "OddRowColor": "rgba(33, 33, 34, 0.92)",
+          "OutOfRangeLabelColor": "#ffffff",
+          "OutlineColor": "rgba(245, 255, 0, 0.1)",
+          "RecolorColName": null,
+          "RecolorHighLimitBar": false,
+          "RecolorLowLimitBar": false,
+          "RecolorRules": [],
+          "ScaleFactor": 1,
+          "ShowBars": true,
+          "ShowBaseLine": false,
+          "ShowDate": false,
+          "ShowGroupLabels": true,
+          "ShowHighLimitLine": false,
+          "ShowLabels": true,
+          "ShowLeftAxis": true,
+          "ShowLines": false,
+          "ShowLowLimitLine": false,
+          "ShowMaxLine": false,
+          "ShowMinLine": false,
+          "ShowRightAxis": true,
+          "ShowTooltips": true,
+          "ShowValues": true,
+          "SortColName": "service",
+          "SortDirection": "ascending",
+          "TZOffsetHours": 0,
+          "TooltipDateFormat": "YYYY-MM-DD HH:mm:ss",
+          "ValueColName": "Value",
+          "ValueColor": "#ffffff",
+          "ValueDecimals": 0,
+          "ValueFontSize": "100%",
+          "ValuePosition": "top",
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [
+                {
+                  "from": "",
+                  "id": 0,
+                  "text": "",
+                  "to": "",
+                  "type": 1
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "dark-red",
+                    "value": null
+                  },
+                  {
+                    "color": "dark-green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 23,
+            "x": 0,
+            "y": 9
+          },
+          "id": 144,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "probe_success{hostname=\"$host\"}",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ service }}",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "blackbox",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "service",
+                    "Value"
+                  ]
+                }
+              }
+            }
+          ],
+          "type": "michaeldmoore-multistat-panel"
+        }
+      ],
+      "title": "services",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 56,
+      "panels": [
+        {
+          "cards": {
+            "cardPadding": null,
+            "cardRound": null
+          },
+          "color": {
+            "cardColor": "#3274D9",
+            "colorScale": "sqrt",
+            "colorScheme": "interpolateOranges",
+            "exponent": 0.5,
+            "mode": "opacity"
+          },
+          "dataFormat": "tsbuckets",
+          "datasource": "$ds",
+          "description": "response time : samples + sma",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 0,
+            "y": 16
+          },
+          "heatmap": {},
+          "hideZeroBuckets": true,
+          "highlightCards": true,
+          "id": 53,
+          "legend": {
+            "show": false
+          },
+          "links": [],
+          "pluginVersion": "7.2.0-040ed969pre",
+          "repeat": null,
+          "reverseYBuckets": false,
+          "targets": [
+            {
+              "expr": "sum(increase(pgspray_bucket{hostname=\"$host\",cluster=\"$cluster\"}[$delta])) by (le)",
+              "format": "heatmap",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{ le }}",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "heatmap",
+          "tooltip": {
+            "show": true,
+            "showHistogram": false
+          },
+          "type": "heatmap",
+          "xAxis": {
+            "show": true
+          },
+          "xBucketNumber": null,
+          "xBucketSize": null,
+          "yAxis": {
+            "decimals": null,
+            "format": "ms",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true,
+            "splitFactor": null
+          },
+          "yBucketBound": "auto",
+          "yBucketNumber": null,
+          "yBucketSize": null
+        },
+        {
+          "cacheTimeout": null,
+          "datasource": "$ds",
+          "description": "as reported by pgspray summary",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "decimals": 3,
+              "mappings": [
+                {
+                  "id": 0,
+                  "op": "=",
+                  "text": "N/A",
+                  "type": 1,
+                  "value": "null"
+                }
+              ],
+              "nullValueMode": "connected",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 8,
+            "y": 16
+          },
+          "id": 168,
+          "interval": null,
+          "links": [],
+          "maxDataPoints": 100,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "pgspray_response{hostname=\"$host\",cluster=\"$cluster\",quantile=\"0.95\"}",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": " sum (pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
+              "format": "time_series",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "title": "95th",
+          "type": "stat"
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "description": "response time : samples + sma",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 4,
+            "w": 5,
+            "x": 11,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 136,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum(increase(pgspray_bucket{hostname=\"$host\",cluster=\"$cluster\"}[$delta])) by (le))",
+              "format": "heatmap",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{ le }}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": " 95th ",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:2323",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:2324",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": true,
+          "cacheTimeout": null,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "description": "response time",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 4,
+            "w": 5,
+            "x": 16,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 160,
+          "interval": null,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": false
+          },
+          "lines": false,
+          "linewidth": 1,
+          "links": [],
+          "maxDataPoints": 100,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "",
+              "expr": "pgspray_response{hostname=\"$host\",cluster=\"$cluster\"}",
+              "format": "time_series",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{quantile}}",
+              "rawSql": " SELECT  1000*percentile_disc( .95) WITHIN GROUP (ORDER BY response)\nFROM\n    (SELECT response, ts\n    FROM response_time\n    WHERE host = $host\n       AND cluster = $cluster\n       AND  $__timeFilter(ts)\n       AND  ts > now() - '65 minutes'::interval\n       AND  md5 = (SELECT last(md5,ts) FROM response_time)\n   ) i\n  ",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "quantile",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "current"
+            ]
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:1954",
+              "format": "none",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:1955",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": true,
+          "cacheTimeout": null,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "description": "response time",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 21,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 135,
+          "interval": null,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": false
+          },
+          "lines": false,
+          "linewidth": 1,
+          "links": [],
+          "maxDataPoints": 100,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "alias": "",
+              "expr": "increase(pgspray_bucket{hostname=\"$host\",cluster=\"$cluster\"}[$delta])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{le}}",
+              "rawSql": " SELECT  1000*percentile_disc( .95) WITHIN GROUP (ORDER BY response)\nFROM\n    (SELECT response, ts\n    FROM response_time\n    WHERE host = $host\n       AND cluster = $cluster\n       AND  $__timeFilter(ts)\n       AND  ts > now() - '65 minutes'::interval\n       AND  md5 = (SELECT last(md5,ts) FROM response_time)\n   ) i\n  ",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "buckets [$delta",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "current"
+            ]
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:1954",
+              "format": "none",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:1955",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "repeat": null,
+      "title": "Response time",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 10
       },
       "id": 55,
       "panels": [],
@@ -315,7 +2150,7 @@
         "h": 5,
         "w": 6,
         "x": 0,
-        "y": 8
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 31,
@@ -355,21 +2190,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (datname) ( drg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
-          "format": "table",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        },
-        {
-          "expr": "sum by (datname) ( pg_stat_database_numbackends)",
+          "expr": "sum by (datname) ( pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
           "format": "time_series",
-          "instant": true,
+          "hide": false,
+          "instant": false,
           "interval": "",
-          "legendFormat": "",
-          "refId": "B"
+          "legendFormat": "{{ datname }}",
+          "refId": "A"
         }
       ],
       "thresholds": [],
@@ -456,7 +2283,7 @@
         "h": 5,
         "w": 4,
         "x": 6,
-        "y": 8
+        "y": 11
       },
       "id": 51,
       "interval": null,
@@ -479,7 +2306,7 @@
       "pluginVersion": "7.2.0-040ed969pre",
       "targets": [
         {
-          "expr": "sum (pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"})  - sum (pg_stat_database_numbackends{hostname=\"$host\"})",
+          "expr": "sum (pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"})  - sum (pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -487,6 +2314,16 @@
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
+        },
+        {
+          "expr": " sum (pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
+          "format": "time_series",
+          "hide": true,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "B"
         }
       ],
       "title": "available",
@@ -495,8 +2332,9 @@
     {
       "aliasColors": {
         "Value": "green",
-        "backends": "#1F78C1",
+        "backends": "dark-green",
         "idle": "#890f02",
+        "max": "dark-red",
         "pg_settings_max_connections{instance=\"qft:9187\", job=\"postgres\", pg_host=\"qft\", pg_ip=\"10.0.0.237\", pg_port=\"5432\", server=\"localhost:5432\"}": "semi-dark-red"
       },
       "bars": false,
@@ -516,19 +2354,19 @@
         "h": 5,
         "w": 7,
         "x": 10,
-        "y": 8
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 49,
       "interval": "30s",
       "legend": {
         "avg": false,
-        "current": false,
+        "current": true,
         "max": false,
         "min": false,
         "show": false,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 3,
@@ -554,18 +2392,26 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
+          "datasource": "prom_qft",
+          "expr": "sum( pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
+          "format": "time_series",
           "instant": false,
           "interval": "",
-          "legendFormat": "",
-          "refId": "A"
+          "intervalFactor": 1,
+          "legendFormat": "backends",
+          "refId": "A",
+          "requestId": "Q-7d362401-fd37-4753-b46e-ad5b57750d43-0Q-8d3076af-7609-4da7-a17d-4f23ac78e867-1A"
         },
         {
+          "datasource": "prom_qft",
           "expr": "pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"}\n",
+          "format": "time_series",
+          "hide": false,
           "instant": false,
           "interval": "",
-          "legendFormat": "",
-          "refId": "B"
+          "legendFormat": "max",
+          "refId": "B",
+          "requestId": "Q-7d362401-fd37-4753-b46e-ad5b57750d43-0Q-8d3076af-7609-4da7-a17d-4f23ac78e867-1B"
         }
       ],
       "thresholds": [],
@@ -614,7 +2460,9 @@
     {
       "aliasColors": {
         "backends": "#1F78C1",
-        "idle": "#890f02"
+        "cert": "semi-dark-red",
+        "idle": "#890f02",
+        "passwd": "dark-blue"
       },
       "bars": true,
       "dashLength": 10,
@@ -649,12 +2497,13 @@
         "h": 5,
         "w": 6,
         "x": 17,
-        "y": 8
+        "y": 11
       },
       "hiddenSeries": false,
       "id": 87,
       "interval": "30s",
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": true,
         "hideZero": true,
@@ -665,7 +2514,7 @@
         "values": true
       },
       "lines": false,
-      "linewidth": 1,
+      "linewidth": 3,
       "links": [
         {
           "title": "postgres _pg_more",
@@ -684,17 +2533,26 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "pg_stat_database_numbackends{hostname=\"$host\",datname=\"$db\"}",
+          "expr": "sum (pglog_passwd_failed{hostname=\"$host\",cluster=\"$cluster\"})",
           "format": "time_series",
-          "hide": true,
+          "hide": false,
           "instant": false,
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "passwd",
           "refId": "B"
+        },
+        {
+          "expr": "\nsum (pglog_ssl_cert_failed{hostname=\"$host\",cluster=\"$cluster\"})",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "cert",
+          "refId": "A"
         }
       ],
       "thresholds": [],
@@ -750,7 +2608,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 16
       },
       "id": 110,
       "panels": [
@@ -773,7 +2631,7 @@
             "h": 6,
             "w": 5,
             "x": 0,
-            "y": 14
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 108,
@@ -803,14 +2661,14 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(pglog_passwd_failed[4m])",
+              "expr": "rate(pglog_passwd_failed[$delta])",
               "instant": false,
               "interval": "",
               "legendFormat": "rate",
               "refId": "A"
             },
             {
-              "expr": "(pglog_passwd_failed_total)",
+              "expr": "(pglog_passwd_failed_total{hostname=\"$host\"})",
               "hide": true,
               "instant": false,
               "interval": "",
@@ -896,7 +2754,7 @@
             "h": 6,
             "w": 6,
             "x": 5,
-            "y": 14
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 117,
@@ -994,7 +2852,7 @@
             "h": 6,
             "w": 12,
             "x": 11,
-            "y": 14
+            "y": 12
           },
           "id": 121,
           "options": {
@@ -1034,181 +2892,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
-      },
-      "id": 119,
-      "panels": [
-        {
-          "datasource": "loki",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 16,
-            "x": 0,
-            "y": 15
-          },
-          "id": 120,
-          "options": {
-            "showLabels": false,
-            "showTime": false,
-            "sortOrder": "Descending",
-            "wrapLogMessage": false
-          },
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "expr": "{job=\"pglogs\",hostname=\"$host\"}",
-              "hide": false,
-              "legendFormat": "",
-              "refId": "A"
-            },
-            {
-              "expr": "{job=\"pglogs\",hostname=\"$host\"} |=  \"FATAL\" |= \"password authen\"",
-              "hide": true,
-              "legendFormat": "",
-              "refId": "B"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "pglogs",
-          "type": "logs"
-        },
-        {
-          "aliasColors": {
-            "Value #A": "dark-red",
-            "ssl": "dark-green"
-          },
-          "bars": true,
-          "cacheTimeout": null,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "$ds",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "unit": "string"
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 7,
-            "w": 6,
-            "x": 16,
-            "y": 15
-          },
-          "hiddenSeries": false,
-          "id": 112,
-          "interval": null,
-          "legend": {
-            "avg": false,
-            "current": true,
-            "max": false,
-            "min": false,
-            "show": false,
-            "total": false,
-            "values": true
-          },
-          "lines": false,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "options": {
-            "alertThreshold": true
-          },
-          "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum(pglog_conn_ssl_authorized{hostname=$host\"})",
-              "format": "time_series",
-              "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "ssl",
-              "refId": "B"
-            },
-            {
-              "expr": "sum(pglog_conn_nossl)",
-              "format": "table",
-              "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "no _ssl",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "auth ",
-          "tooltip": {
-            "shared": false,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "series",
-            "name": null,
-            "show": true,
-            "values": [
-              "total"
-            ]
-          },
-          "yaxes": [
-            {
-              "$$hashKey": "object:426",
-              "format": "string",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "$$hashKey": "object:427",
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        }
-      ],
-      "title": "connection  .log",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "datasource": null,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 15
+        "y": 17
       },
       "id": 105,
       "panels": [
@@ -1232,7 +2916,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 16
+            "y": 13
           },
           "hiddenSeries": false,
           "id": 103,
@@ -1270,7 +2954,7 @@
               "refId": "B"
             },
             {
-              "expr": "avg_over_time(pg_stat_activity_count{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"}[4m])",
+              "expr": "avg_over_time(pg_stat_activity_count{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"}[$delta)",
               "hide": true,
               "instant": false,
               "interval": "",
@@ -1282,7 +2966,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "fort \"$db\"  --  avg over [4m] ,",
+          "title": "\"$db\"  --  avg over [4m] ,",
           "tooltip": {
             "shared": false,
             "sort": 0,
@@ -1360,7 +3044,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 16
+            "y": 13
           },
           "id": 111,
           "interval": null,
@@ -1423,7 +3107,7 @@
             "h": 7,
             "w": 8,
             "x": 10,
-            "y": 16
+            "y": 13
           },
           "id": 114,
           "interval": "30s",
@@ -1445,7 +3129,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "sum(pglog_fatal{datname=\"$db\"})",
+              "expr": "sum(pglog_error{hostname=\"$host\",cluster=\"$cluster\",datname=\"$db\"})",
               "hide": false,
               "instant": true,
               "interval": "",
@@ -1454,8 +3138,8 @@
               "refId": "A"
             },
             {
-              "expr": "sum(pglog_error{hostname=\"$host\",datname=\"$db\"})",
-              "instant": true,
+              "expr": "sum(pglog_error{hostname=\"$host\",cluster=\"$cluster\",datname=\"$db\"})",
+              "instant": false,
               "interval": "",
               "legendFormat": "ERROR",
               "refId": "B"
@@ -1486,7 +3170,7 @@
             "h": 6,
             "w": 6,
             "x": 18,
-            "y": 16
+            "y": 13
           },
           "hiddenSeries": false,
           "id": 115,
@@ -1516,7 +3200,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(pglog_error_syntax{hostname=\"$host\",datname=\"$db\"}[4m])",
+              "expr": "irate(pglog_error_syntax{hostname=\"$host\",datname=\"$db\"}[$delta])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -1579,47 +3263,89 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 18
       },
-      "id": 56,
+      "id": 119,
       "panels": [
         {
-          "aliasColors": {
-            "response": "#99440a",
-            "sma": "#cca300"
-          },
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": null,
-          "description": "response time : samples + sma",
+          "datasource": "loki",
           "fieldConfig": {
             "defaults": {
               "custom": {}
             },
             "overrides": []
           },
-          "fill": 3,
+          "gridPos": {
+            "h": 7,
+            "w": 16,
+            "x": 0,
+            "y": 14
+          },
+          "id": 120,
+          "options": {
+            "showLabels": false,
+            "showTime": false,
+            "sortOrder": "Descending",
+            "wrapLogMessage": false
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "{job=\"pglogs\",hostname=\"$host\"}",
+              "hide": false,
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": "{job=\"pglogs\",hostname=\"$host\"} |=  \"FATAL\" |= \"password authen\"",
+              "hide": true,
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pglogs",
+          "type": "logs"
+        },
+        {
+          "aliasColors": {
+            "Value #A": "dark-red",
+            "ssl": "dark-green"
+          },
+          "bars": true,
+          "cacheTimeout": null,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "string"
+            },
+            "overrides": []
+          },
+          "fill": 1,
           "fillGradient": 0,
           "gridPos": {
             "h": 7,
-            "w": 12,
-            "x": 0,
-            "y": 24
+            "w": 6,
+            "x": 16,
+            "y": 14
           },
           "hiddenSeries": false,
-          "id": 53,
+          "id": 112,
+          "interval": null,
           "legend": {
-            "alignAsTable": false,
             "avg": false,
-            "current": false,
+            "current": true,
             "max": false,
             "min": false,
-            "show": true,
+            "show": false,
             "total": false,
-            "values": false
+            "values": true
           },
-          "lines": true,
+          "lines": false,
           "linewidth": 1,
           "links": [],
           "nullPointMode": "null",
@@ -1628,52 +3354,172 @@
           },
           "percentage": false,
           "pluginVersion": "7.2.0-040ed969pre",
-          "pointradius": 5,
+          "pointradius": 2,
           "points": false,
           "renderer": "flot",
-          "repeat": null,
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": false,
           "steppedLine": false,
           "targets": [
             {
-              "alias": "",
+              "expr": "sum(pglog_conn_ssl_authorized{hostname=$host\"})",
               "format": "time_series",
               "hide": false,
-              "rawSql": "SELECT $__time(ts), 1000* response AS response\n        -- , 1000* avg(response) OVER(ORDER BY ts ROWS BETWEEN 30 PRECEDING AND CURRENT ROW) AS sma\n\nFROM response_time\nWHERE \n $__timeFilter(ts) \n AND host = $host\n AND cluster = $cluster\n",
-              "refId": "A"
+              "instant": false,
+              "interval": "",
+              "legendFormat": "ssl",
+              "refId": "B"
             },
             {
-              "alias": "",
-              "format": "time_series",
-              "hide": true,
-              "rawSql": "SELECT $__time(ts), response \nFROM response_time\nWHERE \n $__timeFilter(ts) \n AND host = $host\n AND cluster = $cluster\n",
-              "refId": "B"
+              "expr": "sum(pglog_conn_nossl{hostname=\"$host\"})",
+              "format": "table",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "no _ssl",
+              "refId": "A"
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "response time",
+          "title": "auth ",
           "tooltip": {
-            "shared": true,
+            "shared": false,
             "sort": 0,
             "value_type": "individual"
           },
           "type": "graph",
           "xaxis": {
             "buckets": null,
-            "mode": "time",
+            "mode": "series",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+              "total"
+            ]
           },
           "yaxes": [
             {
-              "$$hashKey": "object:1239",
-              "format": "ms",
+              "$$hashKey": "object:426",
+              "format": "string",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:427",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "title": "connection  .log",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 133,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": true,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 0,
+            "y": 15
+          },
+          "hiddenSeries": false,
+          "id": 123,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum by (user) (pglog_error{hostname=\"$host\",cluster=\"$cluster\",datname=\"$db\"})",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{ user }}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "user activity",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "total"
+            ]
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:845",
+              "format": "none",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1681,8 +3527,8 @@
               "show": true
             },
             {
-              "$$hashKey": "object:1240",
-              "format": "ms",
+              "$$hashKey": "object:846",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -1696,97 +3542,108 @@
           }
         },
         {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
+          "aliasColors": {},
+          "bars": true,
+          "dashLength": 10,
+          "dashes": false,
           "datasource": "$ds",
-          "description": "response time",
           "fieldConfig": {
             "defaults": {
               "custom": {}
             },
             "overrides": []
           },
-          "format": "ms",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
+          "fill": 1,
+          "fillGradient": 0,
           "gridPos": {
-            "h": 7,
-            "w": 4,
-            "x": 12,
-            "y": 24
+            "h": 5,
+            "w": 8,
+            "x": 6,
+            "y": 15
           },
-          "id": 52,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "repeat": null,
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
+          "hiddenSeries": false,
+          "id": 127,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
           },
-          "tableColumn": "?column?",
+          "lines": false,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
           "targets": [
             {
-              "alias": "",
-              "format": "table",
-              "rawSql": " SELECT  1000*percentile_disc( .95) WITHIN GROUP (ORDER BY response)\nFROM\n    (SELECT response, ts\n    FROM response_time\n    WHERE host = $host\n       AND cluster = $cluster\n       AND  $__timeFilter(ts)\n       AND  ts > now() - '65 minutes'::interval\n       AND  md5 = (SELECT last(md5,ts) FROM response_time)\n   ) i\n  ",
+              "expr": "sum by (user) (increase(pglog_error{hostname=\"$host\",cluster=\"$cluster\",datname=\"$db\"}[$delta]))",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{ user }}",
               "refId": "A"
             }
           ],
-          "thresholds": "",
-          "title": "95th percentile",
-          "transparent": true,
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "user activity [5m]",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "total"
+            ]
+          },
+          "yaxes": [
             {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
+              "$$hashKey": "object:845",
+              "decimals": 0,
+              "format": "none",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:846",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
             }
           ],
-          "valueName": "avg"
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
         }
       ],
-      "repeat": null,
-      "title": "Response time",
+      "title": "activity, for \"$db\"",
       "type": "row"
     },
     {
@@ -1796,7 +3653,226 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 20
+      },
+      "id": 125,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": true,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 0,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 128,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum by (severity) (pglog_error{hostname=\"$host\",cluster=\"$cluster\",datname=\"$db\",severity!=\"LOG\"})",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{ severity }}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "errors",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "total"
+            ]
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:845",
+              "decimals": 0,
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:846",
+              "decimals": 0,
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": true,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 5,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 134,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum by (severity) (increase(pglog_error{hostname=\"$host\",cluster=\"$cluster\",datname=\"$db\", severity!=\"LOG\"}[$delta]))",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{ severity }}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "errors, [$delta]",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "total"
+            ]
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:845",
+              "decimals": 0,
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:846",
+              "decimals": 0,
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "title": "errors, for \"$db\"",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 21
       },
       "id": 58,
       "panels": [
@@ -1823,7 +3899,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 18
+            "y": 17
           },
           "id": 32,
           "interval": "30s",
@@ -1937,7 +4013,7 @@
             "h": 7,
             "w": 8,
             "x": 8,
-            "y": 18
+            "y": 17
           },
           "hiddenSeries": false,
           "id": 70,
@@ -2108,7 +4184,7 @@
             "h": 7,
             "w": 8,
             "x": 16,
-            "y": 18
+            "y": 17
           },
           "hiddenSeries": false,
           "id": 71,
@@ -2373,7 +4449,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 59,
       "panels": [
@@ -2402,7 +4478,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 19
+            "y": 18
           },
           "hiddenSeries": false,
           "id": 5,
@@ -2431,10 +4507,12 @@
           "renderer": "flot",
           "seriesOverrides": [
             {
+              "$$hashKey": "object:1982",
               "alias": "xlog",
               "yaxis": 2
             },
             {
+              "$$hashKey": "object:1983",
               "alias": "log",
               "yaxis": 2
             }
@@ -2541,7 +4619,7 @@
             "h": 7,
             "w": 8,
             "x": 6,
-            "y": 19
+            "y": 18
           },
           "hiddenSeries": false,
           "id": 42,
@@ -2607,6 +4685,7 @@
           },
           "yaxes": [
             {
+              "$$hashKey": "object:2072",
               "format": "bytes",
               "label": "size",
               "logBase": 1,
@@ -2615,6 +4694,7 @@
               "show": true
             },
             {
+              "$$hashKey": "object:2073",
               "format": "short",
               "label": null,
               "logBase": 1,
@@ -2640,7 +4720,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 23
       },
       "id": 85,
       "panels": [
@@ -2663,7 +4743,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 20
+            "y": 19
           },
           "hiddenSeries": false,
           "id": 94,
@@ -2778,7 +4858,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 20
+            "y": 19
           },
           "id": 106,
           "interval": null,
@@ -2846,7 +4926,7 @@
             "h": 6,
             "w": 6,
             "x": 10,
-            "y": 20
+            "y": 19
           },
           "hiddenSeries": false,
           "id": 92,
@@ -3053,7 +5133,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 24
       },
       "id": 60,
       "panels": [
@@ -3083,7 +5163,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 21
+            "y": 20
           },
           "hiddenSeries": false,
           "id": 1,
@@ -3115,7 +5195,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate (pg_stat_database_xact_commit{hostname=\"$host\",cluster=\"$cluster\"}[5m])",
+              "expr": "rate (pg_stat_database_xact_commit{hostname=\"$host\",cluster=\"$cluster\"}[$delta])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -3193,7 +5273,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 21
+            "y": 20
           },
           "id": 33,
           "interval": "30s",
@@ -3215,7 +5295,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "sum by (instance) (irate(pg_stat_database_xact_commit{hostname=\"$host\"}[5m]))",
+              "expr": "sum(irate(pg_stat_database_xact_commit{hostname=\"$host\"}[$delta]))",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -3239,7 +5319,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 99,
       "panels": [
@@ -3269,7 +5349,7 @@
             "h": 5,
             "w": 7,
             "x": 0,
-            "y": 22
+            "y": 27
           },
           "hiddenSeries": false,
           "id": 73,
@@ -3379,7 +5459,7 @@
             "h": 5,
             "w": 6,
             "x": 7,
-            "y": 22
+            "y": 27
           },
           "id": 95,
           "interval": "30s",
@@ -3401,7 +5481,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "sum by (instance) (irate(pg_stat_database_xact_commit{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"}[5m]))",
+              "expr": "sum by (instance) (irate(pg_stat_database_xact_commit{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"}[$delta))",
               "instant": false,
               "interval": "",
               "legendFormat": "$db",
@@ -3440,7 +5520,7 @@
             "h": 5,
             "w": 4,
             "x": 13,
-            "y": 22
+            "y": 27
           },
           "id": 100,
           "interval": "30s",
@@ -3462,7 +5542,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "100*(pg_stat_database_xact_rollback{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"})/ \n(pg_stat_database_xact_commit{datname=\"$db\",cluster=\"$cluster\"})",
+              "expr": "100*(pg_stat_database_xact_rollback{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"})/ \n(pg_stat_database_xact_commit{hostname=\"$host\",datname=\"$db\",cluster=\"$cluster\"})",
               "hide": false,
               "instant": true,
               "interval": "",
@@ -3486,7 +5566,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "id": 61,
       "panels": [
@@ -3513,7 +5593,7 @@
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 23
+            "y": 28
           },
           "hiddenSeries": false,
           "id": 37,
@@ -3541,6 +5621,7 @@
           "renderer": "flot",
           "seriesOverrides": [
             {
+              "$$hashKey": "object:162",
               "alias": "timed"
             }
           ],
@@ -3549,7 +5630,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(pg_stat_bgwriter_checkpoint_sync_time{hostname=\"$host\",cluster=\"$cluster\"}[3m])",
+              "expr": "irate(pg_stat_bgwriter_checkpoint_sync_time{hostname=\"$host\",cluster=\"$cluster\"}[$delta])",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -3627,7 +5708,7 @@
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 23
+            "y": 28
           },
           "hiddenSeries": false,
           "id": 38,
@@ -3656,6 +5737,7 @@
           "renderer": "flot",
           "seriesOverrides": [
             {
+              "$$hashKey": "object:240",
               "alias": "timed"
             }
           ],
@@ -3664,7 +5746,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(pg_stat_bgwriter_buffers_backend{hostname=\"$host\",cluster=\"$cluster\"}[3m])",
+              "expr": "irate(pg_stat_bgwriter_buffers_backend{hostname=\"$host\",cluster=\"$cluster\"}[$delta])",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -3753,7 +5835,7 @@
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 23
+            "y": 28
           },
           "hiddenSeries": false,
           "id": 2,
@@ -3781,6 +5863,7 @@
           "renderer": "flot",
           "seriesOverrides": [
             {
+              "$$hashKey": "object:318",
               "alias": "req",
               "dashes": true
             }
@@ -3859,7 +5942,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 27
       },
       "id": 62,
       "panels": [
@@ -3884,7 +5967,7 @@
             "h": 8,
             "w": 6,
             "x": 0,
-            "y": 24
+            "y": 35
           },
           "id": 40,
           "interval": null,
@@ -3903,7 +5986,7 @@
           "targets": [
             {
               "expr": "pg_stat_bgwriter_buffers_backend{hostname=\"$host\",cluster=\"$cluster\"}",
-              "instant": false,
+              "instant": true,
               "interval": "",
               "legendFormat": "backend",
               "refId": "A"
@@ -3982,7 +6065,7 @@
             "h": 5,
             "w": 7,
             "x": 6,
-            "y": 24
+            "y": 35
           },
           "id": 74,
           "interval": null,
@@ -4066,7 +6149,7 @@
             "h": 7,
             "w": 8,
             "x": 13,
-            "y": 24
+            "y": 35
           },
           "id": 101,
           "interval": "30s",
@@ -4120,7 +6203,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 28
       },
       "id": 63,
       "panels": [
@@ -4195,7 +6278,7 @@
             "h": 4,
             "w": 11,
             "x": 0,
-            "y": 20
+            "y": 30
           },
           "id": 35,
           "links": [],
@@ -4325,13 +6408,14 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 29
       },
       "id": 64,
       "panels": [
         {
           "columns": [
             {
+              "$$hashKey": "object:660",
               "text": "Current",
               "value": "current"
             }
@@ -4349,7 +6433,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 34
+            "y": 31
           },
           "id": 43,
           "links": [],
@@ -4398,6 +6482,7 @@
         {
           "columns": [
             {
+              "$$hashKey": "object:674",
               "text": "Current",
               "value": "current"
             }
@@ -4415,7 +6500,7 @@
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 34
+            "y": 31
           },
           "id": 45,
           "links": [],
@@ -4473,7 +6558,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 30
       },
       "id": 65,
       "panels": [
@@ -4496,7 +6581,7 @@
             "h": 5,
             "w": 8,
             "x": 0,
-            "y": 27
+            "y": 40
           },
           "hiddenSeries": false,
           "id": 47,
@@ -4605,7 +6690,7 @@
             "h": 5,
             "w": 8,
             "x": 8,
-            "y": 27
+            "y": 40
           },
           "hiddenSeries": false,
           "id": 50,
@@ -4723,7 +6808,7 @@
             "h": 5,
             "w": 8,
             "x": 16,
-            "y": 27
+            "y": 40
           },
           "id": 86,
           "interval": null,
@@ -4797,19 +6882,19 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "qft",
           "value": "qft"
         },
-        "datasource": "$ds",
-        "definition": "label_values(pg_up,hostname)",
+        "datasource": "prom_qft",
+        "definition": "label_values(pg_up,hostname)\n\n",
         "hide": 0,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "host",
         "options": [],
-        "query": "label_values(pg_up,hostname)",
+        "query": "label_values(pg_up,hostname)\n\n",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -4824,18 +6909,18 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "main",
-          "value": "main"
+          "text": "karat",
+          "value": "karat"
         },
         "datasource": "$ds",
-        "definition": "label_values(pg_up,cluster)",
+        "definition": "label_values(pg_up,cluster) \n",
         "hide": 0,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "cluster",
         "options": [],
-        "query": "label_values(pg_up,cluster)",
+        "query": "label_values(pg_up,cluster) \n",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -4878,7 +6963,7 @@
           "text": "prom_qft",
           "value": "prom_qft"
         },
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
@@ -4969,7 +7054,7 @@
         },
         "datasource": "$ds",
         "definition": "label_values(node_filesystem_avail_bytes{mountpoint=\"/\",hostname=\"$host\"},device)",
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
@@ -4995,7 +7080,7 @@
         },
         "datasource": "$ds",
         "definition": "label_values(node_filesystem_avail_bytes{mountpoint=\"/\",hostname=\"$host\"},device)",
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
@@ -5011,6 +7096,140 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "prometheus",
+          "value": "prometheus"
+        },
+        "hide": 1,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "role",
+        "options": [
+          {
+            "selected": false,
+            "text": "ioannis",
+            "value": "ioannis"
+          },
+          {
+            "selected": false,
+            "text": "postgres",
+            "value": "postgres"
+          },
+          {
+            "selected": false,
+            "text": "readonly",
+            "value": "readonly"
+          },
+          {
+            "selected": true,
+            "text": "prometheus",
+            "value": "prometheus"
+          }
+        ],
+        "query": "ioannis,postgres,readonly,prometheus",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "plack",
+          "value": "plack"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(probe_success,service)\n",
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": true,
+        "name": "services",
+        "options": [],
+        "query": "label_values(probe_success,service)\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "5m",
+          "value": "5m"
+        },
+        "hide": 1,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "delta",
+        "options": [
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "2m",
+            "value": "2m"
+          },
+          {
+            "selected": false,
+            "text": "3m",
+            "value": "3m"
+          },
+          {
+            "selected": false,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": true,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "4h",
+            "value": "4h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": false,
+            "text": "1d",
+            "value": "1d"
+          }
+        ],
+        "query": "1m,2m,3m,5m,10m,30m,1h,4h,6h,1d",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
       }
     ]
   },
@@ -5046,5 +7265,5 @@
   "timezone": "browser",
   "title": "pg",
   "uid": "NPz_1JKGk",
-  "version": 1
+  "version": 90
 }

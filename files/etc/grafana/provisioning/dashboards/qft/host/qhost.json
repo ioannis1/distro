@@ -15,8 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 7,
-  "iteration": 1599545782409,
+  "id": 4,
+  "iteration": 1603042821461,
   "links": [],
   "panels": [
     {
@@ -115,7 +115,7 @@
       "pluginVersion": "7.2.0-040ed969pre",
       "targets": [
         {
-          "expr": " node_boot_time_seconds",
+          "expr": " node_boot_time_seconds{hostname=\"$host\"}",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -145,6 +145,7 @@
     },
     {
       "datasource": "$prom",
+      "description": "This number includes buffers and caches. It is a conservative number that includes as much as we can.",
       "fieldConfig": {
         "defaults": {
           "custom": {},
@@ -161,17 +162,18 @@
                 "value": 15.5
               }
             ]
-          }
+          },
+          "unit": "decgbytes"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 11,
+        "w": 3,
+        "x": 12,
         "y": 1
       },
-      "id": 48,
+      "id": 131,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -189,7 +191,7 @@
       "pluginVersion": "7.2.0-040ed969pre",
       "targets": [
         {
-          "expr": "(node_memory_ioannis_MemUsed) /1024/1024/1024\n",
+          "expr": "(node_memory_ioannis_MemUsed{hostname=\"$host\"}) /1024/1024/1024\n",
           "instant": false,
           "interval": "",
           "legendFormat": "",
@@ -198,7 +200,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Mem Uxed",
+      "title": "Used  ",
       "type": "stat"
     },
     {
@@ -250,7 +252,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(node_disk_written_bytes_total[1m])",
+          "expr": "irate(node_disk_written_bytes_total{hostname=\"$host\"}[$delta])",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -348,7 +350,7 @@
       "pluginVersion": "7.2.0-040ed969pre",
       "targets": [
         {
-          "expr": "100-(avg (irate(node_cpu_seconds_total{mode=\"idle\"}[1m]))*100)",
+          "expr": "100-(avg (irate(node_cpu_seconds_total{mode=\"idle\"}[$delta]))*100)",
           "instant": false,
           "interval": "",
           "legendFormat": "",
@@ -361,7 +363,7 @@
       "type": "stat"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -370,142 +372,351 @@
         "y": 5
       },
       "id": 6,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": "prom_qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "decimals": 0,
+              "mappings": [],
+              "thresholds": {
+                "mode": "percentage",
+                "steps": [
+                  {
+                    "color": "light-green",
+                    "value": null
+                  },
+                  {
+                    "color": "semi-dark-yellow",
+                    "value": 80
+                  },
+                  {
+                    "color": "semi-dark-red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 0,
+            "y": 6
+          },
+          "id": 4,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "/^Value$/",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "100*(sum(node_filesystem_size_bytes{hostname=\"$host\"})-\nsum(node_filesystem_free_bytes{hostname=\"$host\"}) )/\nsum(node_filesystem_size_bytes{hostname=\"$host\"})",
+              "format": "time_series",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": "(sum(node_filesystem_size_bytes{hostname=\"$host\"})-\nsum(node_filesystem_free_bytes{hostname=\"$host\"}) ) /1024/1024/1024",
+              "format": "time_series",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "used  (GB)",
+          "type": "stat"
+        },
+        {
+          "datasource": "prom_qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "percentage",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 3,
+            "y": 6
+          },
+          "id": 61,
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "(sum by (device) (node_filesystem_size_bytes{hostname=\"$host\"})  - sum by (device) (node_filesystem_avail_bytes{hostname=\"$host\"}))/ sum by (device) (node_filesystem_size_bytes{hostname=\"$host\"})",
+              "format": "time_series",
+              "hide": true,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{device}}",
+              "refId": "B"
+            },
+            {
+              "expr": "100*(sum by (device) (node_filesystem_size_bytes{hostname=\"$host\"})  - sum by (device) (node_filesystem_avail_bytes{hostname=\"$host\"})  )/sum by (device) (node_filesystem_size_bytes{hostname=\"$host\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{device}}",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Partitions Used",
+          "transparent": true,
+          "type": "gauge"
+        },
+        {
+          "datasource": "$prom",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "decgbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 5,
+            "x": 9,
+            "y": 6
+          },
+          "id": 60,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "textMode": "value_and_name"
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "SUM BY (device) (node_filesystem_free_bytes{hostname=\"$host\"})/1024/1024/1024\n\n \n\n\n",
+              "format": "time_series",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{ device }}",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "free  ",
+          "transformations": [],
+          "type": "stat"
+        },
+        {
+          "Aggregate": "last",
+          "BarPadding": 10,
+          "BaseLineColor": "#ff0000",
+          "BaseLineValue": null,
+          "BaseLineWidth": 1,
+          "CurveType": "Monotone",
+          "DateFormat": "YYYY-MM-DD HH:mm:ss",
+          "DateTimeColName": "date",
+          "DotColor": "white",
+          "DotSize": 10,
+          "EvenRowColor": "rgba(61, 61, 64, 0.78)",
+          "FlashHighLimitBar": false,
+          "FlashLowLimitBar": false,
+          "GroupCols": 0,
+          "GroupGap": 5,
+          "GroupLabelColor": "#ffffff",
+          "GroupLabelFontSize": "200%",
+          "GroupNameFilter": "",
+          "GroupSortString": "",
+          "HighAxisColor": "#ffffff",
+          "HighAxisWidth": 1,
+          "HighBarColor": "rgb(120, 128, 0)",
+          "HighLimitBarColor": "#ff0000",
+          "HighLimitBarFlashColor": "#ffa500",
+          "HighLimitBarFlashTimeout": 1000,
+          "HighLimitLineColor": "#ff0000",
+          "HighLimitValue": null,
+          "HighLmitLineWidth": 1,
+          "HighSideMargin": 22,
+          "Horizontal": true,
+          "LabelColName": "mountpoint",
+          "LabelColor": "#ffffff",
+          "LabelFontSize": "100%",
+          "LabelMargin": null,
+          "LabelNameFilter": "",
+          "LableAngle": 0,
+          "LineColor": "blue",
+          "LineWidth": 5,
+          "Links": [],
+          "LowAxisColor": "#ffffff",
+          "LowAxisWidth": 1,
+          "LowBarColor": "teal",
+          "LowLimitBarColor": "#ff0000",
+          "LowLimitBarFlashColor": "#ffa500",
+          "LowLimitBarFlashTimeout": 200,
+          "LowLimitLineColor": "#ff0000",
+          "LowLimitValue": null,
+          "LowLmitLineWidth": 1,
+          "LowSideMargin": 22,
+          "MaxLineColor": "rgb(74, 232, 12)",
+          "MaxLineValue": null,
+          "MaxLineWidth": 1,
+          "MinLineColor": "#ff0000",
+          "MinLineValue": null,
+          "MinLineWidth": 1,
+          "OddRowColor": "rgba(33, 33, 34, 0.92)",
+          "OutOfRangeLabelColor": "#ffffff",
+          "OutlineColor": "rgba(245, 255, 0, 0.1)",
+          "RecolorColName": null,
+          "RecolorHighLimitBar": false,
+          "RecolorLowLimitBar": false,
+          "RecolorRules": [],
+          "ScaleFactor": 1,
+          "ShowBars": true,
+          "ShowBaseLine": false,
+          "ShowDate": false,
+          "ShowGroupLabels": true,
+          "ShowHighLimitLine": false,
+          "ShowLabels": true,
+          "ShowLeftAxis": true,
+          "ShowLines": false,
+          "ShowLowLimitLine": true,
+          "ShowMaxLine": false,
+          "ShowMinLine": false,
+          "ShowRightAxis": true,
+          "ShowTooltips": true,
+          "ShowValues": true,
+          "SortColName": "value",
+          "SortDirection": "ascending",
+          "TZOffsetHours": 0,
+          "TooltipDateFormat": "YYYY-MM-DD HH:mm:ss",
+          "ValueColName": "Value",
+          "ValueColor": "#ffffff",
+          "ValueDecimals": 0,
+          "ValueFontSize": "100%",
+          "ValuePosition": "top",
+          "datasource": "$prom",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 10
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 10,
+            "x": 14,
+            "y": 6
+          },
+          "id": 2,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": " (node_filesystem_free_bytes{hostname=\"$host\"}) /1024/1024/1024\n\n \n\n\n",
+              "format": "table",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{mountpoint}}",
+              "refId": "B"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "free  (GB)",
+          "transformations": [],
+          "type": "michaeldmoore-multistat-panel"
+        }
+      ],
       "title": "Disk",
       "type": "row"
-    },
-    {
-      "datasource": "$prom",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 80
-              },
-              {
-                "color": "red",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "percentunit"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 8,
-        "x": 0,
-        "y": 6
-      },
-      "id": 4,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "pluginVersion": "7.2.0-040ed969pre",
-      "targets": [
-        {
-          "expr": "sum(node_filesystem_avail_bytes)/sum(node_filesystem_size_bytes)",
-          "format": "time_series",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "C"
-        },
-        {
-          "expr": "(sum(node_filesystem_size_bytes)  - sum(node_filesystem_avail_bytes)  )/sum(node_filesystem_size_bytes)",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "D"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "disk Used",
-      "transparent": true,
-      "type": "gauge"
-    },
-    {
-      "datasource": "$prom",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 10
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 8,
-        "x": 8,
-        "y": 6
-      },
-      "id": 2,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value_and_name"
-      },
-      "pluginVersion": "7.2.0-040ed969pre",
-      "targets": [
-        {
-          "expr": "SUM BY (mountpoint) (node_filesystem_free_bytes)/1024/1024/1024\n\n \n\n\n",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "B"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "free  (GB)",
-      "type": "stat"
     },
     {
       "collapsed": true,
@@ -514,7 +725,1157 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 6
+      },
+      "id": 87,
+      "panels": [
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 0,
+            "y": 7
+          },
+          "id": 103,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "repeat": null,
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "node",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"node-exporter\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "node",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "node",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 3,
+            "y": 7
+          },
+          "id": 118,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "promtail",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"promtail\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "promtail",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "promtail",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 6,
+            "y": 7
+          },
+          "id": 119,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "loki",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"loki\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "loki",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "loki",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 9,
+            "y": 7
+          },
+          "id": 120,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "consul http",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"consul http\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "consul http",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "consul http",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 12,
+            "y": 7
+          },
+          "id": 121,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "pushgateway",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"pushgateway-exporter\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "pushgateway",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pushgatway",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 15,
+            "y": 7
+          },
+          "id": 122,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "fluent-bit",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"fluent-bit\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "fluent-bit",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "fluent-bit",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 18,
+            "y": 7
+          },
+          "id": 123,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "main",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"pg server main\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "main",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pg server main",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 21,
+            "y": 7
+          },
+          "id": 124,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "karat",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"pg server karat\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "karat",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pg server karat",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 0,
+            "y": 10
+          },
+          "id": 125,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "blackbox",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"blackbox-exporter\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "blackbox",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "blackbox",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 3,
+            "y": 10
+          },
+          "id": 130,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "prometheus",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"prometheus\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "prometheus",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "prometheus",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 6,
+            "y": 10
+          },
+          "id": 126,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "grok main",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"grok-exporter-main\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "grok main",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "grok main",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 9,
+            "y": 10
+          },
+          "id": 129,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "grok karat",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"grok-exporter-karat\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "grok karat",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "grok karat",
+          "type": "vonage-status-panel"
+        },
+        {
+          "clusterName": "$host",
+          "colorMode": "Panel",
+          "colors": {
+            "crit": "rgba(245, 54, 54, 0.9)",
+            "disable": "rgba(128, 128, 128, 0.9)",
+            "ok": "rgba(50, 128, 45, 0.9)",
+            "warn": "rgba(237, 129, 40, 0.9)"
+          },
+          "cornerRadius": 60,
+          "datasource": "prom_qft",
+          "description": "",
+          "displayName": "qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "flipCard": true,
+          "flipTime": 5,
+          "fontFormat": "Regular",
+          "gridPos": {
+            "h": 3,
+            "w": 3,
+            "x": 12,
+            "y": 10
+          },
+          "id": 128,
+          "isAutoScrollOnOverflow": false,
+          "isGrayOnNoData": true,
+          "isHideAlertsOnDisable": true,
+          "isIgnoreOKColors": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "$$hashKey": "object:515",
+              "aggregation": "Last",
+              "alias": "pgbounce",
+              "crit": "0",
+              "decimals": 0,
+              "displayAliasType": "Always",
+              "displayType": "Regular",
+              "displayValueWithAlias": "When Alias Displayed",
+              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "pgbounce",
+              "refId": "A",
+              "units": "none",
+              "valueHandler": "String Threshold"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "pgbounce",
+          "type": "vonage-status-panel"
+        }
+      ],
+      "title": "blackbox  tcp",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 65,
+      "panels": [
+        {
+          "datasource": "prom_qft",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": null
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 17,
+            "w": 12,
+            "x": 0,
+            "y": 8
+          },
+          "id": 63,
+          "options": {
+            "showHeader": true
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "probe_success{hostname=\"$host\"}",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{ service }}",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "blsckbox",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "port",
+                    "service",
+                    "Value"
+                  ]
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Services - interesting",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 135,
+      "panels": [
+        {
+          "datasource": "prom_qft",
+          "description": "from systemd(5)",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": null,
+                "width": 200
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "state"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 11
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 322
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 11,
+            "x": 0,
+            "y": 1
+          },
+          "id": 133,
+          "options": {
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "7.2.0-040ed969pre",
+          "targets": [
+            {
+              "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"failed\"} > 0",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "failed",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "name",
+                    "Value",
+                    "state"
+                  ]
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "services - failed",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
       },
       "id": 37,
       "panels": [
@@ -536,15 +1897,16 @@
                     "value": 80
                   }
                 ]
-              }
+              },
+              "unit": "decgbytes"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
-            "w": 5,
+            "h": 4,
+            "w": 3,
             "x": 0,
-            "y": 11
+            "y": 9
           },
           "id": 44,
           "options": {
@@ -564,7 +1926,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "node_memory_ioannis_MemaTotal /1024/1024/1024\n",
+              "expr": "node_memory_ioannis_MemTotal{hostname=\"$host\"} /1024/1024/1024\n",
               "instant": true,
               "interval": "",
               "legendFormat": "",
@@ -573,11 +1935,12 @@
           ],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Total   (GB)",
+          "title": "Total   ",
           "type": "stat"
         },
         {
           "datasource": "$prom",
+          "description": "This number includes buffers and caches. It is a conservative number that includes as much as we can.",
           "fieldConfig": {
             "defaults": {
               "custom": {},
@@ -594,15 +1957,16 @@
                     "value": 15.5
                   }
                 ]
-              }
+              },
+              "unit": "decgbytes"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
-            "w": 5,
-            "x": 5,
-            "y": 11
+            "h": 4,
+            "w": 3,
+            "x": 3,
+            "y": 9
           },
           "id": 45,
           "options": {
@@ -622,7 +1986,7 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "(node_memory_ioannis_MemUsed) /1024/1024/1024\n",
+              "expr": "(node_memory_ioannis_MemUsed{hostname=\"$host\"}) /1024/1024/1024\n",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -631,7 +1995,7 @@
           ],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Used  (GB)",
+          "title": "Used  ",
           "type": "stat"
         },
         {
@@ -648,15 +2012,16 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "decgbytes"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
-            "w": 5,
-            "x": 10,
-            "y": 11
+            "h": 4,
+            "w": 3,
+            "x": 6,
+            "y": 9
           },
           "id": 46,
           "options": {
@@ -685,15 +2050,17 @@
           ],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Buffers & Cached   (GB)",
+          "title": "Buffers & Cached   ",
           "type": "stat"
         },
         {
           "datasource": "$prom",
+          "description": "On this number,, we still need to add caches + buffers",
           "fieldConfig": {
             "defaults": {
               "custom": {},
               "mappings": [],
+              "max": 5,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -702,15 +2069,16 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "decgbytes"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
-            "w": 5,
-            "x": 15,
-            "y": 11
+            "h": 4,
+            "w": 3,
+            "x": 9,
+            "y": 9
           },
           "id": 47,
           "options": {
@@ -730,8 +2098,8 @@
           "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": " (node_memory_ioannis_MemFree) / 1024/1024/1024\n",
-              "instant": true,
+              "expr": " (node_memory_ioannis_MemFree{hostname=\"$host\"}) / 1024/1024/1024\n",
+              "instant": false,
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -739,8 +2107,129 @@
           ],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Free (GB)",
+          "title": "Free ",
           "type": "stat"
+        },
+        {
+          "aliasColors": {
+            "node_memory_ioannis_MemTotal{host_ip=\"10.0.0.237\", hostname=\"qft\", instance=\"localhost:9100\", job=\"node\"}": "dark-red",
+            "{host_ip=\"10.0.0.237\", hostname=\"qft\", instance=\"localhost:9100\", job=\"node\"}": "semi-dark-green"
+          },
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$prom",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "decgbytes"
+            },
+            "overrides": []
+          },
+          "fill": 0,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 12,
+            "y": 9
+          },
+          "hiddenSeries": false,
+          "id": 59,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 2,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": false
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": " (node_memory_ioannis_MemUsed{hostname=\"$host\"}) / 1024/1024/1024\n ",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "used",
+              "refId": "A"
+            },
+            {
+              "expr": "node_memory_ioannis_MemTotal{hostname=\"$host\"} /1024/1024/1024\n",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "total",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Used ",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": false,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:2767",
+              "format": "decgbytes",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:2768",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
         }
       ],
       "title": "Memory",
@@ -753,7 +2242,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 10
       },
       "id": 10,
       "panels": [
@@ -776,7 +2265,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 19
+            "y": 10
           },
           "hiddenSeries": false,
           "id": 24,
@@ -807,7 +2296,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(node_disk_read_time_seconds_total[1m])",
+              "expr": "sum(rate(node_disk_read_time_seconds_total{hostname=\"$host\"}[$delta]))\n\n",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -876,7 +2365,7 @@
             "h": 8,
             "w": 7,
             "x": 8,
-            "y": 19
+            "y": 10
           },
           "hiddenSeries": false,
           "id": 26,
@@ -907,7 +2396,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(node_disk_reads_completed_total[1m])",
+              "expr": "sum(irate(node_disk_reads_completed_total{hostname=\"$host\"}[$delta]))",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -976,7 +2465,7 @@
             "h": 8,
             "w": 7,
             "x": 15,
-            "y": 19
+            "y": 10
           },
           "hiddenSeries": false,
           "id": 28,
@@ -1007,7 +2496,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(node_disk_read_time_seconds_total[1m])  /          irate(node_disk_reads_completed_total[1m])",
+              "expr": "sum(irate(node_disk_read_time_seconds_total{hostname=\"$host\"}[$delta]))  /          sum(irate(node_disk_reads_completed_total{hostname=\"$host\"}[$delta]))",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -1068,7 +2557,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 11
       },
       "id": 23,
       "panels": [
@@ -1091,7 +2580,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 15
+            "y": 11
           },
           "hiddenSeries": false,
           "id": 8,
@@ -1122,7 +2611,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(node_disk_write_time_seconds_total[1m])",
+              "expr": "irate(node_disk_write_time_seconds_total{hostname=\"$host\"}[$delta]) \n",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -1191,7 +2680,7 @@
             "h": 7,
             "w": 8,
             "x": 8,
-            "y": 15
+            "y": 11
           },
           "hiddenSeries": false,
           "id": 27,
@@ -1222,7 +2711,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(node_disk_writes_completed_total[1m])",
+              "expr": "sum(irate(node_disk_writes_completed_total{hostname=\"$host\"}[$delta]))",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -1288,10 +2777,10 @@
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
-            "h": 8,
+            "h": 7,
             "w": 7,
             "x": 16,
-            "y": 15
+            "y": 11
           },
           "hiddenSeries": false,
           "id": 29,
@@ -1322,7 +2811,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(node_disk_write_time_seconds_total[1m])  /          irate(node_disk_writes_completed_total[1m])",
+              "expr": "sum(irate(node_disk_write_time_seconds_total{hostname=\"$host\"}[$delta]) ) /          sum(irate(node_disk_writes_completed_total{hostname=\"$host\"}[$delta]))",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -1377,518 +2866,519 @@
       "type": "row"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 12
       },
       "id": 52,
-      "panels": [],
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$prom",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 4,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 11,
+            "w": 9,
+            "x": 0,
+            "y": 12
+          },
+          "hiddenSeries": false,
+          "id": 55,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "100-(avg (irate(node_cpu_seconds_total{mode=\"idle\",hostname=\"$host\"}[$delta]))*100)",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [
+            {
+              "$$hashKey": "object:653",
+              "colorMode": "critical",
+              "fill": true,
+              "line": false,
+              "op": "gt",
+              "value": 90,
+              "yaxis": "left"
+            }
+          ],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "%",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:67",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": "100",
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:68",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$prom",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 9,
+            "y": 12
+          },
+          "hiddenSeries": false,
+          "id": 56,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(irate(node_cpu_seconds_total{hostname=\"$host\",mode=\"iowait\"}[$delta]))",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "iowait",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:67",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:68",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$prom",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 17,
+            "y": 12
+          },
+          "hiddenSeries": false,
+          "id": 57,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum (irate(node_cpu_seconds_total{hostname=\"$host\",mode=\"user\"}[$delta]))",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "user",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:67",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:68",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$prom",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 7,
+            "w": 7,
+            "x": 17,
+            "y": 17
+          },
+          "hiddenSeries": false,
+          "id": 53,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum (irate(node_cpu_seconds_total{hostname=\"$host\",mode=\"system\"}[$delta]))",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "system",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:67",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:68",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$prom",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 6,
+            "w": 6,
+            "x": 9,
+            "y": 18
+          },
+          "hiddenSeries": false,
+          "id": 54,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.2.0-040ed969pre",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(irate(node_cpu_seconds_total{hostname=\"$host\",mode=\"idle\"}[$delta]))",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "idle",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:67",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:68",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
       "title": "cpu",
       "type": "row"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$prom",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 4,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 11,
-        "w": 9,
-        "x": 0,
-        "y": 14
-      },
-      "hiddenSeries": false,
-      "id": 55,
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "100-(avg (irate(node_cpu_seconds_total{mode=\"idle\"}[1m]))*100)",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "B"
-        }
-      ],
-      "thresholds": [
-        {
-          "$$hashKey": "object:653",
-          "colorMode": "critical",
-          "fill": true,
-          "line": false,
-          "op": "gt",
-          "value": 90,
-          "yaxis": "left"
-        }
-      ],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "%",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:67",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": "100",
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:68",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$prom",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 9,
-        "y": 14
-      },
-      "hiddenSeries": false,
-      "id": 56,
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum by (instance) (irate(node_cpu_seconds_total{mode=\"iowait\"}[1m]))",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "iowait",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:67",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:68",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$prom",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 17,
-        "y": 14
-      },
-      "hiddenSeries": false,
-      "id": 57,
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum by (instance) (irate(node_cpu_seconds_total{mode=\"user\"}[1m]))",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "user",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:67",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:68",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$prom",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 7,
-        "x": 17,
-        "y": 19
-      },
-      "hiddenSeries": false,
-      "id": 53,
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum by (instance) (irate(node_cpu_seconds_total{mode=\"system\"}[1m]))",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "system",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:67",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:68",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$prom",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 9,
-        "y": 20
-      },
-      "hiddenSeries": false,
-      "id": 54,
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[1m]))",
-          "instant": false,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "idle",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:67",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:68",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     }
   ],
   "refresh": false,
@@ -1899,7 +3389,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "prom_qft",
           "value": "prom_qft"
         },
@@ -1915,6 +3405,154 @@
         "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "qft",
+          "value": "qft"
+        },
+        "datasource": "prom_qft",
+        "definition": "label_values(up,hostname)",
+        "hide": 1,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "host",
+        "options": [],
+        "query": "label_values(up,hostname)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": [
+            "blackbox-exporter",
+            "consul http",
+            "fluent-bit",
+            "grok-exporter-karat",
+            "grok-exporter-main",
+            "loki",
+            "node-exporter",
+            "pg server karat",
+            "pg server main",
+            "pgbounce",
+            "plack",
+            "postgres-exporter-karat",
+            "postgres-exporter-main",
+            "promtail",
+            "pushgateway-exporter"
+          ],
+          "value": [
+            "blackbox-exporter",
+            "consul http",
+            "fluent-bit",
+            "grok-exporter-karat",
+            "grok-exporter-main",
+            "loki",
+            "node-exporter",
+            "pg server karat",
+            "pg server main",
+            "pgbounce",
+            "plack",
+            "postgres-exporter-karat",
+            "postgres-exporter-main",
+            "promtail",
+            "pushgateway-exporter"
+          ]
+        },
+        "datasource": "prom_qft",
+        "definition": "label_values(probe_success,service)",
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": true,
+        "name": "services",
+        "options": [],
+        "query": "label_values(probe_success,service)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "3m",
+          "value": "3m"
+        },
+        "hide": 1,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "delta",
+        "options": [
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "2m",
+            "value": "2m"
+          },
+          {
+            "selected": true,
+            "text": "3m",
+            "value": "3m"
+          },
+          {
+            "selected": false,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "20m",
+            "value": "20m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": false,
+            "text": "1d",
+            "value": "1d"
+          }
+        ],
+        "query": "1m,2m,3m,5m,10m,20m,1h,6h,1d",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
       }
     ]
   },
@@ -1939,5 +3577,5 @@
   "timezone": "",
   "title": "qft",
   "uid": "1fgTIADMk",
-  "version": 11
+  "version": 52
 }
