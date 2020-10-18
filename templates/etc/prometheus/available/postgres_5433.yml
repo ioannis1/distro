@@ -1,7 +1,8 @@
 - targets: ['localhost:9188'] 
   labels:
-       job:        postgres
-       host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
-       hostname:  '{{ ansible_hostname }}'
-       pg_port:    5433 
-       cluster:    karat 
+       job:            postgres
+       host_ip:        '{{ ansible_all_ipv4_addresses.0 }}'
+       hostname:       {{ ansible_hostname }}
+       pg_port:        5433 
+       cluster:        karat 
+      server_version:  REL_12.4

@@ -1,7 +1,9 @@
 - targets:       ['localhost:9187']
   labels:
-      job:       postgres
-      host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
-      hostname:  '{{ ansible_hostname }}'
-      pg_port:   5432 
-      cluster:   main
+      job:             postgres
+      host_ip:         '{{ ansible_all_ipv4_addresses.0 }}'
+      hostname:        {{ ansible_hostname }}
+      pg_port:         5432 
+      cluster:         main
+      server_version:  REL_11.4
+
