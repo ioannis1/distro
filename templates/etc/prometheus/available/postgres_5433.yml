@@ -5,4 +5,4 @@
        hostname:       {{ ansible_hostname }}
        pg_port:        5433 
        cluster:        karat 
-      server_version:  REL_12.4
+       server_version:  REL_12.4
