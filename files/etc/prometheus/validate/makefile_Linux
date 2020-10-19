@@ -3,11 +3,12 @@
 .DEFAULT_GOAL = help
 .DEFAULT_GOAL = check
 
-CONF    = /etc/prometheus/prometheus.yml
-RULES   = /etc/prometheus/rules/
-server  = http://localhost:9090
-name   = node_filesystem_size_bytes #{device="/dev/disk1",fstype="hfs",mountpoint="/Volumes/Macintosh HD"}
-name   = node_cpu_seconds_total
+CONF     = /etc/prometheus/prometheus.yml
+RULES    = /etc/prometheus/rules/
+server   = http://localhost:9090
+name    = node_filesystem_size_bytes #{device="/dev/disk1",fstype="hfs",mountpoint="/Volumes/Macintosh HD"}
+name     = node_cpu_seconds_total
+DATADIR  = /var/lib/prometheus/metrics2
 
 
 NOW     =`date -u -j +"%Y-%m-%dT%H:%M:%SZ"`    # in UTC
@@ -36,5 +37,11 @@ tail:
 	tail -f /var/log/daemon.log
 start stop status restart:
 	service prometheus $@
+clean:
+	service prometheus stop
+	rm -rf  $(DATADIR)/*
+ls:
+	ls -l  $(DATADIR)/
+ls:
 default:
 	vi /etc/default/prometheus
