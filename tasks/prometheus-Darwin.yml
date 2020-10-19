@@ -50,7 +50,7 @@
 
 ####################################################  symlinks 
 - name:    symlink  prometheus.yml
-  file:    src='/etc/prometheus/dynamic_file_fed.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+  file:    src='/etc/prometheus/dynamic_file.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
 
 - name:    symlink  rules/memory_rules.yml
   file:    src="/etc/prometheus/rules/memory_{{ os_family }}.yml"   dest='/etc/prometheus/rules/memory.yml'   state=link  owner=root   force=yes
