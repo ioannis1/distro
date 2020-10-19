@@ -8,7 +8,7 @@ s:
 
 enable_alert              =  #true
 enable_apache_exporter    =  #true
-enable_blackbox           =  #true
+enable_blackbox           =  true
 enable_node_exporter      =  true
 enable_pgbouncer-exporter =  #false
 enable_ppadapter          =  
@@ -16,7 +16,8 @@ enable_pushgatway         =
 enable_grok               = true
 enable_postgres_exporter  = true
 enable_pgspray            = true
-node_dir                  = /tmp/node_dat
+node_dir                  = /var/lib/prometheus/node-exporter/node_dat/
+
 
 
 BINDIR= /usr/local/Cellar/prometheus/2.5.0/bin
@@ -67,7 +68,7 @@ dopt +=  --pg.use-timescaledb=false
 
 
 
-nopt  = --collector.textfile.directory="/tmp/node_dat" 
+nopt  = --collector.textfile.directory="$(node_dir)"
 nopt += --web.disable-exporter-metrics
 nopt += --no-collector.buddyinfo
 nopt += --no-collector.ntp
