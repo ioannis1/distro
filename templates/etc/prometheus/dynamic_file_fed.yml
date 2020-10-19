@@ -18,6 +18,11 @@ rule_files:
    - "rules/memory.yml"
  
 scrape_configs:
+
+- job_name: federate
+  honor_labels:  true
+  metrics_path:  '/federate' 
+
 - job_name: 'overwritten-default'
   scrape_timeout:       30s 
   file_sd_configs:

@@ -17,6 +17,10 @@ rule_files:
  
 scrape_configs:
 
+  - job_name: federate
+    honor_labels:  true
+    metrics_path:  '/federate' 
+
   - job_name: grok
     honor_labels: true
     static_configs:
