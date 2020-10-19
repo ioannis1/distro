@@ -1,0 +1,189 @@
+#!/usr/bin/env perl
+######################### Sample invocation
+#./pgspray_hist  -f /etc/default/pgspray  -f /path/to/config  
+# 
+#
+use strict;
+use v5.10;
+use warnings;
+use DBI;
+use feature qw( switch );
+use Getopt::Compact ;
+no if $] >= 5.018, warnings => qw( experimental::smartmatch );
+use Data::Dumper;
+#use LWP::UserAgent;
+use Config::INI::Reader;
+use File::Slurp; 
+
+use constant MAX_FORKS => 8 ;
+use constant RC_FILES  => qw( ini pgspray.ini  /etc/default/pgspray /etc/default/pgspray.ini  ); 
+
+use constant ALLOWED_KEYS  => qw( host_ip hostname port sslmode user database password chmod timeout secret_file output_interval out_dir out_mode one_shot samples_per_minute sql outfile cluster appname );
+
+use constant DEFAULTS  => {  
+           host_ip            => $ENV{PGHOST}     || 'localhost', 
+           hostname           => 'localhost', 
+           port               => $ENV{PGPORT}     ||  5432,
+           sslmode            => $ENV{PGSSLMODE}  || 'prefer',
+           user               => $ENV{PGUSER}     ||'prometheus',
+           database           => $ENV{PGDATABASE} || 'postgres',
+           password           => $ENV{PGPASSWORD} ||  undef,
+           chmod              =>  0640 ,
+           timeout            =>  4,
+	   secret_file        => '/etc/prometheus/exporters/secret',
+           output_interval    =>  60,
+           out_dir            =>  '/var/lib/prometheus/node-exporter/node_dat',
+           out_mode           =>  'stdout',        #  push, file, stdout
+           one_shot           =>  undef,
+           samples_per_minute =>  20 ,
+           sql                =>  "SELECT 'response_tme'" ,
+          outfile             => '/var/lib/prometheus/node-exporter/node_dat/pgspray.prom' ,
+          #sql                =>  "SELECT current_setting('server_version')",
+     }; 
+
+#############  Read Config
+sub find_config { 
+    -r $_ && return $_  for RC_FILES  
+}
+sub read_config {
+        my ($defaults, $file) = @_;
+        my $in = Config::INI::Reader->read_file( $file );
+        my $result;
+        for my $k (keys %$in) {
+            next  if $k =~ /^common$/i ;
+            next  if $k =~ /^#/        ;
+            my $tmp = DEFAULTS()       ;
+            my $entry;
+            for (keys %{$in->{common}}) { 
+                $entry     = $in->{common}{$_}            ;
+                $entry     =~ s/\s+[#].*$//               ;
+                $entry     =~ s/^\s*[#]//                 ;
+                $tmp->{$_} = $entry    unless /^\s*[#]/   ;
+            }
+
+            for (keys %{$in->{$k}})   {
+                $entry     = $in->{$k}{$_}                ;
+                $entry     =~ s/\s*[#].*$//               ;
+                $entry     =~ s/^\s*[#]//                 ;
+                $tmp->{$_} = $entry    unless /^\s*[#]/   ;
+            }
+            $result->{$k} = { %$tmp };
+        }
+        return $result;
+}
+sub ensure_integer { 
+      my ($key, $value) = @_;
+      return if  $value =~  /^\d+$/; 
+      say sprintf  qq(%s  - Found "%s" but expected a number\n), $key, $value  ;
+}
+sub calc_passwd {
+       my $o = shift;
+        if ( $o->{secret_file}) {
+                my $passwd = read_file($o->{secret_file} ) || die;
+                warn "password from file \"".  $o->{secret_file}. "\"\n";
+                chomp $passwd ;
+                return $passwd ;
+        }
+        return $o->{password} ;
+}
+sub form_dsn {
+        my $o = shift;
+        "dbi:Pg:host=$o->{host_ip};port=$o->{port};dbname=$o->{database};sslmode=$o->{sslmode};application_name=$o->{appname}" 
+}
+sub check_db_connection {
+     my ($o)  = @_;
+     # check connection to Postgres server
+     $o->{password} =  calc_passwd $o;
+     my $att = { AutoCommit => 0, ReadOnly => 1};
+     my $DSN = form_dsn($o);
+     undef @_;
+     eval {
+		local $SIG{ALRM} = sub { die "timeout" }; 
+                alarm $o->{timeout} ;
+                my $dbh = DBI->connect($DSN, $o->{user},$o->{passwd}, $att) or 
+                                   say sprintf 'FAIL: connection to Postgres server with DSN = %s', $DSN; 
+    };
+    alarm  0 ;
+    if ($@ =~ /timeout/) {
+                say sprintf 'FAIL: connection to Postgres server with DSN = %s', $DSN; 
+    }
+    if ($@ ) { say  'FAILED: DBI->connect(). Exiting...' ; exit;  }
+}
+sub show_settings {
+    say Dumper (shift);
+}
+############################################## Process ARGV
+my $opt = new Getopt::Compact
+              args   => '',
+              modes  => [qw (verbose )],
+              struct =>  [ [ [qw(c config)],   'config file'    , '=s' ],
+		   	   [ [qw(1 once)],     'run only once'         ],
+		   	   [ [qw(s show)],     'show parameters'       ],
+		   	   [ [qw(connect)],    'check connect()'      ],
+		   	   [ [qw(dsn)],        'show DSN'             ],
+	];
+my $arg      = $opt->opts;
+my $ini      =  $arg->{conf}  || find_config()             ;
+my $conf     =  read_config( DEFAULTS, $ini)               ;
+my $once     =  $arg->{once}                               ; 
+$arg->{show}  && show_settings( $conf) && exit             ;
+#
+############################################################ show DSN
+if ($arg->{dsn}) {
+        for my $cluster (keys %$conf) {
+            say form_dsn( $conf->{$cluster} )                    ;
+        }
+        exit;
+} # if
+###################################################################  
+my $numforks = scalar keys %$conf                          ;
+   $numforks > MAX_FORKS and die "MAX_FORKS exeeded.\n"    ;
+#
+sub check_cluster;
+
+my $allowed_keys ; 
+  $allowed_keys->{$_} = 1 for (ALLOWED_KEYS); 
+
+
+# check that all keys supplied in ini are vald
+for my $cluster (keys %$conf) {
+    check_cluster $conf->{$cluster}                        ;
+    $arg->{connect} and check_db_connection $conf->{$cluster};
+
+}
+##################################################### Check Cluster
+#
+sub check_cluster {
+    
+      # check for valid keys
+      my ($o) = @_;
+      for (keys %$o) {
+                warn "$_: not a valid keyword\n"  unless ( $allowed_keys->{$_})  
+      }
+
+      # check out_mode  
+      my @out_mode = qw/ file push stdout/ ;
+      #warn $o->{out_mode)  
+      say sprintf( qq(out_mode -  Found "%s" but expected one of these: %s\n), $o->{out_mode}, join ', ',@out_mode)  
+                                                     unless grep { $_ =~ /$o->{out_mode}/i} (@out_mode) ;
+      # check chmod
+      say sprintf( qq(chmod - Found "%s" but expected three or four octal numbers\n),  $o->{chmod}) unless $o->{chmod} =~ /[0-7]{3,4}/; 
+
+      # check secret_file 
+      say sprintf( qq(secret_file  - Found "%s" but it is not readable\n),  $o->{secret_file}) unless -r ($o->{secret_file}||'/tmp') ; 
+       
+      # check out_dir 
+      say sprintf( qq(out_dir  - Found "%s" but directory  is not writable\n),  $o->{out_dir}) unless -w ($o->{out_dir}||'/tmp') ; 
+
+       # check port 
+       # samples_per_minute
+       # output_interval
+       ensure_integer  $_, $o->{$_}                for ( qw/ port samples_per_minute output_interval /) ;
+
+      # check msec_BETWEEN_SAMPLES
+      my $msec_BETWEEN_SAMPLES   =  1_000 * 60 / $o->{samples_per_minute}         ;
+       say sprintf( qq(smaples_per_minute - Found "%d" but rate is too fast\n), $o->{samples_per_minute})  unless  $msec_BETWEEN_SAMPLES > 1_00 ;
+
+} 
+
+

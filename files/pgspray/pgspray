@@ -147,7 +147,7 @@ my $opt = new Getopt::Compact
 		   	   [ [qw(dsn)],        'show DSN'             ],
 	];
 my $arg  = $opt->opts;
-my $ini      =  $arg->{conf}  || find_config()             ;
+my $ini      =  $arg->{config}  || find_config()           ;
 my $conf     =  read_config( DEFAULTS, $ini)               ;
 my $once     =  $arg->{once}                               ; 
 $arg->{show}  && show_settings( $conf) && exit             ;
