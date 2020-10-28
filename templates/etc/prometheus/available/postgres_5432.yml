@@ -6,4 +6,5 @@
       pg_port:         5432 
       cluster:         main
       server_version:  REL_11.4
+      env:             prod
 

@@ -45,9 +45,12 @@
       - grafana-piechart-panel    
       - grafana-worldmap-panel
       - farski-blendstat-panel
+      - grafana-polystat-panel
       - michaeldmoore-multistat-panel
       - yesoreyeram-boomtable-panel
       - vonage-status-panel
+      #- grafana-image-renderer
+
 
 
 - name:    provisioning
