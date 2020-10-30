@@ -1,55 +1,58 @@
 #############################  install  loki(1) and logcli(1)
+- name:         release version
+  debug:        msg="LOKI_RELEASE = {{ LOKI_RELEASE }}"
+
 - name:         install loki(1)
   unarchive:
       src:          "https://github.com/grafana/loki/releases/download/{{LOKI_RELEASE}}/loki-linux-amd64.zip"
       dest:         /tmp/
       remote_src:   yes
-      creates:      /usr/local/bin/loki-linux-amd64 
+      creates:      "/usr/local/bin/loki-linux-amd64-{{LOKI_RELEASE}}" 
 
-- command:       cp -a "/tmp/loki-linux-amd64"  "/usr/local/bin/"  
+- command:       cp -a "/tmp/loki-linux-amd64"  "/usr/local/bin/loki-linux-amd64-{{LOKI_RELEASE}}"  
   args:
-      creates:       /usr/local/bin/loki-linux-amd64 
+      creates:       "/usr/local/bin/loki-linux-amd64-{{LOKI_RELEASE}}" 
 ######
 - name:         install logcli(1)
   unarchive:
       src:          "https://github.com/grafana/loki/releases/download/{{LOKI_RELEASE}}/logcli-linux-amd64.zip"
       dest:         /tmp/
       remote_src:   yes
-      creates:      /usr/local/bin/logcli-linux-amd64 
+      creates:     "/usr/local/bin/logcli-linux-amd64-{{LOKI_RELEASE}}" 
 
-- command:       cp -a "/tmp/logcli-linux-amd64"  "/usr/local/bin/"  
+- command:       cp -a /tmp/logcli-linux-amd64  "/usr/local/bin/logcli-linux-amd64-{{LOKI_RELEASE}}" 
   args:
-      creates:       /usr/local/bin/logcli-linux-amd64 
+      creates:   "/usr/local/bin/logcli-linux-amd64-{{LOKI_RELEASE}}" 
 ##############################################  check both intalls
 - name:        check for loki(1)
-  stat:        path="/usr/local/bin/loki-linux-amd64"
+  stat:        path="/usr/local/bin/loki-linux-amd64-{{LOKI_RELEASE}}"
   register:    lokibin
 
-- name:        assert /usr/local/bin/loki-linux-amd64
+- name:        assert "/usr/local/bin/loki-linux-amd64-{{LOKI_RELEASE}}"
   assert:       
     that:
         - lokibin.stat.exists
     quiet:      true
-    fail_msg:   'please install loki-linux-amd64r(1)'
+    fail_msg:   "please install loki-linux-amd64-{{LOKI_RELEASE}}(1)"
 
 - name:        check for logcli(1)
-  stat:        path="/usr/local/bin/logcli-linux-amd64"
+  stat:        path="/usr/local/bin/logcli-linux-amd64-{{LOKI_RELEASE}}"
   register:    logclibin
 
 
-- name:        assert /usr/local/bin/logcli-linux-amd64
+- name:        assert "/usr/local/bin/logcli-linux-amd64-{{LOKI_RELEASE}}"
   assert:       
     that:
         - logclibin.stat.exists
     quiet:      true
-    fail_msg:   'please install logcli-linux-amd64r(1)'
+    fail_msg:   "please install logcli-linux-amd64-{{LOKI_RELEASE}}(1)"
 
 ####################################################  symlinks 
 - name:    symlink loki 
-  file:    src='/usr/local/bin/loki-linux-amd64'   dest='/usr/local/bin/loki'   state=link  owner=root   force=yes
+  file:    src="/usr/local/bin/loki-linux-amd64-{{LOKI_RELEASE}}"   dest='/usr/local/bin/loki'   state=link  owner=root   force=yes
 
 - name:    symlink logcli
-  file:    src='/usr/local/bin/logcli-linux-amd64'   dest='/usr/local/bin/logcli'   state=link  owner=root   force=yes
+  file:    src="/usr/local/bin/logcli-linux-amd64-{{LOKI_RELEASE}}"   dest='/usr/local/bin/logcli'   state=link  owner=root   force=yes
 ####################################################  config files 
 - name:         config files
   synchronize:  src=etc/loki    dest="/etc/"    owner=root   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
