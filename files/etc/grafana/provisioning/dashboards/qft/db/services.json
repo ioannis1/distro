@@ -1,0 +1,2123 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 1,
+  "id": 7,
+  "iteration": 1606160077732,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "host"
+      ],
+      "targetBlank": false,
+      "title": "$host",
+      "type": "dashboards",
+      "url": "dashboard/host/qft"
+    },
+    {
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "title": "$cluster",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/NPz_1JKGk/pg"
+    }
+  ],
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 54,
+      "panels": [],
+      "repeat": null,
+      "title": "",
+      "type": "row"
+    },
+    {
+      "datasource": "$ds",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": null,
+            "displayMode": "color-background",
+            "filterable": false,
+            "width": 150
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "cluster"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 98
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 143
+              },
+              {
+                "id": "unit",
+                "value": "dtdhms"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hostname"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 36
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "server_version"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 105
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hostname"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": []
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 81,
+      "options": {
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "7.3.0-beta2",
+      "targets": [
+        {
+          "expr": "label_join(pg_postmaster_start_time_seconds{hostname=\"$host\",cluster=\"$cluster\"},\"hostport\", ':', \"host_ip\", \"pg_port\")/1000",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "expr": "pg_postmaster_start_time_seconds{hostname=\"$host\",cluster=\"$cluster\"}/1000",
+          "format": "table",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "hostname",
+                "server_version",
+                "Value",
+                "hostport",
+                "cluster"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Value": 4,
+              "cluster": 1,
+              "hostname": 0,
+              "hostport": 2,
+              "server_version": 3
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "id": 174,
+      "panels": [],
+      "title": "blackbox  tcp",
+      "type": "row"
+    },
+    {
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a",
+        "#4040a0"
+      ],
+      "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 17,
+        "x": 0,
+        "y": 5
+      },
+      "id": 172,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "blackbox",
+          "url": "http://$host:9115"
+        }
+      ],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:262",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:263",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "pluginVersion": "7.3.0-beta2",
+      "polystat": {
+        "animationSpeed": 2500,
+        "columnAutoSize": false,
+        "columns": 7,
+        "defaultClickThrough": "",
+        "defaultClickThroughNewTab": true,
+        "defaultClickThroughSanitize": false,
+        "displayLimit": 30,
+        "fontAutoColor": true,
+        "fontAutoScale": false,
+        "fontSize": 14,
+        "fontType": "Roboto",
+        "globalDecimals": 0,
+        "globalDisplayMode": "all",
+        "globalDisplayTextTriggeredEmpty": "OK",
+        "globalOperatorName": "current",
+        "globalThresholds": [
+          {
+            "$$hashKey": "object:202",
+            "color": "#C4162A",
+            "state": 2,
+            "value": 0
+          },
+          {
+            "$$hashKey": "object:209",
+            "color": "#37872D",
+            "state": 0,
+            "value": 1
+          }
+        ],
+        "globalUnitFormat": "short",
+        "gradientEnabled": true,
+        "hexagonSortByDirection": 1,
+        "hexagonSortByField": "name",
+        "maxMetrics": 0,
+        "polygonBorderColor": "#CA95E5",
+        "polygonBorderSize": 2,
+        "polygonGlobalFillColor": "#0a50a1",
+        "radius": 70,
+        "radiusAutoSize": false,
+        "rowAutoSize": true,
+        "rows": "",
+        "shape": "hexagon_pointed_top",
+        "tooltipDisplayMode": "all",
+        "tooltipDisplayTextTriggeredEmpty": "OK",
+        "tooltipFontSize": 12,
+        "tooltipFontType": "Roboto",
+        "tooltipPrimarySortDirection": 2,
+        "tooltipPrimarySortField": "thresholdLevel",
+        "tooltipSecondarySortDirection": 2,
+        "tooltipSecondarySortField": "value",
+        "tooltipTimestampEnabled": true,
+        "valueEnabled": true
+      },
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "savedComposites": [],
+      "savedOverrides": [
+        {
+          "$$hashKey": "object:211",
+          "clickThrough": "http://$host:9144/metrics",
+          "colors": [
+            "#299c46",
+            "#e5ac0e",
+            "#bf1b00",
+            "#4040a0"
+          ],
+          "decimals": "",
+          "enabled": true,
+          "label": "OVERRIDE 1",
+          "metricName": "loki",
+          "newTabEnabled": true,
+          "operatorName": "avg",
+          "prefix": "",
+          "sanitizeURLEnabled": true,
+          "scaledDecimals": null,
+          "suffix": "",
+          "thresholds": [],
+          "unitFormat": "short"
+        },
+        {
+          "$$hashKey": "object:223",
+          "clickThrough": "http://$host:9145/metrics",
+          "colors": [
+            "#299c46",
+            "#e5ac0e",
+            "#bf1b00",
+            "#4040a0"
+          ],
+          "decimals": "",
+          "enabled": true,
+          "label": "OVERRIDE 2",
+          "metricName": "grok-exporter-karat",
+          "newTabEnabled": true,
+          "operatorName": "avg",
+          "prefix": "",
+          "sanitizeURLEnabled": true,
+          "scaledDecimals": null,
+          "suffix": "",
+          "thresholds": [],
+          "unitFormat": "short"
+        },
+        {
+          "$$hashKey": "object:235",
+          "clickThrough": "http://$host:9188/metrics",
+          "colors": [
+            "#299c46",
+            "#e5ac0e",
+            "#bf1b00",
+            "#4040a0"
+          ],
+          "decimals": "",
+          "enabled": true,
+          "label": "OVERRIDE 3",
+          "metricName": "postgres-exporter-karat",
+          "newTabEnabled": true,
+          "operatorName": "avg",
+          "prefix": "",
+          "sanitizeURLEnabled": true,
+          "scaledDecimals": null,
+          "suffix": "",
+          "thresholds": [],
+          "unitFormat": "short"
+        },
+        {
+          "$$hashKey": "object:485",
+          "clickThrough": "http://$host:9144/metrics",
+          "colors": [
+            "#299c46",
+            "#e5ac0e",
+            "#bf1b00",
+            "#4040a0"
+          ],
+          "decimals": "",
+          "enabled": true,
+          "label": "OVERRIDE 4",
+          "metricName": "grok-exporter-main",
+          "newTabEnabled": true,
+          "operatorName": "avg",
+          "prefix": "",
+          "sanitizeURLEnabled": true,
+          "scaledDecimals": null,
+          "suffix": "",
+          "thresholds": [],
+          "unitFormat": "short"
+        },
+        {
+          "$$hashKey": "object:497",
+          "clickThrough": "http://$host:9187/metrics",
+          "colors": [
+            "#299c46",
+            "#e5ac0e",
+            "#bf1b00",
+            "#4040a0"
+          ],
+          "decimals": "",
+          "enabled": true,
+          "label": "OVERRIDE 5",
+          "metricName": "postgres-exporter-main",
+          "newTabEnabled": true,
+          "operatorName": "avg",
+          "prefix": "",
+          "sanitizeURLEnabled": true,
+          "scaledDecimals": null,
+          "suffix": "",
+          "thresholds": [],
+          "unitFormat": "short"
+        },
+        {
+          "$$hashKey": "object:319",
+          "clickThrough": "http://$host:9080/metrics",
+          "colors": [
+            "#299c46",
+            "#e5ac0e",
+            "#bf1b00",
+            "#4040a0"
+          ],
+          "decimals": "",
+          "enabled": true,
+          "label": "OVERRIDE 6",
+          "metricName": "promtail",
+          "newTabEnabled": true,
+          "operatorName": "avg",
+          "prefix": "",
+          "sanitizeURLEnabled": true,
+          "scaledDecimals": null,
+          "suffix": "",
+          "thresholds": [],
+          "unitFormat": "short"
+        }
+      ],
+      "targets": [
+        {
+          "expr": "probe_success{hostname=\"$host\",service=~\".*$cluster.*\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ service }}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        },
+        {
+          "expr": "probe_success{hostname=\"$host\",service=\"promtail\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "promtail",
+          "refId": "B"
+        },
+        {
+          "expr": "probe_success{hostname=\"$host\",service=\"pgspray\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "pgspray",
+          "queryType": "randomWalk",
+          "refId": "C"
+        },
+        {
+          "expr": "probe_success{hostname=\"$host\",service=\"loki\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "loki",
+          "queryType": "randomWalk",
+          "refId": "D"
+        },
+        {
+          "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\",name=\"pgspray.service\"}",
+          "interval": "",
+          "legendFormat": "pgspray",
+          "refId": "E"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "type": "grafana-polystat-panel",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:265",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "id": 155,
+      "panels": [],
+      "title": "blackbox tcp",
+      "type": "row"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "description": "pgspray via systemd(5)",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 11
+      },
+      "id": 142,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "repeat": null,
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "systemd",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"pgspray.service\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "systemd",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "pgspray",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "description": "psgi via plack(5)",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 3,
+        "y": 11
+      },
+      "id": 161,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "plack",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"plack\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "plack",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        },
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "aa",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "Never",
+          "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "aa",
+          "refId": "B",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "pgspray ",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "description": "psgi via plack(5)",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 6,
+        "y": 11
+      },
+      "id": 163,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "loki",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"loki\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "loki",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        },
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "aa",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "Never",
+          "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "aa",
+          "refId": "B",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "loki",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "description": "psgi via plack(5)",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 9,
+        "y": 11
+      },
+      "id": 164,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "fluent-bit",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"fluent-bit\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "fluent-bit",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        },
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "aa",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "Never",
+          "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "aa",
+          "refId": "B",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "fluent-bit",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 12,
+        "y": 11
+      },
+      "id": 159,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "blackbox",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"blackbox-exporter\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "blackbox",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "blackbox",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 15,
+        "y": 11
+      },
+      "id": 150,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "pg server",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"pg server $cluster\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "pg server",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "pg server $cluster",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 18,
+        "y": 11
+      },
+      "id": 153,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "pgexporter",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"postgres-exporter-$cluster\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "pgexporter",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "pgexporter-$cluster",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 21,
+        "y": 11
+      },
+      "id": 158,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "grok",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"grok-exporter-$cluster\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "grok",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "grok-exporter-$cluster",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "description": "pgspray via systemd(5)",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 14
+      },
+      "id": 167,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "systemd",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"postfix.service\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "systemd",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "postfix",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "description": "pgspray via systemd(5)",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 3,
+        "y": 14
+      },
+      "id": 166,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "systemd",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"apache2.service\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "systemd",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "apache2",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 9,
+        "y": 14
+      },
+      "id": 156,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "blackbox",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"blackbox-exporter\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "blackbox",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "blackbox",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 12,
+        "y": 14
+      },
+      "id": 157,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "consul http",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"consul http\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "consul http",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "consul http",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 15,
+        "y": 14
+      },
+      "id": 165,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "prometheus",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"prometheus\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "prometheus",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "prometheus",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "description": "psgi via plack(5)",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 18,
+        "y": 14
+      },
+      "id": 162,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "promtail",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"promtail\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "promtail",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        },
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "aa",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "Never",
+          "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "aa",
+          "refId": "B",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "promtail",
+      "type": "vonage-status-panel"
+    },
+    {
+      "clusterName": "$host",
+      "colorMode": "Panel",
+      "colors": {
+        "crit": "rgba(245, 54, 54, 0.9)",
+        "disable": "rgba(128, 128, 128, 0.9)",
+        "ok": "rgba(50, 128, 45, 0.9)",
+        "warn": "rgba(237, 129, 40, 0.9)"
+      },
+      "cornerRadius": 90,
+      "datasource": "$ds",
+      "displayName": "qft",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "flipCard": true,
+      "flipTime": 5,
+      "fontFormat": "Regular",
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 21,
+        "y": 14
+      },
+      "id": 146,
+      "isAutoScrollOnOverflow": false,
+      "isGrayOnNoData": true,
+      "isHideAlertsOnDisable": true,
+      "isIgnoreOKColors": false,
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "$$hashKey": "object:571",
+          "aggregation": "Last",
+          "alias": "pushgateway",
+          "crit": "0",
+          "decimals": 2,
+          "displayAliasType": "Always",
+          "displayType": "Regular",
+          "displayValueWithAlias": "When Alias Displayed",
+          "expr": "probe_success{hostname=\"$host\",service=\"pushgateway-exporter\"}",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "pushgateway",
+          "refId": "A",
+          "units": "none",
+          "valueHandler": "String Threshold"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "pushgateway",
+      "type": "vonage-status-panel"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 140,
+      "panels": [],
+      "title": "services",
+      "type": "row"
+    },
+    {
+      "Aggregate": "last",
+      "BarPadding": 10,
+      "BaseLineColor": "#ff0000",
+      "BaseLineValue": null,
+      "BaseLineWidth": 1,
+      "CurveType": "Monotone",
+      "DateFormat": "YYYY-MM-DD HH:mm:ss",
+      "DateTimeColName": "date",
+      "DotColor": "white",
+      "DotSize": 10,
+      "EvenRowColor": "rgba(61, 61, 64, 0.78)",
+      "FlashHighLimitBar": false,
+      "FlashLowLimitBar": false,
+      "GroupCols": 0,
+      "GroupGap": 5,
+      "GroupLabelColor": "#ffffff",
+      "GroupLabelFontSize": "200%",
+      "GroupNameFilter": "",
+      "GroupSortString": "",
+      "HighAxisColor": "#ffffff",
+      "HighAxisWidth": 1,
+      "HighBarColor": "rgb(120, 128, 0)",
+      "HighLimitBarColor": "#ff0000",
+      "HighLimitBarFlashColor": "#ffa500",
+      "HighLimitBarFlashTimeout": 1000,
+      "HighLimitLineColor": "#ff0000",
+      "HighLimitValue": null,
+      "HighLmitLineWidth": 1,
+      "HighSideMargin": 22,
+      "Horizontal": true,
+      "LabelColName": "service",
+      "LabelColor": "#ffffff",
+      "LabelFontSize": "100%",
+      "LabelMargin": null,
+      "LabelNameFilter": "",
+      "LableAngle": 0,
+      "LineColor": "blue",
+      "LineWidth": 5,
+      "Links": [],
+      "LowAxisColor": "#ffffff",
+      "LowAxisWidth": 1,
+      "LowBarColor": "#C4162A",
+      "LowLimitBarColor": "#ff0000",
+      "LowLimitBarFlashColor": "#ffa500",
+      "LowLimitBarFlashTimeout": 200,
+      "LowLimitLineColor": "#ff0000",
+      "LowLimitValue": null,
+      "LowLmitLineWidth": 1,
+      "LowSideMargin": 11,
+      "MaxLineColor": "rgb(74, 232, 12)",
+      "MaxLineValue": null,
+      "MaxLineWidth": 1,
+      "MinLineColor": "#ff0000",
+      "MinLineValue": null,
+      "MinLineWidth": 1,
+      "OddRowColor": "rgba(33, 33, 34, 0.92)",
+      "OutOfRangeLabelColor": "#ffffff",
+      "OutlineColor": "rgba(245, 255, 0, 0.1)",
+      "RecolorColName": null,
+      "RecolorHighLimitBar": false,
+      "RecolorLowLimitBar": false,
+      "RecolorRules": [],
+      "ScaleFactor": 1,
+      "ShowBars": true,
+      "ShowBaseLine": false,
+      "ShowDate": false,
+      "ShowGroupLabels": true,
+      "ShowHighLimitLine": false,
+      "ShowLabels": true,
+      "ShowLeftAxis": true,
+      "ShowLines": false,
+      "ShowLowLimitLine": false,
+      "ShowMaxLine": false,
+      "ShowMinLine": false,
+      "ShowRightAxis": true,
+      "ShowTooltips": true,
+      "ShowValues": true,
+      "SortColName": "service",
+      "SortDirection": "ascending",
+      "TZOffsetHours": 0,
+      "TooltipDateFormat": "YYYY-MM-DD HH:mm:ss",
+      "ValueColName": "Value",
+      "ValueColor": "#ffffff",
+      "ValueDecimals": 0,
+      "ValueFontSize": "100%",
+      "ValuePosition": "top",
+      "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [
+            {
+              "from": "",
+              "id": 0,
+              "text": "",
+              "to": "",
+              "type": 1
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              },
+              {
+                "color": "dark-green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 23,
+        "x": 0,
+        "y": 18
+      },
+      "id": 144,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "blackbox",
+          "url": "http://$host:9115/"
+        }
+      ],
+      "pluginVersion": "7.2.0-040ed969pre",
+      "targets": [
+        {
+          "expr": "probe_success{hostname=\"$host\"}",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{ service }}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "blackbox",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "service",
+                "Value"
+              ]
+            }
+          }
+        }
+      ],
+      "type": "michaeldmoore-multistat-panel"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [
+    "db"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "qft",
+          "value": "qft"
+        },
+        "datasource": "prom_qft",
+        "definition": "label_values(pg_up,hostname)\n\n",
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "host",
+        "options": [],
+        "query": "label_values(pg_up,hostname)\n\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "karat",
+          "value": "karat"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(pg_up,cluster) \n",
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "cluster",
+        "options": [],
+        "query": "label_values(pg_up,cluster) \n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "prom_qft",
+          "value": "prom_qft"
+        },
+        "error": null,
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "ds",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "5432",
+          "value": "5432"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(pg_up{hostname=\"$host\"},pg_port)",
+        "error": null,
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "port",
+        "options": [],
+        "query": "label_values(pg_up{hostname=\"$host\"},pg_port)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "plack",
+          "value": "plack"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(probe_success,service)\n",
+        "error": null,
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": true,
+        "name": "services",
+        "options": [],
+        "query": "label_values(probe_success,service)\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "5m",
+          "value": "5m"
+        },
+        "error": null,
+        "hide": 1,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "delta",
+        "options": [
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "2m",
+            "value": "2m"
+          },
+          {
+            "selected": false,
+            "text": "3m",
+            "value": "3m"
+          },
+          {
+            "selected": true,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "4h",
+            "value": "4h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": false,
+            "text": "1d",
+            "value": "1d"
+          }
+        ],
+        "query": "1m,2m,3m,5m,10m,30m,1h,4h,6h,1d",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "services",
+  "uid": "rPMXZuoMk",
+  "version": 15
+}

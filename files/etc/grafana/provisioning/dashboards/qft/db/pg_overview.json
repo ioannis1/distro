@@ -1,0 +1,470 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 1,
+  "id": 6,
+  "iteration": 1606160191405,
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "tags": [
+        "pg",
+        "iet"
+      ],
+      "title": "postgres",
+      "type": "dashboards"
+    }
+  ],
+  "panels": [
+    {
+      "autoPanLabels": true,
+      "autoWidthLabels": true,
+      "circleMaxSize": 30,
+      "circleMinSize": 2,
+      "circleOptions": {
+        "strokeEnabled": true,
+        "strokeWeight": 3
+      },
+      "clickthroughOptions": {
+        "windowName": null
+      },
+      "clickthroughUrl": "",
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "customAttribution": false,
+      "customAttributionText": null,
+      "datasource": "$ds",
+      "decimals": 0,
+      "doubleClickZoom": true,
+      "dragging": true,
+      "esGeoPoint": null,
+      "esLink": null,
+      "esLocationName": null,
+      "esMetric": "Count",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "hideEmpty": false,
+      "hideTimepickerNavigation": false,
+      "hideZero": false,
+      "id": 181,
+      "ignoreEmptyGeohashValues": false,
+      "ignoreEscapeKey": false,
+      "ignoreInvalidGeohashValues": false,
+      "initialZoom": 1,
+      "legendContainerSelector": null,
+      "locationData": null,
+      "mapCenter": "(0°, 0°)",
+      "mapCenterLatitude": 0,
+      "mapCenterLongitude": 0,
+      "mapFitData": false,
+      "mapZoomByRadius": null,
+      "maxDataPoints": 1,
+      "maximumZoom": null,
+      "mouseWheelZoom": false,
+      "pluginVersion": "7.3.0-beta2",
+      "showAttribution": true,
+      "showLegend": true,
+      "showZoomControl": true,
+      "stickyLabels": false,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "labelField": null,
+        "labelLocationKeyField": null,
+        "latitudeField": "latitude",
+        "linkField": null,
+        "longitudeField": "longitude",
+        "metricField": "metric",
+        "queryType": "geohash"
+      },
+      "thresholds": "0,10",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Panel Title",
+      "type": "grafana-map-panel",
+      "unitPlural": "",
+      "unitSingular": "",
+      "valueName": "total"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 179,
+      "panels": [],
+      "title": "world map",
+      "type": "row"
+    },
+    {
+      "circleMaxSize": "8",
+      "circleMinSize": "8",
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "datasource": "$ds",
+      "decimals": 0,
+      "esMetric": "Count",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "hideEmpty": true,
+      "hideZero": true,
+      "id": 175,
+      "initialZoom": "3",
+      "locationData": "states",
+      "mapCenter": "North America",
+      "mapCenterLatitude": 40,
+      "mapCenterLongitude": -100,
+      "maxDataPoints": 1,
+      "mouseWheelZoom": false,
+      "pluginVersion": "7.3.0-beta2",
+      "showLegend": false,
+      "stickyLabels": false,
+      "tableQueryOptions": {
+        "geohashField": "geohash",
+        "latitudeField": "latitude",
+        "longitudeField": "longitude",
+        "metricField": "metric",
+        "queryType": "geohash"
+      },
+      "targets": [
+        {
+          "expr": "pglocation",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{location}}",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "0,10",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "PG servers",
+      "type": "grafana-worldmap-panel",
+      "unitPlural": "",
+      "unitSingle": "",
+      "valueName": "current"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 173,
+      "panels": [
+        {
+          "colors": [
+            "#299c46",
+            "rgba(237, 129, 40, 0.89)",
+            "#d44a3a",
+            "#4040a0"
+          ],
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 10,
+            "x": 0,
+            "y": 10
+          },
+          "id": 177,
+          "mappingType": 1,
+          "mappingTypes": [
+            {
+              "$$hashKey": "object:547",
+              "name": "value to text",
+              "value": 1
+            },
+            {
+              "$$hashKey": "object:548",
+              "name": "range to text",
+              "value": 2
+            }
+          ],
+          "pluginVersion": "7.3.0-beta2",
+          "polystat": {
+            "animationSpeed": 2500,
+            "columnAutoSize": false,
+            "columns": 2,
+            "defaultClickThrough": "dashboard/db/pg?var-cluster=${__cell_name}",
+            "defaultClickThroughNewTab": false,
+            "defaultClickThroughSanitize": false,
+            "displayLimit": 10,
+            "fontAutoColor": true,
+            "fontAutoScale": false,
+            "fontColor": "",
+            "fontSize": 17,
+            "fontType": "Roboto",
+            "globalDecimals": 0,
+            "globalDisplayMode": "all",
+            "globalDisplayTextTriggeredEmpty": "OK",
+            "globalOperatorName": "current",
+            "globalThresholds": [
+              {
+                "$$hashKey": "object:101",
+                "color": "#d44a3a",
+                "state": 2,
+                "value": 0
+              },
+              {
+                "$$hashKey": "object:94",
+                "color": "#299c46",
+                "state": 0,
+                "value": 1
+              }
+            ],
+            "globalUnitFormat": "short",
+            "gradientEnabled": true,
+            "hexagonSortByDirection": 1,
+            "hexagonSortByField": "name",
+            "maxMetrics": 0,
+            "polygonBorderColor": "black",
+            "polygonBorderSize": 2,
+            "polygonGlobalFillColor": "#0a50a1",
+            "radius": 70,
+            "radiusAutoSize": false,
+            "rowAutoSize": true,
+            "rows": "",
+            "shape": "hexagon_pointed_top",
+            "tooltipDisplayMode": "all",
+            "tooltipDisplayTextTriggeredEmpty": "OK",
+            "tooltipFontSize": 12,
+            "tooltipFontType": "Roboto",
+            "tooltipPrimarySortDirection": 2,
+            "tooltipPrimarySortField": "thresholdLevel",
+            "tooltipSecondarySortDirection": 2,
+            "tooltipSecondarySortField": "value",
+            "tooltipTimestampEnabled": false,
+            "valueEnabled": false
+          },
+          "rangeMaps": [
+            {
+              "from": "null",
+              "text": "N/A",
+              "to": "null"
+            }
+          ],
+          "savedComposites": [],
+          "savedOverrides": [],
+          "targets": [
+            {
+              "expr": "pg_up",
+              "interval": "",
+              "legendFormat": "{{cluster}}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Postgres servers",
+          "type": "grafana-polystat-panel",
+          "valueMaps": [
+            {
+              "$$hashKey": "object:550",
+              "op": "=",
+              "text": "N/A",
+              "value": "null"
+            }
+          ]
+        }
+      ],
+      "title": "hosts",
+      "type": "row"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "qft",
+          "value": "qft"
+        },
+        "datasource": "prom_qft",
+        "definition": "label_values(pg_up,hostname)\n\n",
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "host",
+        "options": [],
+        "query": "label_values(pg_up,hostname)\n\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "prom_qft",
+          "value": "prom_qft"
+        },
+        "error": null,
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "ds",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "5433",
+          "value": "5433"
+        },
+        "datasource": "$ds",
+        "definition": "label_values(pg_up{hostname=\"$host\"},pg_port)",
+        "error": null,
+        "hide": 2,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "port",
+        "options": [],
+        "query": "label_values(pg_up{hostname=\"$host\"},pg_port)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "prom_qft",
+        "definition": "label_values(pg_up,hostname)\n\n",
+        "error": null,
+        "hide": 2,
+        "includeAll": true,
+        "label": null,
+        "multi": false,
+        "name": "HOSTS",
+        "options": [],
+        "query": "label_values(pg_up,hostname)\n\n",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "pg overview",
+  "uid": "wTaLQQtGk",
+  "version": 30
+}

@@ -16,17 +16,36 @@
   "gnetId": null,
   "graphTooltip": 1,
   "id": 2,
-  "iteration": 1603048897453,
+  "iteration": 1606160105889,
   "links": [
     {
-      "asDropdown": true,
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "title": "$host",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/1fgTIADMk/linux"
+    },
+    {
+      "icon": "dashboard",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "title": "Services",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/rPMXZuoMk/services"
+    },
+    {
       "icon": "external link",
-      "tags": [
-        "pg",
-        "iet"
-      ],
-      "title": "postgres",
-      "type": "dashboards"
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "title": "config",
+      "type": "link",
+      "url": "/d/6YDsdXTMz/pg_config"
     }
   ],
   "panels": [
@@ -50,45 +69,33 @@
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": null
+          "color": {
+            "mode": "thresholds"
           },
+          "custom": {
+            "align": null,
+            "displayMode": "color-background",
+            "filterable": false,
+            "width": 150
+          },
+          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-purple",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "server_version"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 102
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "pg_host"
+              "options": "cluster"
             },
             "properties": [
               {
@@ -105,23 +112,11 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 250
+                "value": 143
               },
               {
                 "id": "unit",
                 "value": "dtdhms"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "pg_port"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 76
               }
             ]
           },
@@ -145,7 +140,24 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 205
+                "value": 105
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "hostname"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "$host",
+                    "url": "/d/1fgTIADMk/linux"
+                  }
+                ]
               }
             ]
           }
@@ -153,24 +165,39 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 11,
+        "w": 12,
         "x": 0,
         "y": 1
       },
       "id": 81,
+      "links": [
+        {
+          "title": "$host",
+          "url": "/d/1fgTIADMk/linux"
+        }
+      ],
       "options": {
         "showHeader": false,
         "sortBy": []
       },
-      "pluginVersion": "7.2.0-040ed969pre",
+      "pluginVersion": "7.3.0-beta2",
       "targets": [
         {
-          "expr": "pg_postmaster_start_time_seconds{hostname=\"$host\",cluster=\"$cluster\"}",
+          "expr": "label_join(pg_postmaster_start_time_seconds{hostname=\"$host\",cluster=\"$cluster\"},\"hostport\", ':', \"host_ip\", \"pg_port\")/1000",
           "format": "table",
           "instant": true,
           "interval": "",
           "legendFormat": "",
           "refId": "A"
+        },
+        {
+          "expr": "pg_postmaster_start_time_seconds{hostname=\"$host\",cluster=\"$cluster\"}/1000",
+          "format": "table",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
         }
       ],
       "timeFrom": null,
@@ -183,11 +210,26 @@
             "include": {
               "names": [
                 "hostname",
-                "pg_port",
                 "server_version",
-                "Value"
+                "Value",
+                "hostport",
+                "cluster"
               ]
             }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Value": 4,
+              "cluster": 1,
+              "hostname": 0,
+              "hostport": 2,
+              "server_version": 3
+            },
+            "renameByName": {}
           }
         }
       ],
@@ -195,65 +237,104 @@
       "type": "table"
     },
     {
-      "columns": [],
       "datasource": "$ds",
-      "description": "current_setting()",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": [],
+          "mappings": [
+            {
+              "from": "0",
+              "id": 1,
+              "text": "OK",
+              "to": "80",
+              "type": 2,
+              "value": "<80"
+            },
+            {
+              "from": "80",
+              "id": 2,
+              "text": "Warning",
+              "to": "90",
+              "type": 2
+            },
+            {
+              "from": "90",
+              "id": 3,
+              "text": "Critical",
+              "to": "100",
+              "type": 2
+            }
+          ],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
-      "fontSize": "100%",
       "gridPos": {
-        "h": 6,
-        "w": 12,
+        "h": 3,
+        "w": 6,
         "x": 12,
         "y": 1
       },
-      "id": 48,
+      "id": 179,
       "links": [],
-      "pageSize": null,
-      "repeat": null,
-      "scroll": true,
-      "showHeader": true,
-      "sort": {
-        "col": 0,
-        "desc": true
-      },
-      "styles": [
-        {
-          "alias": "",
-          "align": "auto",
-          "colorMode": null,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
           ],
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "decimals": 2,
-          "pattern": "",
-          "thresholds": [],
-          "type": "number",
-          "unit": "short"
-        }
-      ],
+          "fields": "",
+          "values": true
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
+      },
+      "pluginVersion": "7.3.0-beta2",
       "targets": [
         {
-          "alias": "",
-          "expr": "",
-          "format": "table",
-          "hide": false,
+          "expr": "(sum by (device) (node_filesystem_size_bytes{hostname=\"$host\"})  - sum by (device) (node_filesystem_avail_bytes{hostname=\"$host\"}))/ sum by (device) (node_filesystem_size_bytes{hostname=\"$host\"})",
+          "format": "time_series",
+          "hide": true,
+          "instant": true,
           "interval": "",
-          "legendFormat": "",
-          "rawSql": "SELECT * FROM (\nVALUES ('conflicts',  (SELECT conflicts FROM pg_stat_database WHERE datname = $db))\n       , ('temp_files', (SELECT temp_files FROM pg_stat_database WHERE datname = $db))\n      -- , ('numbackends', (SELECT numbackends FROM pg_stat_database WHERE datname = $db))\n      -- , ('temp_bytes', (SELECT temp_bytes FROM pg_stat_database WHERE datname = $db))\n      ,  ('deadlocks', (SELECT deadlocks FROM pg_stat_database WHERE datname = $db))\n      -- ('blk_read_time', (SELECT blk_read_time FROM pg_stat_database WHERE datname = $db))\n     ) i(metric,value)\n     \nunion\nSELECT  'months until AV_FREEZE_MAX_AGE'\n      , (diff/(7*24*60*60*xact/epoch)/4 ::int)::int    AS  \"weeks remain\"\nFROM (\n    SELECT  S.datname\n       , extract (epoch from (now()-pg_stat_get_db_stat_reset_time(datid)))  AS epoch\n       , xact_commit + xact_rollback                                         AS xact\n       , current_setting('autovacuum_freeze_max_age')::int  - age(datfrozenxid)       AS diff\n    FROM pg_stat_database S JOIN pg_database D  ON (S.datname = D.datname)\n        WHERE D.datname = $db \n)i\n\n",
+          "intervalFactor": 1,
+          "legendFormat": "{{device}}",
+          "refId": "B"
+        },
+        {
+          "expr": "100*(sum by (device) (node_filesystem_size_bytes{hostname=\"$host\"})  - sum by (device) (node_filesystem_avail_bytes{hostname=\"$host\"})  )/sum by (device) (node_filesystem_size_bytes{hostname=\"$host\"})>0",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{device}}",
           "refId": "A"
         }
       ],
-      "title": "db:     $db  (live)",
-      "transform": "table",
-      "type": "table-old"
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Partitions Used",
+      "transparent": true,
+      "type": "gauge"
     },
     {
       "collapsed": true,
@@ -262,1356 +343,9 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 7
-      },
-      "id": 155,
-      "panels": [
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "description": "pgspray via systemd(5)",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 0,
-            "y": 8
-          },
-          "id": 142,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "repeat": null,
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "systemd",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"pgspray.service\"}",
-              "format": "time_series",
-              "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "systemd",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "pgspray",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "description": "pgspray via systemd(5)",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 3,
-            "y": 8
-          },
-          "id": 166,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "systemd",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"apache2.service\"}",
-              "format": "time_series",
-              "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "systemd",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "apache2",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "description": "pgspray via systemd(5)",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 6,
-            "y": 8
-          },
-          "id": 167,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "systemd",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "node_systemd_unit_state{hostname=\"$host\",state=\"active\", name=\"postfix.service\"}",
-              "format": "time_series",
-              "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "systemd",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "postfix",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "description": "psgi via plack(5)",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 9,
-            "y": 8
-          },
-          "id": 164,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "fluent-bit",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"fluent-bit\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "fluent-bit",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            },
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "aa",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "Never",
-              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
-              "hide": true,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "aa",
-              "refId": "B",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "fluent-bit",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 12,
-            "y": 8
-          },
-          "id": 159,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "blackbox",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"blackbox-exporter\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "blackbox",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "blackbox",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 15,
-            "y": 8
-          },
-          "id": 150,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "pg server",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"pg server $cluster\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "pg server",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "pg server $cluster",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 18,
-            "y": 8
-          },
-          "id": 153,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "pgexporter",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"postgres-exporter-$cluster\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "pgexporter",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "pgexporter-$cluster",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 21,
-            "y": 8
-          },
-          "id": 158,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "grok",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"grok-exporter-$cluster\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "grok",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "grok-exporter-$cluster",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "description": "psgi via plack(5)",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 3,
-            "y": 11
-          },
-          "id": 161,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "plack",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"plack\"}",
-              "format": "time_series",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "plack",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            },
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "aa",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "Never",
-              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
-              "hide": true,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "aa",
-              "refId": "B",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "pgspray ",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "description": "psgi via plack(5)",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 6,
-            "y": 11
-          },
-          "id": 163,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "loki",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"loki\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "loki",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            },
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "aa",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "Never",
-              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
-              "hide": true,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "aa",
-              "refId": "B",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "loki",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 9,
-            "y": 11
-          },
-          "id": 156,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "blackbox",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"blackbox-exporter\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "blackbox",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "blackbox",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 12,
-            "y": 11
-          },
-          "id": 157,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "consul http",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"consul http\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "consul http",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "consul http",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 15,
-            "y": 11
-          },
-          "id": 165,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "prometheus",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"prometheus\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "prometheus",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "prometheus",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "description": "psgi via plack(5)",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 18,
-            "y": 11
-          },
-          "id": 162,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "promtail",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"promtail\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "promtail",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            },
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "aa",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "Never",
-              "expr": "probe_success{hostname=\"$host\",service=\"pgbounce\"}",
-              "hide": true,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "aa",
-              "refId": "B",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "promtail",
-          "type": "vonage-status-panel"
-        },
-        {
-          "clusterName": "$host",
-          "colorMode": "Panel",
-          "colors": {
-            "crit": "rgba(245, 54, 54, 0.9)",
-            "disable": "rgba(128, 128, 128, 0.9)",
-            "ok": "rgba(50, 128, 45, 0.9)",
-            "warn": "rgba(237, 129, 40, 0.9)"
-          },
-          "cornerRadius": 90,
-          "datasource": "$ds",
-          "displayName": "qft",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "flipCard": true,
-          "flipTime": 5,
-          "fontFormat": "Regular",
-          "gridPos": {
-            "h": 3,
-            "w": 3,
-            "x": 21,
-            "y": 11
-          },
-          "id": 146,
-          "isAutoScrollOnOverflow": false,
-          "isGrayOnNoData": true,
-          "isHideAlertsOnDisable": true,
-          "isIgnoreOKColors": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "$$hashKey": "object:571",
-              "aggregation": "Last",
-              "alias": "pushgateway",
-              "crit": "0",
-              "decimals": 2,
-              "displayAliasType": "Always",
-              "displayType": "Regular",
-              "displayValueWithAlias": "When Alias Displayed",
-              "expr": "probe_success{hostname=\"$host\",service=\"pushgateway-exporter\"}",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "pushgateway",
-              "refId": "A",
-              "units": "none",
-              "valueHandler": "String Threshold"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "pushgateway",
-          "type": "vonage-status-panel"
-        }
-      ],
-      "title": "blackbox tcp",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "datasource": null,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 8
+        "y": 4
       },
       "id": 140,
-      "panels": [
-        {
-          "Aggregate": "last",
-          "BarPadding": 10,
-          "BaseLineColor": "#ff0000",
-          "BaseLineValue": null,
-          "BaseLineWidth": 1,
-          "CurveType": "Monotone",
-          "DateFormat": "YYYY-MM-DD HH:mm:ss",
-          "DateTimeColName": "date",
-          "DotColor": "white",
-          "DotSize": 10,
-          "EvenRowColor": "rgba(61, 61, 64, 0.78)",
-          "FlashHighLimitBar": false,
-          "FlashLowLimitBar": false,
-          "GroupCols": 0,
-          "GroupGap": 5,
-          "GroupLabelColor": "#ffffff",
-          "GroupLabelFontSize": "200%",
-          "GroupNameFilter": "",
-          "GroupSortString": "",
-          "HighAxisColor": "#ffffff",
-          "HighAxisWidth": 1,
-          "HighBarColor": "rgb(120, 128, 0)",
-          "HighLimitBarColor": "#ff0000",
-          "HighLimitBarFlashColor": "#ffa500",
-          "HighLimitBarFlashTimeout": 1000,
-          "HighLimitLineColor": "#ff0000",
-          "HighLimitValue": null,
-          "HighLmitLineWidth": 1,
-          "HighSideMargin": 22,
-          "Horizontal": true,
-          "LabelColName": "service",
-          "LabelColor": "#ffffff",
-          "LabelFontSize": "100%",
-          "LabelMargin": null,
-          "LabelNameFilter": "",
-          "LableAngle": 0,
-          "LineColor": "blue",
-          "LineWidth": 5,
-          "Links": [],
-          "LowAxisColor": "#ffffff",
-          "LowAxisWidth": 1,
-          "LowBarColor": "#C4162A",
-          "LowLimitBarColor": "#ff0000",
-          "LowLimitBarFlashColor": "#ffa500",
-          "LowLimitBarFlashTimeout": 200,
-          "LowLimitLineColor": "#ff0000",
-          "LowLimitValue": null,
-          "LowLmitLineWidth": 1,
-          "LowSideMargin": 11,
-          "MaxLineColor": "rgb(74, 232, 12)",
-          "MaxLineValue": null,
-          "MaxLineWidth": 1,
-          "MinLineColor": "#ff0000",
-          "MinLineValue": null,
-          "MinLineWidth": 1,
-          "OddRowColor": "rgba(33, 33, 34, 0.92)",
-          "OutOfRangeLabelColor": "#ffffff",
-          "OutlineColor": "rgba(245, 255, 0, 0.1)",
-          "RecolorColName": null,
-          "RecolorHighLimitBar": false,
-          "RecolorLowLimitBar": false,
-          "RecolorRules": [],
-          "ScaleFactor": 1,
-          "ShowBars": true,
-          "ShowBaseLine": false,
-          "ShowDate": false,
-          "ShowGroupLabels": true,
-          "ShowHighLimitLine": false,
-          "ShowLabels": true,
-          "ShowLeftAxis": true,
-          "ShowLines": false,
-          "ShowLowLimitLine": false,
-          "ShowMaxLine": false,
-          "ShowMinLine": false,
-          "ShowRightAxis": true,
-          "ShowTooltips": true,
-          "ShowValues": true,
-          "SortColName": "service",
-          "SortDirection": "ascending",
-          "TZOffsetHours": 0,
-          "TooltipDateFormat": "YYYY-MM-DD HH:mm:ss",
-          "ValueColName": "Value",
-          "ValueColor": "#ffffff",
-          "ValueDecimals": 0,
-          "ValueFontSize": "100%",
-          "ValuePosition": "top",
-          "datasource": "$ds",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [
-                {
-                  "from": "",
-                  "id": 0,
-                  "text": "",
-                  "to": "",
-                  "type": 1
-                }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "dark-red",
-                    "value": null
-                  },
-                  {
-                    "color": "dark-green",
-                    "value": 1
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 11,
-            "w": 23,
-            "x": 0,
-            "y": 9
-          },
-          "id": 144,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "expr": "probe_success{hostname=\"$host\"}",
-              "format": "table",
-              "instant": true,
-              "interval": "",
-              "intervalFactor": 1,
-              "legendFormat": "{{ service }}",
-              "refId": "A"
-            }
-          ],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "blackbox",
-          "transformations": [
-            {
-              "id": "filterFieldsByName",
-              "options": {
-                "include": {
-                  "names": [
-                    "service",
-                    "Value"
-                  ]
-                }
-              }
-            }
-          ],
-          "type": "michaeldmoore-multistat-panel"
-        }
-      ],
-      "title": "services",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "datasource": null,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 9
-      },
-      "id": 56,
       "panels": [
         {
           "cards": {
@@ -1635,10 +369,10 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
-            "w": 8,
+            "h": 5,
+            "w": 6,
             "x": 0,
-            "y": 16
+            "y": 5
           },
           "heatmap": {},
           "hideZeroBuckets": true,
@@ -1690,7 +424,7 @@
         },
         {
           "cacheTimeout": null,
-          "datasource": "$ds",
+          "datasource": "-- Dashboard --",
           "description": "as reported by pgspray summary",
           "fieldConfig": {
             "defaults": {
@@ -1724,12 +458,12 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 4,
+            "h": 5,
             "w": 3,
-            "x": 8,
-            "y": 16
+            "x": 6,
+            "y": 5
           },
-          "id": 168,
+          "id": 169,
           "interval": null,
           "links": [],
           "maxDataPoints": 100,
@@ -1747,132 +481,27 @@
             },
             "textMode": "auto"
           },
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "targets": [
             {
-              "expr": "pgspray_response{hostname=\"$host\",cluster=\"$cluster\",quantile=\"0.95\"}",
-              "format": "time_series",
-              "hide": false,
-              "instant": false,
-              "interval": "",
-              "intervalFactor": 1,
-              "legendFormat": "",
+              "panelId": 160,
               "refId": "A"
-            },
-            {
-              "expr": " sum (pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
-              "format": "time_series",
-              "hide": true,
-              "instant": false,
-              "interval": "",
-              "intervalFactor": 1,
-              "legendFormat": "",
-              "refId": "B"
             }
           ],
           "title": "95th",
+          "transformations": [
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "include": {
+                  "names": [
+                    "0.95"
+                  ]
+                }
+              }
+            }
+          ],
           "type": "stat"
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "$ds",
-          "description": "response time : samples + sma",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 4,
-            "w": 5,
-            "x": 11,
-            "y": 16
-          },
-          "hiddenSeries": false,
-          "id": 136,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "options": {
-            "alertThreshold": true
-          },
-          "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "histogram_quantile(0.95, sum(increase(pgspray_bucket{hostname=\"$host\",cluster=\"$cluster\"}[$delta])) by (le))",
-              "format": "heatmap",
-              "instant": false,
-              "interval": "",
-              "legendFormat": "{{ le }}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": " 95th ",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "$$hashKey": "object:2323",
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "$$hashKey": "object:2324",
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
         },
         {
           "aliasColors": {},
@@ -1891,10 +520,10 @@
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
-            "h": 4,
-            "w": 5,
-            "x": 16,
-            "y": 16
+            "h": 5,
+            "w": 4,
+            "x": 9,
+            "y": 5
           },
           "hiddenSeries": false,
           "id": 160,
@@ -1917,7 +546,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -1986,11 +615,10 @@
         {
           "aliasColors": {},
           "bars": true,
-          "cacheTimeout": null,
           "dashLength": 10,
           "dashes": false,
           "datasource": "$ds",
-          "description": "response time",
+          "description": "response time : samples + sma",
           "fieldConfig": {
             "defaults": {
               "custom": {}
@@ -2000,19 +628,20 @@
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
-            "h": 4,
-            "w": 3,
-            "x": 21,
-            "y": 16
+            "h": 5,
+            "w": 6,
+            "x": 13,
+            "y": 5
           },
           "hiddenSeries": false,
-          "id": 135,
-          "interval": null,
+          "id": 170,
           "legend": {
+            "alignAsTable": false,
             "avg": false,
             "current": false,
             "max": false,
             "min": false,
+            "rightSide": true,
             "show": false,
             "total": false,
             "values": false
@@ -2020,13 +649,12 @@
           "lines": false,
           "linewidth": 1,
           "links": [],
-          "maxDataPoints": 100,
           "nullPointMode": "null",
           "options": {
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -2036,27 +664,34 @@
           "steppedLine": false,
           "targets": [
             {
-              "alias": "",
-              "expr": "increase(pgspray_bucket{hostname=\"$host\",cluster=\"$cluster\"}[$delta])",
+              "expr": " sort(100*increase(pgspray_bucket{hostname=\"$host\",cluster=\"$cluster\"}[$delta])/ on(cluster,hostname) group_left increase(pgspray_count[$delta]))\n\n",
               "format": "time_series",
-              "instant": false,
+              "hide": false,
+              "instant": true,
               "interval": "",
-              "legendFormat": "{{le}}",
-              "rawSql": " SELECT  1000*percentile_disc( .95) WITHIN GROUP (ORDER BY response)\nFROM\n    (SELECT response, ts\n    FROM response_time\n    WHERE host = $host\n       AND cluster = $cluster\n       AND  $__timeFilter(ts)\n       AND  ts > now() - '65 minutes'::interval\n       AND  md5 = (SELECT last(md5,ts) FROM response_time)\n   ) i\n  ",
+              "legendFormat": "{{ le }}",
               "refId": "A"
+            },
+            {
+              "expr": " pgspray_bucket{hostname=\"$host\",cluster=\"$cluster\"}/ on(cluster,hostname) group_left pgspray_count\n\n",
+              "format": "time_series",
+              "hide": true,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{ le }}",
+              "refId": "B"
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "buckets [$delta",
+          "title": "bucket frequency , [$delta] ",
           "tooltip": {
             "shared": false,
             "sort": 0,
             "value_type": "individual"
           },
-          "transparent": true,
           "type": "graph",
           "xaxis": {
             "buckets": null,
@@ -2064,13 +699,116 @@
             "name": null,
             "show": true,
             "values": [
-              "current"
+              "total"
             ]
           },
           "yaxes": [
             {
-              "$$hashKey": "object:1954",
-              "format": "none",
+              "$$hashKey": "object:672",
+              "decimals": 0,
+              "format": "short",
+              "label": "percent",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:673",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "description": "response time from postres server. Calculation is based on histogram_quantile() .",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 19,
+            "y": 5
+          },
+          "hiddenSeries": false,
+          "id": 136,
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.3.0-beta2",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum(increase(pgspray_bucket{hostname=\"$host\",cluster=\"$cluster\"}[$delta])) by (le))",
+              "format": "heatmap",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{ le }}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": " 95th ",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:2323",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -2078,7 +816,511 @@
               "show": true
             },
             {
-              "$$hashKey": "object:1955",
+              "$$hashKey": "object:2324",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "title": "Response Time",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 55,
+      "panels": [
+        {
+          "aliasColors": {
+            "backends": "#1F78C1",
+            "idle": "#890f02"
+          },
+          "bars": true,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": null
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 0,
+            "y": 11
+          },
+          "hiddenSeries": false,
+          "id": 31,
+          "interval": "30s",
+          "legend": {
+            "avg": false,
+            "current": true,
+            "hideZero": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 1,
+          "links": [
+            {
+              "title": "postgres _pg_more",
+              "url": "dashboard/db/postgres-_pg_more"
+            }
+          ],
+          "maxPerRow": 2,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": false
+          },
+          "percentage": false,
+          "pluginVersion": "7.3.0-beta2",
+          "pointradius": 1,
+          "points": false,
+          "renderer": "flot",
+          "repeat": null,
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum by (datname) ( pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{ datname }}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Backends",
+          "tooltip": {
+            "shared": false,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "max": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "total"
+            ]
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:1365",
+              "format": "string",
+              "label": "num  backends",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:1366",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "cacheTimeout": null,
+          "datasource": "$ds",
+          "description": "connections available (live)",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "mappings": [
+                {
+                  "id": 0,
+                  "op": "=",
+                  "text": "N/A",
+                  "type": 1,
+                  "value": "null"
+                }
+              ],
+              "nullValueMode": "connected",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 6,
+            "y": 11
+          },
+          "id": 51,
+          "interval": null,
+          "links": [],
+          "maxDataPoints": 100,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "7.3.0-beta2",
+          "targets": [
+            {
+              "expr": "sum (pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"})  - sum (pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": " sum (pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
+              "format": "time_series",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "refId": "B"
+            }
+          ],
+          "title": "available",
+          "type": "stat"
+        },
+        {
+          "aliasColors": {
+            "Value": "green",
+            "backends": "dark-green",
+            "idle": "#890f02",
+            "max": "dark-red",
+            "pg_settings_max_connections{instance=\"qft:9187\", job=\"postgres\", pg_host=\"qft\", pg_ip=\"10.0.0.237\", pg_port=\"5432\", server=\"localhost:5432\"}": "semi-dark-red"
+          },
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "description": "connections available",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
+          "fill": 0,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 7,
+            "x": 10,
+            "y": 11
+          },
+          "hiddenSeries": false,
+          "id": 49,
+          "interval": "30s",
+          "legend": {
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 3,
+          "links": [
+            {
+              "title": "postgres _pg_more",
+              "url": "dashboard/db/postgres-_pg_more"
+            }
+          ],
+          "maxPerRow": 2,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.3.0-beta2",
+          "pointradius": 1,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "datasource": "prom_qft",
+              "expr": "sum( pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "backends",
+              "refId": "A",
+              "requestId": "Q-7d362401-fd37-4753-b46e-ad5b57750d43-0Q-8d3076af-7609-4da7-a17d-4f23ac78e867-1A"
+            },
+            {
+              "datasource": "prom_qft",
+              "expr": "pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"}\n",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "max",
+              "refId": "B",
+              "requestId": "Q-7d362401-fd37-4753-b46e-ad5b57750d43-0Q-8d3076af-7609-4da7-a17d-4f23ac78e867-1B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "sturation",
+          "tooltip": {
+            "shared": false,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:187",
+              "format": "short",
+              "label": "num  backends",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:188",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {
+            "backends": "#1F78C1",
+            "cert": "semi-dark-red",
+            "idle": "#890f02",
+            "passwd": "dark-blue"
+          },
+          "bars": true,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": null
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": []
+          },
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 17,
+            "y": 11
+          },
+          "hiddenSeries": false,
+          "id": 87,
+          "interval": "30s",
+          "legend": {
+            "alignAsTable": false,
+            "avg": false,
+            "current": true,
+            "hideZero": true,
+            "max": false,
+            "min": false,
+            "show": false,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 3,
+          "links": [
+            {
+              "title": "postgres _pg_more",
+              "url": "dashboard/db/postgres-_pg_more"
+            }
+          ],
+          "maxPerRow": 2,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": false
+          },
+          "percentage": false,
+          "pluginVersion": "7.3.0-beta2",
+          "pointradius": 1,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": true,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "pglog_passwd_failed{hostname=\"$host\",cluster=\"$cluster\"}",
+              "format": "time_series",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "passwd",
+              "refId": "B"
+            },
+            {
+              "expr": "\nsum (pglog_ssl_cert_failed{hostname=\"$host\",cluster=\"$cluster\"})",
+              "format": "time_series",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "cert",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "refused",
+          "tooltip": {
+            "shared": false,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "max": null,
+            "mode": "series",
+            "name": null,
+            "show": true,
+            "values": [
+              "total"
+            ]
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:1365",
+              "format": "string",
+              "label": "num  backends",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "$$hashKey": "object:1366",
               "format": "short",
               "label": null,
               "logBase": 1,
@@ -2094,512 +1336,8 @@
         }
       ],
       "repeat": null,
-      "title": "Response time",
-      "type": "row"
-    },
-    {
-      "collapsed": false,
-      "datasource": null,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 10
-      },
-      "id": 55,
-      "panels": [],
-      "repeat": null,
       "title": "connections",
       "type": "row"
-    },
-    {
-      "aliasColors": {
-        "backends": "#1F78C1",
-        "idle": "#890f02"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$ds",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "string"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 0,
-        "y": 11
-      },
-      "hiddenSeries": false,
-      "id": 31,
-      "interval": "30s",
-      "legend": {
-        "avg": false,
-        "current": true,
-        "hideZero": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "links": [
-        {
-          "title": "postgres _pg_more",
-          "url": "dashboard/db/postgres-_pg_more"
-        }
-      ],
-      "maxPerRow": 2,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": false
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 1,
-      "points": false,
-      "renderer": "flot",
-      "repeat": null,
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum by (datname) ( pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "{{ datname }}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Backends",
-      "tooltip": {
-        "shared": false,
-        "sort": 1,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "max": null,
-        "mode": "series",
-        "name": null,
-        "show": true,
-        "values": [
-          "total"
-        ]
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1365",
-          "format": "string",
-          "label": "num  backends",
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:1366",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "cacheTimeout": null,
-      "datasource": "$ds",
-      "description": "connections available (live)",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {},
-          "mappings": [
-            {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
-            }
-          ],
-          "nullValueMode": "connected",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 6,
-        "y": 11
-      },
-      "id": 51,
-      "interval": null,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.2.0-040ed969pre",
-      "targets": [
-        {
-          "expr": "sum (pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"})  - sum (pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "A"
-        },
-        {
-          "expr": " sum (pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
-          "format": "time_series",
-          "hide": true,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "refId": "B"
-        }
-      ],
-      "title": "available",
-      "type": "stat"
-    },
-    {
-      "aliasColors": {
-        "Value": "green",
-        "backends": "dark-green",
-        "idle": "#890f02",
-        "max": "dark-red",
-        "pg_settings_max_connections{instance=\"qft:9187\", job=\"postgres\", pg_host=\"qft\", pg_ip=\"10.0.0.237\", pg_port=\"5432\", server=\"localhost:5432\"}": "semi-dark-red"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$ds",
-      "description": "connections available",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 5,
-        "w": 7,
-        "x": 10,
-        "y": 11
-      },
-      "hiddenSeries": false,
-      "id": 49,
-      "interval": "30s",
-      "legend": {
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 3,
-      "links": [
-        {
-          "title": "postgres _pg_more",
-          "url": "dashboard/db/postgres-_pg_more"
-        }
-      ],
-      "maxPerRow": 2,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 1,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "datasource": "prom_qft",
-          "expr": "sum( pg_stat_database_numbackends{hostname=\"$host\",cluster=\"$cluster\"})",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "backends",
-          "refId": "A",
-          "requestId": "Q-7d362401-fd37-4753-b46e-ad5b57750d43-0Q-8d3076af-7609-4da7-a17d-4f23ac78e867-1A"
-        },
-        {
-          "datasource": "prom_qft",
-          "expr": "pg_settings_max_connections{hostname=\"$host\",cluster=\"$cluster\"}\n",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "max",
-          "refId": "B",
-          "requestId": "Q-7d362401-fd37-4753-b46e-ad5b57750d43-0Q-8d3076af-7609-4da7-a17d-4f23ac78e867-1B"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "available ",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:187",
-          "format": "short",
-          "label": "num  backends",
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:188",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {
-        "backends": "#1F78C1",
-        "cert": "semi-dark-red",
-        "idle": "#890f02",
-        "passwd": "dark-blue"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$ds",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": null
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "string"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 17,
-        "y": 11
-      },
-      "hiddenSeries": false,
-      "id": 87,
-      "interval": "30s",
-      "legend": {
-        "alignAsTable": false,
-        "avg": false,
-        "current": true,
-        "hideZero": true,
-        "max": false,
-        "min": false,
-        "show": false,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 3,
-      "links": [
-        {
-          "title": "postgres _pg_more",
-          "url": "dashboard/db/postgres-_pg_more"
-        }
-      ],
-      "maxPerRow": 2,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": false
-      },
-      "percentage": false,
-      "pluginVersion": "7.2.0-040ed969pre",
-      "pointradius": 1,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum (pglog_passwd_failed{hostname=\"$host\",cluster=\"$cluster\"})",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "passwd",
-          "refId": "B"
-        },
-        {
-          "expr": "\nsum (pglog_ssl_cert_failed{hostname=\"$host\",cluster=\"$cluster\"})",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "cert",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "refused",
-      "tooltip": {
-        "shared": false,
-        "sort": 1,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "max": null,
-        "mode": "series",
-        "name": null,
-        "show": true,
-        "values": [
-          "total"
-        ]
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1365",
-          "format": "string",
-          "label": "num  backends",
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:1366",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     },
     {
       "collapsed": true,
@@ -2608,12 +1346,14 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 6
       },
       "id": 110,
       "panels": [
         {
-          "aliasColors": {},
+          "aliasColors": {
+            "rate": "semi-dark-yellow"
+          },
           "bars": true,
           "dashLength": 10,
           "dashes": false,
@@ -2631,7 +1371,7 @@
             "h": 6,
             "w": 5,
             "x": 0,
-            "y": 12
+            "y": 16
           },
           "hiddenSeries": false,
           "id": 108,
@@ -2640,7 +1380,7 @@
             "current": true,
             "max": false,
             "min": false,
-            "show": true,
+            "show": false,
             "total": false,
             "values": true
           },
@@ -2648,7 +1388,7 @@
           "linewidth": 1,
           "nullPointMode": "null",
           "options": {
-            "alertThreshold": true
+            "alertThreshold": false
           },
           "percentage": false,
           "pluginVersion": "7.2.0-040ed969pre",
@@ -2657,30 +1397,23 @@
           "renderer": "flot",
           "seriesOverrides": [],
           "spaceLength": 10,
-          "stack": true,
+          "stack": false,
           "steppedLine": false,
           "targets": [
             {
-              "expr": "rate(pglog_passwd_failed[$delta])",
+              "expr": "increase(pglog_passwd_failed{hostname=\"$host\",cluster=\"$cluster\"}[$delta])",
+              "hide": false,
               "instant": false,
               "interval": "",
               "legendFormat": "rate",
               "refId": "A"
-            },
-            {
-              "expr": "(pglog_passwd_failed_total{hostname=\"$host\"})",
-              "hide": true,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "attempts",
-              "refId": "B"
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "passwd failures",
+          "title": "passwd failures, [$delta]",
           "tooltip": {
             "shared": false,
             "sort": 0,
@@ -2754,7 +1487,7 @@
             "h": 6,
             "w": 6,
             "x": 5,
-            "y": 12
+            "y": 16
           },
           "hiddenSeries": false,
           "id": 117,
@@ -2852,7 +1585,7 @@
             "h": 6,
             "w": 12,
             "x": 11,
-            "y": 12
+            "y": 16
           },
           "id": 121,
           "options": {
@@ -2892,7 +1625,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 7
       },
       "id": 105,
       "panels": [
@@ -2916,7 +1649,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 13
+            "y": 17
           },
           "hiddenSeries": false,
           "id": 103,
@@ -2966,7 +1699,7 @@
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "\"$db\"  --  avg over [4m] ,",
+          "title": "\"$db\"  --  avg over [$delta]",
           "tooltip": {
             "shared": false,
             "sort": 0,
@@ -3044,7 +1777,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 13
+            "y": 17
           },
           "id": 111,
           "interval": null,
@@ -3107,7 +1840,7 @@
             "h": 7,
             "w": 8,
             "x": 10,
-            "y": 13
+            "y": 17
           },
           "id": 114,
           "interval": "30s",
@@ -3170,7 +1903,7 @@
             "h": 6,
             "w": 6,
             "x": 18,
-            "y": 13
+            "y": 17
           },
           "hiddenSeries": false,
           "id": 115,
@@ -3263,7 +1996,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 8
       },
       "id": 119,
       "panels": [
@@ -3279,7 +2012,7 @@
             "h": 7,
             "w": 16,
             "x": 0,
-            "y": 14
+            "y": 18
           },
           "id": 120,
           "options": {
@@ -3331,7 +2064,7 @@
             "h": 7,
             "w": 6,
             "x": 16,
-            "y": 14
+            "y": 18
           },
           "hiddenSeries": false,
           "id": 112,
@@ -3437,7 +2170,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 9
       },
       "id": 133,
       "panels": [
@@ -3459,7 +2192,7 @@
             "h": 5,
             "w": 6,
             "x": 0,
-            "y": 15
+            "y": 13
           },
           "hiddenSeries": false,
           "id": 123,
@@ -3479,7 +2212,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -3559,7 +2292,7 @@
             "h": 5,
             "w": 8,
             "x": 6,
-            "y": 15
+            "y": 13
           },
           "hiddenSeries": false,
           "id": 127,
@@ -3579,7 +2312,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -3653,7 +2386,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 10
       },
       "id": 125,
       "panels": [
@@ -3675,7 +2408,7 @@
             "h": 5,
             "w": 5,
             "x": 0,
-            "y": 16
+            "y": 25
           },
           "hiddenSeries": false,
           "id": 128,
@@ -3777,7 +2510,7 @@
             "h": 5,
             "w": 5,
             "x": 5,
-            "y": 16
+            "y": 25
           },
           "hiddenSeries": false,
           "id": 134,
@@ -3872,118 +2605,79 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 11
       },
       "id": 58,
       "panels": [
         {
-          "aliasColors": {},
-          "breakPoint": "25%",
-          "cacheTimeout": null,
-          "combine": {
-            "label": "Others",
-            "threshold": 0
-          },
           "datasource": "$ds",
-          "description": "db sizes in cluster 'main'",
           "fieldConfig": {
             "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
               "custom": {},
+              "mappings": [
+                {
+                  "from": "",
+                  "id": 1,
+                  "text": "",
+                  "to": "",
+                  "type": 1
+                }
+              ],
+              "max": 80000000,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 8000000
+                  }
+                ]
+              },
               "unit": "decbytes"
             },
             "overrides": []
           },
-          "fontSize": "80%",
-          "format": "bytes",
           "gridPos": {
             "h": 7,
-            "w": 8,
+            "w": 9,
             "x": 0,
-            "y": 17
+            "y": 12
           },
-          "id": 32,
-          "interval": "30s",
-          "legend": {
-            "header": "",
-            "percentage": true,
-            "show": false,
-            "values": true
+          "id": 181,
+          "options": {
+            "displayMode": "lcd",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": false
           },
-          "legendType": "Under graph",
-          "links": [
-            {
-              "title": "postgres _pg_more",
-              "url": "dashboard/db/postgres-_pg_more"
-            }
-          ],
-          "nullPointMode": "connected",
-          "pieType": "pie",
-          "pluginVersion": "7.2.0-040ed969pre",
-          "repeat": null,
-          "strokeWidth": 1,
+          "pluginVersion": "7.3.0-beta2",
           "targets": [
             {
-              "alias": "",
-              "dsType": "influxdb",
-              "expr": "pg_database_size_bytes{hostname=\"$host\",cluster=\"$cluster\"}\n",
-              "format": "time_series",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "instant": true,
+              "expr": "pg_database_size_bytes{hostname=\"$host\",cluster=\"$cluster\",datname!~\"^template.*\"}",
               "interval": "",
-              "legendFormat": "{{ datname }}",
-              "measurement": "postgresql_value",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "rawSql": "SELECT\n  $__time(ts)\n  , datname AS metric\n  ,size     AS lessons \nFROM\n  scale.db_size\nWHERE\n  $__timeFilter(ts)\n  AND cluster = $cluster \n  AND host = $host\n -- And ts > now() - '20 minutes'::interval \n  ",
-              "refId": "B",
-              "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "last"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "instance",
-                  "operator": "=",
-                  "value": "db_sizes"
-                },
-                {
-                  "condition": "AND",
-                  "key": "type_instance",
-                  "operator": "=",
-                  "value": "bench"
-                }
-              ]
+              "legendFormat": "{{datname}}",
+              "queryType": "randomWalk",
+              "refId": "A"
             }
           ],
-          "timeFrom": "20m",
+          "timeFrom": null,
           "timeShift": null,
           "title": "db sizes",
-          "type": "grafana-piechart-panel",
-          "valueName": "current"
+          "type": "bargauge"
         },
         {
           "aliasColors": {
@@ -4012,8 +2706,8 @@
           "gridPos": {
             "h": 7,
             "w": 8,
-            "x": 8,
-            "y": 17
+            "x": 9,
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 70,
@@ -4042,7 +2736,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -4054,7 +2748,7 @@
             {
               "alias": "",
               "dsType": "influxdb",
-              "expr": "pg_database_size_bytes{hostname=\"$host\",cluster=\"$cluster\"}\n",
+              "expr": "pg_database_size_bytes{hostname=\"$host\",cluster=\"$cluster\",datname!~\"^template.+\"}\n",
               "format": "time_series",
               "groupBy": [
                 {
@@ -4182,9 +2876,9 @@
           "fillGradient": 0,
           "gridPos": {
             "h": 7,
-            "w": 8,
-            "x": 16,
-            "y": 17
+            "w": 7,
+            "x": 17,
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 71,
@@ -4213,7 +2907,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -4436,6 +3130,115 @@
             "align": false,
             "alignLevel": null
           }
+        },
+        {
+          "aliasColors": {},
+          "breakPoint": "25%",
+          "cacheTimeout": null,
+          "combine": {
+            "label": "Others",
+            "threshold": 0
+          },
+          "datasource": "$ds",
+          "description": "db sizes in cluster 'main'",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {},
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "fontSize": "80%",
+          "format": "bytes",
+          "gridPos": {
+            "h": 8,
+            "w": 9,
+            "x": 0,
+            "y": 19
+          },
+          "id": 32,
+          "interval": "30s",
+          "legend": {
+            "header": "",
+            "percentage": true,
+            "show": false,
+            "values": true
+          },
+          "legendType": "On graph",
+          "links": [
+            {
+              "title": "postgres _pg_more",
+              "url": "dashboard/db/postgres-_pg_more"
+            }
+          ],
+          "nullPointMode": "connected",
+          "pieType": "pie",
+          "pluginVersion": "7.2.0-040ed969pre",
+          "repeat": null,
+          "strokeWidth": 1,
+          "targets": [
+            {
+              "alias": "",
+              "dsType": "influxdb",
+              "expr": "pg_database_size_bytes{hostname=\"$host\",cluster=\"$cluster\",datname!~\"^template.+\"}\n",
+              "format": "time_series",
+              "groupBy": [
+                {
+                  "params": [
+                    "$interval"
+                  ],
+                  "type": "time"
+                },
+                {
+                  "params": [
+                    "null"
+                  ],
+                  "type": "fill"
+                }
+              ],
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{ datname }}",
+              "measurement": "postgresql_value",
+              "orderByTime": "ASC",
+              "policy": "default",
+              "rawSql": "SELECT\n  $__time(ts)\n  , datname AS metric\n  ,size     AS lessons \nFROM\n  scale.db_size\nWHERE\n  $__timeFilter(ts)\n  AND cluster = $cluster \n  AND host = $host\n -- And ts > now() - '20 minutes'::interval \n  ",
+              "refId": "B",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "value"
+                    ],
+                    "type": "field"
+                  },
+                  {
+                    "params": [],
+                    "type": "last"
+                  }
+                ]
+              ],
+              "tags": [
+                {
+                  "key": "instance",
+                  "operator": "=",
+                  "value": "db_sizes"
+                },
+                {
+                  "condition": "AND",
+                  "key": "type_instance",
+                  "operator": "=",
+                  "value": "bench"
+                }
+              ]
+            }
+          ],
+          "timeFrom": "20m",
+          "timeShift": null,
+          "title": "db sizes",
+          "type": "grafana-piechart-panel",
+          "valueName": "current"
         }
       ],
       "repeat": null,
@@ -4449,7 +3252,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 12
       },
       "id": 59,
       "panels": [
@@ -4478,7 +3281,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 18
+            "y": 35
           },
           "hiddenSeries": false,
           "id": 5,
@@ -4619,7 +3422,7 @@
             "h": 7,
             "w": 8,
             "x": 6,
-            "y": 18
+            "y": 35
           },
           "hiddenSeries": false,
           "id": 42,
@@ -4720,7 +3523,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 13
       },
       "id": 85,
       "panels": [
@@ -4743,7 +3546,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 19
+            "y": 36
           },
           "hiddenSeries": false,
           "id": 94,
@@ -4858,7 +3661,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 19
+            "y": 36
           },
           "id": 106,
           "interval": null,
@@ -4926,7 +3729,7 @@
             "h": 6,
             "w": 6,
             "x": 10,
-            "y": 19
+            "y": 36
           },
           "hiddenSeries": false,
           "id": 92,
@@ -5133,7 +3936,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 14
       },
       "id": 60,
       "panels": [
@@ -5163,7 +3966,7 @@
             "h": 6,
             "w": 6,
             "x": 0,
-            "y": 20
+            "y": 37
           },
           "hiddenSeries": false,
           "id": 1,
@@ -5273,7 +4076,7 @@
             "h": 6,
             "w": 4,
             "x": 6,
-            "y": 20
+            "y": 37
           },
           "id": 33,
           "interval": "30s",
@@ -5319,7 +4122,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 15
       },
       "id": 99,
       "panels": [
@@ -5349,7 +4152,7 @@
             "h": 5,
             "w": 7,
             "x": 0,
-            "y": 27
+            "y": 38
           },
           "hiddenSeries": false,
           "id": 73,
@@ -5459,7 +4262,7 @@
             "h": 5,
             "w": 6,
             "x": 7,
-            "y": 27
+            "y": 38
           },
           "id": 95,
           "interval": "30s",
@@ -5520,7 +4323,7 @@
             "h": 5,
             "w": 4,
             "x": 13,
-            "y": 27
+            "y": 38
           },
           "id": 100,
           "interval": "30s",
@@ -5566,7 +4369,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 16
       },
       "id": 61,
       "panels": [
@@ -5593,7 +4396,7 @@
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 28
+            "y": 22
           },
           "hiddenSeries": false,
           "id": 37,
@@ -5615,7 +4418,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 1,
           "points": false,
           "renderer": "flot",
@@ -5708,7 +4511,7 @@
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 28
+            "y": 22
           },
           "hiddenSeries": false,
           "id": 38,
@@ -5731,7 +4534,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 1,
           "points": false,
           "renderer": "flot",
@@ -5835,7 +4638,7 @@
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 28
+            "y": 22
           },
           "hiddenSeries": false,
           "id": 2,
@@ -5857,7 +4660,7 @@
             "alertThreshold": true
           },
           "percentage": true,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -5942,12 +4745,16 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 17
       },
       "id": 62,
       "panels": [
         {
-          "aliasColors": {},
+          "aliasColors": {
+            "backend": "#E02F44",
+            "checkpoint": "#3274D9",
+            "clean": "#56A64B"
+          },
           "breakPoint": "50%",
           "cacheTimeout": null,
           "combine": {
@@ -5967,13 +4774,13 @@
             "h": 8,
             "w": 6,
             "x": 0,
-            "y": 35
+            "y": 23
           },
           "id": 40,
           "interval": null,
           "legend": {
             "percentage": true,
-            "show": false,
+            "show": true,
             "values": true
           },
           "legendType": "On graph",
@@ -5982,7 +4789,7 @@
           "nullPointMode": "connected",
           "pieType": "pie",
           "repeat": null,
-          "strokeWidth": 1,
+          "strokeWidth": "3",
           "targets": [
             {
               "expr": "pg_stat_bgwriter_buffers_backend{hostname=\"$host\",cluster=\"$cluster\"}",
@@ -5992,16 +4799,17 @@
               "refId": "A"
             },
             {
-              "expr": "pg_stat_bgwriter_buffers_checkpoint{hostname=\"$host\"}",
+              "expr": "pg_stat_bgwriter_buffers_checkpoint{hostname=\"$host\",cluster=\"$cluster\"}",
               "hide": false,
+              "instant": true,
               "interval": "",
               "legendFormat": "checkpoint",
               "refId": "B"
             },
             {
-              "expr": "pg_stat_bgwriter_buffers_clean{hostname=\"$host\"}",
+              "expr": "pg_stat_bgwriter_buffers_clean{hostname=\"$host\",cluster=\"$cluster\"}",
               "hide": false,
-              "instant": false,
+              "instant": true,
               "interval": "",
               "legendFormat": "clean",
               "refId": "C"
@@ -6012,12 +4820,58 @@
           "valueName": "current"
         },
         {
-          "cacheTimeout": null,
+          "activePatternIndex": -3,
           "datasource": "$ds",
+          "debug_mode": false,
+          "defaultPattern": {
+            "bgColors": "green|orange|red",
+            "bgColors_overrides": "0->green|2->red|1->yellow",
+            "clickable_cells_link": "",
+            "col_name": "val",
+            "decimals": "2",
+            "defaultBGColor": "transparent",
+            "defaultTextColor": "",
+            "delimiter": "|",
+            "displayTemplate": "_value_",
+            "enable_bgColor": false,
+            "enable_bgColor_overrides": false,
+            "enable_clickable_cells": false,
+            "enable_textColor": false,
+            "enable_textColor_overrides": false,
+            "enable_time_based_thresholds": false,
+            "enable_transform": false,
+            "enable_transform_overrides": false,
+            "filter": {
+              "value_above": "",
+              "value_below": ""
+            },
+            "format": "none",
+            "name": "Default Pattern",
+            "null_color": "darkred",
+            "null_textcolor": "black",
+            "null_value": "No data",
+            "pattern": "*",
+            "row_col_wrapper": "_",
+            "row_name": "_series_",
+            "textColors": "red|orange|green",
+            "textColors_overrides": "0->red|2->green|1->yellow",
+            "thresholds": "70,90",
+            "time_based_thresholds": [],
+            "tooltipTemplate": "Series : _series_ <br/>Row Name : _row_name_ <br/>Col Name : _col_name_ <br/>Value : _value_",
+            "transform_values": "_value_|_value_|_value_",
+            "transform_values_overrides": "0->down|1->up",
+            "valueName": "current"
+          },
+          "default_title_for_rows": "Metric",
           "fieldConfig": {
             "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
               "custom": {
-                "align": null
+                "align": null,
+                "displayMode": "color-background",
+                "filterable": false
               },
               "mappings": [],
               "thresholds": {
@@ -6026,119 +4880,6 @@
                   {
                     "color": "green",
                     "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Value"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 100
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "__name__"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 330
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 7,
-            "x": 6,
-            "y": 35
-          },
-          "id": 74,
-          "interval": null,
-          "links": [],
-          "maxDataPoints": 3,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "last"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
-          },
-          "pluginVersion": "7.2.0-040ed969pre",
-          "targets": [
-            {
-              "expr": "pg_stat_bgwriter_buffers_backend_fsync{hostname=\"$host\",cluster=\"$cluster\"}",
-              "format": "table",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "fsync",
-              "refId": "A"
-            },
-            {
-              "expr": "pg_stat_bgwriter_maxwritten_clean{host=\"$chost\", cluster=\"$cluster\"}",
-              "format": "table",
-              "hide": false,
-              "instant": true,
-              "interval": "",
-              "legendFormat": "maxwritten_clean",
-              "refId": "B"
-            }
-          ],
-          "title": "Cleaned By",
-          "transformations": [
-            {
-              "id": "filterFieldsByName",
-              "options": {
-                "include": {
-                  "names": [
-                    "__name__",
-                    "Value"
-                  ]
-                }
-              }
-            }
-          ],
-          "type": "stat"
-        },
-        {
-          "datasource": "$ds",
-          "description": "cummulative  tps  for all databases",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {},
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
                   }
                 ]
               }
@@ -6146,50 +4887,251 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 7,
+            "h": 4,
             "w": 8,
-            "x": 13,
-            "y": 35
+            "x": 6,
+            "y": 23
           },
-          "id": 101,
-          "interval": "30s",
-          "links": [],
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "horizontal",
-            "reduceOptions": {
-              "calcs": [
-                "last"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "textMode": "value_and_name"
+          "hide_first_column": false,
+          "hide_headers": true,
+          "id": 177,
+          "patterns": [
+            {
+              "bgColors": "green|orange|red",
+              "bgColors_overrides": "0->green|2->red|1->yellow",
+              "clickable_cells_link": "",
+              "col_name": "vol",
+              "decimals": "0",
+              "defaultBGColor": "",
+              "defaultTextColor": "",
+              "delimiter": "tag",
+              "displayTemplate": "_value_",
+              "enable_bgColor": false,
+              "enable_bgColor_overrides": false,
+              "enable_clickable_cells": false,
+              "enable_textColor": false,
+              "enable_textColor_overrides": false,
+              "enable_time_based_thresholds": false,
+              "enable_transform": false,
+              "enable_transform_overrides": false,
+              "filter": {
+                "value_above": "",
+                "value_below": ""
+              },
+              "format": "none",
+              "name": "backend",
+              "null_color": "darkred",
+              "null_textcolor": "black",
+              "null_value": "No data",
+              "pattern": "$",
+              "row_col_wrapper": "_",
+              "row_name": "{{metric_name}}",
+              "textColors": "red|orange|green",
+              "textColors_overrides": "0->red|2->green|1->yellow",
+              "thresholds": "70,90",
+              "time_based_thresholds": [],
+              "tooltipTemplate": "Series : _series_ <br/>Row Name : _row_name_ <br/>Col Name : _col_name_ <br/>Value : _value_",
+              "transform_values": "_value_|_value_|_value_",
+              "transform_values_overrides": "0->down|1->up",
+              "valueName": "current"
+            }
+          ],
+          "pluginVersion": "7.3.0-beta2",
+          "row_col_wrapper": "_",
+          "sorting_props": {
+            "col_index": 0,
+            "direction": "asc"
           },
-          "pluginVersion": "7.2.0-040ed969pre",
           "targets": [
             {
-              "expr": "sum(pg_stat_bgwriter_buffers_backend_fsync{hostname=\"$host\",cluster=\"$cluster\"})",
-              "instant": false,
+              "expr": "pg_stat_bgwriter_buffers_backend_fsync{hostname=\"$host\",cluster=\"$cluster\"}",
+              "instant": true,
               "interval": "",
-              "intervalFactor": 2,
-              "legendFormat": "buffers_backend_fsync",
+              "legendFormat": "",
               "refId": "A"
             },
             {
-              "expr": "sum(pg_stat_bgwriter_maxwritten_clean{hostname=\"$host\"})",
+              "expr": "pg_stat_bgwriter_buffers_clean{hostname=\"$host\",cluster=\"$cluster\"}",
+              "format": "time_series",
+              "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "maxwritten_clean",
+              "legendFormat": "",
               "refId": "B"
             }
           ],
+          "text_alignment_firstcolumn": "",
+          "text_alignment_header": "",
+          "text_alignment_values": "left",
           "timeFrom": null,
           "timeShift": null,
-          "title": "tps",
-          "type": "stat"
+          "title": "Panel Title",
+          "transformations": [],
+          "type": "yesoreyeram-boomtable-panel"
+        },
+        {
+          "activePatternIndex": -3,
+          "datasource": "$ds",
+          "debug_mode": false,
+          "defaultPattern": {
+            "bgColors": "green|orange|red",
+            "bgColors_overrides": "0->green|2->red|1->yellow",
+            "clickable_cells_link": "",
+            "col_name": "val",
+            "decimals": "2",
+            "defaultBGColor": "transparent",
+            "defaultTextColor": "",
+            "delimiter": "|",
+            "displayTemplate": "_value_",
+            "enable_bgColor": false,
+            "enable_bgColor_overrides": false,
+            "enable_clickable_cells": false,
+            "enable_textColor": false,
+            "enable_textColor_overrides": false,
+            "enable_time_based_thresholds": false,
+            "enable_transform": false,
+            "enable_transform_overrides": false,
+            "filter": {
+              "value_above": "",
+              "value_below": ""
+            },
+            "format": "none",
+            "name": "Default Pattern",
+            "null_color": "darkred",
+            "null_textcolor": "black",
+            "null_value": "No data",
+            "pattern": "*",
+            "row_col_wrapper": "_",
+            "row_name": "_series_",
+            "textColors": "red|orange|green",
+            "textColors_overrides": "0->red|2->green|1->yellow",
+            "thresholds": "70,90",
+            "time_based_thresholds": [],
+            "tooltipTemplate": "Series : _series_ <br/>Row Name : _row_name_ <br/>Col Name : _col_name_ <br/>Value : _value_",
+            "transform_values": "_value_|_value_|_value_",
+            "transform_values_overrides": "0->down|1->up",
+            "valueName": "current"
+          },
+          "default_title_for_rows": "Metric",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "align": null,
+                "displayMode": "color-background",
+                "filterable": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 10,
+            "x": 14,
+            "y": 23
+          },
+          "hide_first_column": false,
+          "hide_headers": true,
+          "id": 176,
+          "patterns": [
+            {
+              "bgColors": "green|orange|red",
+              "bgColors_overrides": "0->green|2->red|1->yellow",
+              "clickable_cells_link": "",
+              "col_name": "vol",
+              "decimals": "0",
+              "defaultBGColor": "",
+              "defaultTextColor": "",
+              "delimiter": "tag",
+              "displayTemplate": "_value_",
+              "enable_bgColor": false,
+              "enable_bgColor_overrides": false,
+              "enable_clickable_cells": false,
+              "enable_textColor": false,
+              "enable_textColor_overrides": false,
+              "enable_time_based_thresholds": false,
+              "enable_transform": false,
+              "enable_transform_overrides": false,
+              "filter": {
+                "value_above": "",
+                "value_below": ""
+              },
+              "format": "none",
+              "name": "backend",
+              "null_color": "darkred",
+              "null_textcolor": "black",
+              "null_value": "No data",
+              "pattern": "$",
+              "row_col_wrapper": "_",
+              "row_name": "{{metric_name}}",
+              "textColors": "red|orange|green",
+              "textColors_overrides": "0->red|2->green|1->yellow",
+              "thresholds": "70,90",
+              "time_based_thresholds": [],
+              "tooltipTemplate": "Series : _series_ <br/>Row Name : _row_name_ <br/>Col Name : _col_name_ <br/>Value : _value_",
+              "transform_values": "_value_|_value_|_value_",
+              "transform_values_overrides": "0->down|1->up",
+              "valueName": "current"
+            }
+          ],
+          "pluginVersion": "7.3.0-beta2",
+          "row_col_wrapper": "_",
+          "sorting_props": {
+            "col_index": 0,
+            "direction": "asc"
+          },
+          "targets": [
+            {
+              "expr": "pg_settings_backend_flush_after_bytes{hostname=\"$host\",cluster=\"$cluster\"}",
+              "format": "time_series",
+              "hide": true,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "expr": "pg_settings_bgwriter_delay_seconds{hostname=\"$host\",cluster=\"$cluster\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "B"
+            },
+            {
+              "expr": "pg_settings_bgwriter_lru_maxpages{hostname=\"$host\",cluster=\"$cluster\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "C"
+            },
+            {
+              "expr": "pg_settings_bgwriter_lru_multiplier{hostname=\"$host\",cluster=\"$cluster\"}",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "D"
+            }
+          ],
+          "text_alignment_firstcolumn": "",
+          "text_alignment_header": "",
+          "text_alignment_values": "right",
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Panel Title",
+          "transformations": [],
+          "type": "yesoreyeram-boomtable-panel"
         }
       ],
       "repeat": null,
@@ -6203,7 +5145,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 18
       },
       "id": 63,
       "panels": [
@@ -6408,157 +5350,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 29
-      },
-      "id": 64,
-      "panels": [
-        {
-          "columns": [
-            {
-              "$$hashKey": "object:660",
-              "text": "Current",
-              "value": "current"
-            }
-          ],
-          "datasource": "$ds",
-          "description": "current_setting()",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fontSize": "100%",
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 0,
-            "y": 31
-          },
-          "id": 43,
-          "links": [],
-          "pageSize": null,
-          "repeat": null,
-          "scroll": true,
-          "showHeader": true,
-          "sort": {
-            "col": 0,
-            "desc": true
-          },
-          "styles": [
-            {
-              "alias": "",
-              "align": "auto",
-              "colorMode": "value",
-              "colors": [
-                "rgba(50, 172, 45, 0.97)",
-                "rgba(237, 129, 40, 0.89)",
-                "rgba(245, 54, 54, 0.9)"
-              ],
-              "dateFormat": "MM/DD/YY h:mm:ss a",
-              "decimals": 2,
-              "link": false,
-              "pattern": "Current",
-              "thresholds": [
-                "1",
-                "1"
-              ],
-              "type": "number",
-              "unit": "short"
-            }
-          ],
-          "targets": [
-            {
-              "alias": "",
-              "format": "table",
-              "rawSql": "SELECT name, setting,unit\nFROM pg_settings\nWHERE name IN ('checkpoint_timeout', 'bgwriter_lru_maxpages', 'bgwriter_lru_multiplier',\n               'checkpoint_timeout', 'log_checkpoints____','checkpoint_flush_after')\nORDER BY name\n\n \n",
-              "refId": "A"
-            }
-          ],
-          "title": "checkpoint  -- $ds  (live)",
-          "transform": "table",
-          "type": "table-old"
-        },
-        {
-          "columns": [
-            {
-              "$$hashKey": "object:674",
-              "text": "Current",
-              "value": "current"
-            }
-          ],
-          "datasource": "$ds",
-          "description": "current_setting()",
-          "fieldConfig": {
-            "defaults": {
-              "custom": {}
-            },
-            "overrides": []
-          },
-          "fontSize": "100%",
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 8,
-            "y": 31
-          },
-          "id": 45,
-          "links": [],
-          "pageSize": null,
-          "repeat": null,
-          "scroll": true,
-          "showHeader": true,
-          "sort": {
-            "col": 0,
-            "desc": true
-          },
-          "styles": [
-            {
-              "alias": "",
-              "align": "auto",
-              "colorMode": "value",
-              "colors": [
-                "rgba(50, 172, 45, 0.97)",
-                "rgba(237, 129, 40, 0.89)",
-                "rgba(245, 54, 54, 0.9)"
-              ],
-              "dateFormat": "MM/DD/YY h:mm:ss a",
-              "decimals": 2,
-              "link": false,
-              "pattern": "Current",
-              "thresholds": [
-                "1",
-                "1"
-              ],
-              "type": "number",
-              "unit": "short"
-            }
-          ],
-          "targets": [
-            {
-              "alias": "",
-              "format": "table",
-              "rawSql": "SELECT name, setting\nFROM pg_settings\nWHERE name IN  (\n      'effective_io_concurrency' , \n     'fsync'  ,                  \n     'max_replication_slots' ,    \n     'synchronous_commit' ,       \n     'wal_compression',          \n     'wal_level')\nORDER BY name\n\n",
-              "refId": "A"
-            }
-          ],
-          "title": "seepdup  -- $ds   (live)",
-          "transform": "table",
-          "type": "table-old"
-        }
-      ],
-      "repeat": null,
-      "title": "config",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "datasource": null,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 30
+        "y": 19
       },
       "id": 65,
       "panels": [
@@ -6581,7 +5373,7 @@
             "h": 5,
             "w": 8,
             "x": 0,
-            "y": 40
+            "y": 26
           },
           "hiddenSeries": false,
           "id": 47,
@@ -6602,7 +5394,7 @@
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
@@ -6690,7 +5482,7 @@
             "h": 5,
             "w": 8,
             "x": 8,
-            "y": 40
+            "y": 26
           },
           "hiddenSeries": false,
           "id": 50,
@@ -6713,7 +5505,7 @@
             "alertThreshold": false
           },
           "percentage": false,
-          "pluginVersion": "7.2.0-040ed969pre",
+          "pluginVersion": "7.3.0-beta2",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -6808,7 +5600,7 @@
             "h": 5,
             "w": 8,
             "x": 16,
-            "y": 40
+            "y": 26
           },
           "id": 86,
           "interval": null,
@@ -6876,7 +5668,9 @@
   "refresh": false,
   "schemaVersion": 26,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "db"
+  ],
   "templating": {
     "list": [
       {
@@ -6888,6 +5682,7 @@
         },
         "datasource": "prom_qft",
         "definition": "label_values(pg_up,hostname)\n\n",
+        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -6914,6 +5709,7 @@
         },
         "datasource": "$ds",
         "definition": "label_values(pg_up,cluster) \n",
+        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -6940,6 +5736,7 @@
         },
         "datasource": "$ds",
         "definition": "label_values(pg_locks_count{hostname=\"$host\"},datname)",
+        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -6963,6 +5760,7 @@
           "text": "prom_qft",
           "value": "prom_qft"
         },
+        "error": null,
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -6985,6 +5783,7 @@
         },
         "datasource": "$ds",
         "definition": "label_values(pg_up{hostname=\"$host\"},pg_port)",
+        "error": null,
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -7009,6 +5808,7 @@
           "text": "90",
           "value": "90"
         },
+        "error": null,
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -7054,6 +5854,7 @@
         },
         "datasource": "$ds",
         "definition": "label_values(node_filesystem_avail_bytes{mountpoint=\"/\",hostname=\"$host\"},device)",
+        "error": null,
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -7080,6 +5881,7 @@
         },
         "datasource": "$ds",
         "definition": "label_values(node_filesystem_avail_bytes{mountpoint=\"/\",hostname=\"$host\"},device)",
+        "error": null,
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -7104,7 +5906,8 @@
           "text": "prometheus",
           "value": "prometheus"
         },
-        "hide": 1,
+        "error": null,
+        "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
@@ -7145,6 +5948,7 @@
         },
         "datasource": "$ds",
         "definition": "label_values(probe_success,service)\n",
+        "error": null,
         "hide": 2,
         "includeAll": false,
         "label": null,
@@ -7169,6 +5973,7 @@
           "text": "5m",
           "value": "5m"
         },
+        "error": null,
         "hide": 1,
         "includeAll": false,
         "label": null,
@@ -7191,12 +5996,12 @@
             "value": "3m"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "5m",
             "value": "5m"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "10m",
             "value": "10m"
           },
@@ -7265,5 +6070,5 @@
   "timezone": "browser",
   "title": "pg",
   "uid": "NPz_1JKGk",
-  "version": 90
+  "version": 173
 }
