@@ -1,0 +1,27 @@
+
+- name:           docker
+  when:           need_docker
+  apt_key:
+     id:         '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
+     url:        https://download.docker.com/linux/debian/gpg
+
+
+- name:            docker  repository
+  when:            need_docker
+  apt_repository:
+    repo:         deb http://download.docker.com/linux/debian buster stable
+    filename:     docker-ce
+
+
+- name:            docker
+  when:            need_docker
+  apt:             
+     pkg:
+                   - apt-transport-https  
+                   - ca-certificates 
+                   - gnupg2 
+                   - software-properties-common
+                   - curl
+                   - docker-ce 
+                   - docker-ce-cli 
+                   - containerd.io

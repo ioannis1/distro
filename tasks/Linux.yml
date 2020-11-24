@@ -1,3 +1,7 @@
+- name:           docker
+  when:           need_docker
+  include:        docker.yml
+
 - name:            Add add-apt-repository
   apt:             pkg=software-properties-common
 
@@ -17,13 +21,14 @@
 #- name:            ubuntu.com  keyserver
 #  apt_key:         keyserver='http://keyserver.ubuntu.com'   id='EA8CACC073C3DB2A'
 
-- name:            docker.asc
-  when:            need_docker
-  apt_key:         data="{{ lookup('file', 'docker.asc') }}"   
+#- name:            docker.asc
+#when:            need_docker
+#apt_key:         data="{{ lookup('file', 'docker.asc') }}"   
+
 
 - name:            oracle_vbox_2016.asc
-sudo add-apt-repository ppa:linuxuprising/java
   when:            allow_vbox_repo
+  #shell:           sudo add-apt-repository ppa:linuxuprising/java
   apt_key:         data="{{ lookup('file', 'oracle_vbox_2016.asc') }}"   
 
             
@@ -70,10 +75,6 @@ sudo add-apt-repository ppa:linuxuprising/java
   when:            allow_vbox_repo
   apt_repository:  repo="deb http://download.virtualbox.org/virtualbox/debian stretch contrib"    
 
-- name:            Docker repo
-  when:            false
-  #when:            need_docker
-  apt_repository:  repo="deb http://download.docker.com/linux/debian buster stable"    
 
 
 
@@ -167,12 +168,6 @@ sudo add-apt-repository ppa:linuxuprising/java
                    - icedtea-netx
 
 
-- name:            docker
-  when:            need_docker
-  apt:             
-     pkg:
-                   - apt-transport-https  
-                   - docker-ce 
 
 
 - name:            mail
