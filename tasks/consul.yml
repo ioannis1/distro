@@ -6,7 +6,9 @@
 
 
 - name:            consul Hashicorp.com epository
-  apt_repository:  repo="deb [arch=amd64] https://apt.releases.hashicorp.com buster main"
+  apt_repository:  
+     repo:        deb [arch=amd64] https://apt.releases.hashicorp.com buster main
+     filename:    consul 
 
 
 - name:          packages consul
