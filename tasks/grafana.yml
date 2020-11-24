@@ -5,10 +5,14 @@
 
 - name:            grafana repository
   when:            false
-  apt_repository:  repo="deb https://packages.grafana.com/oss/deb stable main"  
+  apt_repository:  
+       repo:       deb https://packages.grafana.com/oss/deb stable main  
+       filename:   grafana
 
 - name:            grafana BETA repository
-  apt_repository:  repo="deb https://packages.grafana.com/oss/deb beta main"  
+  apt_repository:  
+      repo:        deb https://packages.grafana.com/oss/deb beta main  
+      filename:    grafana
 
 - name:            packages
   apt:
@@ -49,6 +53,8 @@
       - michaeldmoore-multistat-panel
       - yesoreyeram-boomtable-panel
       - vonage-status-panel
+        # --pluginUrl https://packages.hiveeyes.org/grafana/grafana-map-panel/grafana-map-panel-0.9.0.zip plugins install grafana-map-panel
+
       #- grafana-image-renderer
 
 
