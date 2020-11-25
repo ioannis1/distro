@@ -123,6 +123,7 @@
                    - info
                    - beep
                    - wordnet
+                   - tree
                    - net-tools
                    - dc 
                    - bc 
