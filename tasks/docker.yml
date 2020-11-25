@@ -22,6 +22,7 @@
                    - docker-ce 
                    - docker-ce-cli 
                    - containerd.io
+                   - syntax-docker 
 
 
 - name:          Docker users
