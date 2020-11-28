@@ -23,9 +23,24 @@
                    - docker-ce-cli 
                    - containerd.io
                    - syntax-docker 
+                   - docker-registry
 
 
 - name:          Docker users
   when:          false
   shell:         usermod -aG docker ioannis
  
+
+#TODO: IMPORTANT:  move file from /var/lib/docker/ to  ~ioannis/docker-data/. Then enable the task bellow.
+- name:           /etc/docker
+  when:           false
+  synchronize:    src="/etc/docker/"  dest="/etc/docker"    rsync_opts=--ignore-existing
+
+- name:          docker-composer
+     uri:
+       url:       https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64
+       dest:      /usr/local/bin/docker-compose
+       creates:   /usr/local/bin/docker-compose
+       timeout:   15
+       mode:      0755
+
