@@ -6,7 +6,7 @@ datasources:
   - name:     ts
     default:  no
     type:     postgres
-    url:      localhost:5432
+    url:      qft:5432
     database: timescaledb
     user:     read_only
     secureJsonData:
