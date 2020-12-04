@@ -1,0 +1,50 @@
+
+- name:            busybox
+  apt:             pkg="busybox"      state=absent
+
+- name:                   qemu-system
+  apt:             
+    name:                 qemu-system  
+    install_recommends:   no 
+
+
+- name:            lxc
+  apt:             
+     pkg:
+                   - lxc 
+                   - libvirt-clients 
+                   - libvirt-daemon-system 
+                   - iptables 
+                   - ebtables 
+                   - dnsmasq-base 
+                   - libxml2-utils 
+                   - iproute2
+                   - libvirt0 
+                   - libpam-cgfs 
+                   - bridge-utils 
+                   - uidmap
+
+- name:            network setup 1
+  ignore_errors:   yes
+  command:         virsh net-start default
+
+- name:            network setup 2
+  ignore_errors:   yes
+  command:         virsh net-autostart default
+
+- name: independent bridge setup
+  when: false
+  shell:  echo '"USE_LXC_BRIDGE="true"' > /etc/default/lxc-net 
+
+- name:  /etc/lxc
+  synchronize:  src="etc/lxc/"  dest="/etc/lxc"   delete='no'  owner=no  dirs=yes #rsync_opts=--ignore-existing
+
+
+- systemd:    name="lxc-net"   daemon_reload="yes"   enabled=no  state="restarted"  
+  when:  ansible_facts.services["lxc-net.service"].state  == 'running'
+
+  #  lxc-create -n mydeb -t debian -- -r stretch
+  #  LANG=C SUITE=stretch MIRROR=http://httpredir.debian.org/debian lxc-create -n debian9 -t debian
+
+
+
