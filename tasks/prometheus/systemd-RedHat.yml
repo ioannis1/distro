@@ -1,0 +1,41 @@
+####################################################   systemd
+- name:       reload  alertmanager
+  systemd:    name="alertmanager"   daemon_reload="yes"   state=stopped    enabled=no
+  when:       ansible_facts.services["alertmanager.service"].state  == 'disabled'
+
+- name:       reload  apache-exporter
+  systemd:    name="apache-exporter"   daemon_reload="yes"   state=stopped    enabled=no
+  when:       ansible_facts.services["apache-exporter.service"].state  == 'disabled'
+
+- name:       reload  blackbox-exporter
+  systemd:    name="blackbox-exporter"   daemon_reload="yes"   state=stopped    enabled=no
+  when:       ansible_facts.services["blackbox-exporter.service"].state  == 'disabled'
+
+- name:       reload  pushgateway
+  systemd:    name="pushgateway"   daemon_reload="yes"   state=stopped    enabled=no
+  when:       ansible_facts.services["pushgateway.service"].state  == 'disabled'
+
+  #- name:       reload  consul-exporter
+  #systemd:    name="consul-exporter"   daemon_reload="yes"   state=stopped    enabled=no
+  #when:       ansible_facts.services["consul-exporter.service"].state  == 'disabled'
+
+  #- name:       reload graphite-xporter
+  #systemd:    name="graphite-exporter"   daemon_reload="yes"   state=stopped    enabled=no
+  #when:       ansible_facts.services["graphite-exporter.service"].state  == 'disabled'
+
+- name:       reload  node-exporter
+  systemd:    name="node-exporter"   daemon_reload="yes"   state=stopped    enabled=no
+  when:       ansible_facts.services["node-exporter.service"].state  == 'disabled'
+
+- name:       reload prometheus 
+  systemd:    name="prometheus"     daemon_reload="yes"   state=stopped     enabled=no
+  when:       ansible_facts.services["prometheus.service"].state  == 'disabled'
+
+
+- name:       reload  postgres-exporter
+  systemd:    name="postgres-exporter"   daemon_reload="yes"  state=stopped  enabled=no
+  when:       ansible_facts.services["postgres-exporter.service"].state  == 'disabled'
+
+- name:       reload  postgres-exporter_5433
+  systemd:    name="postgres-exporter_5433"   daemon_reload="yes"  state=stopped  enabled=no
+  when:       ansible_facts.services["postgres-exporter_5433.service"].state  == 'disabled'

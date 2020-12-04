@@ -16,8 +16,27 @@
       remote_src:   yes
       creates:      "/tmp/prometheus-{{ PROMETHEUS_VERSION}}.linux-amd64"
 
-- command:       cp -a "/tmp/prometheus-{{ PROMETHEUS_VERSION}}.linux-amd64/prometheus"     "/usr/local/bin/"  
-- command:       cp -a "/tmp/prometheus-{{ PROMETHEUS_VERSION}}.linux-amd64/promtool"       "/usr/local/bin/"  
+- copy:      
+     src:          "/tmp/prometheus-{{ PROMETHEUS_VERSION}}.linux-amd64/prometheus"    
+     dest:        "/usr/local/bin/prometheus-{{PROMETHEUS_VERSION}}"  
+     remote_src:   yes
+     force:        no
+     mode:         755
+
+- name:        link /usr/local/bin/prometheus
+  file:  
+     src:      "/usr/local/bin/prometheus-{{PROMETHEUS_VERSION}}"  
+     dest:     /usr/local/bin/prometheus
+     state:    link  
+     owner:    root
+     force:    yes
+
+- copy:      
+     src:          "/tmp/prometheus-{{ PROMETHEUS_VERSION}}.linux-amd64/promtool"    
+     dest:        /usr/local/bin/
+     remote_src:   yes
+     force:        no
+     mode:         755
 #################################################################################
 - name:      alertmanager
   unarchive:
@@ -26,8 +45,27 @@
       remote_src:   yes
       creates:     /tmp/alertmanager-0.21.0.linux-amd64
 
-- command:       cp -a "/tmp/alertmanager-0.21.0.linux-amd64/alertmanager"     "/usr/local/bin/"  
-- command:       cp -a "/tmp/alertmanager-0.21.0.linux-amd64/amtool"           "/usr/local/bin/"  
+- copy:      
+     src:         "/tmp/alertmanager-0.21.0.linux-amd64/alertmanager"
+     dest:        /usr/local/bin/alertmanager-0.21.0
+     remote_src:   yes
+     force:        no
+     mode:         755
+
+- name:        link /usr/local/bin/altermanager
+  file:  
+     src:      /usr/local/bin/alertmanager-0.21.0
+     dest:     /usr/local/bin/alertmanager
+     state:    link  
+     owner:    root
+     force:    yes
+
+- copy:      
+     src:         /tmp/alertmanager-0.21.0.linux-amd64/amtool 
+     dest:        /usr/local/bin/
+     remote_src:   yes
+     force:        no
+     mode:         755
 #################################################################################
 - name:      blackbox_exporter
   unarchive:
@@ -36,7 +74,20 @@
       remote_src:   yes
       creates:      /tmp/blackbox_exporter-0.18.0.linux-amd64
 
-- command:       cp -a "/tmp/blackbox_exporter-0.18.0.linux-amd64/blackbox_exporter"     "/usr/local/bin/"  
+- copy:      
+     src:          /tmp/blackbox_exporter-0.18.0.linux-amd64/blackbox_exporter  
+     dest:         /usr/local/bin/blackbox_exporter-0.18.0
+     remote_src:   yes
+     force:        no
+     mode:         755
+
+- name:        link /usr/local/bin/blackbox
+  file:  
+     src:      /usr/local/bin/blackbox_exporter-0.18.0
+     dest:     /usr/local/bin/blackbox
+     state:    link  
+     owner:    root
+     force:    yes
 #################################################################################
 - name:      node_exporter
   unarchive:
@@ -45,7 +96,20 @@
       remote_src:   yes
       creates:      /tmp/node_exporter-1.0.1.linux-amd64
 
-- command:       cp -a "/tmp/node_exporter-1.0.1.linux-amd64/node_exporter"     "/usr/local/bin/"  
+- copy:      
+     src:          /tmp/node_exporter-1.0.1.linux-amd64/node_exporter
+     dest:         /usr/local/bin/node_exporter-1.0.1
+     remote_src:   yes
+     force:        no
+     mode:         755
+
+- name:        link /usr/local/bin/node_explorter
+  file:  
+     src:      /usr/local/bin/node_exporter-1.0.1
+     dest:     /usr/local/bin/node_exporter
+     state:    link  
+     owner:    root
+     force:    yes
 #################################################################################
 - name:      pushgateway
   unarchive:
@@ -54,7 +118,20 @@
       remote_src:   yes
       creates:      /tmp/pushgateway-1.3.0.linux-amd64
 
-- command:       cp -a /tmp/pushgateway-1.3.0.linux-amd64/pushgateway     "/usr/local/bin/"  
+- copy:      
+     src:           /tmp/pushgateway-1.3.0.linux-amd64/pushgateway
+     dest:          /usr/local/bin/pushgateway-1.3.0
+     remote_src:    yes
+     force:         no
+     mode:         755
+
+- name:        link /usr/local/bin/pushgateway
+  file:  
+     src:      /usr/local/bin/pushgateway-1.3.0
+     dest:     /usr/local/bin/pushgateway
+     state:    link  
+     owner:    root
+     force:    yes
 #################################################################################
 - name:      consul_exporter
   unarchive:
@@ -63,7 +140,20 @@
       remote_src:   yes
       creates:      /tmp/consul_exporter-0.7.1.linux-amd64
 
-- command:       cp -a /tmp/consul_exporter-0.7.1.linux-amd64/consul_exporter     "/usr/local/bin/"  
+- copy:      
+     src:           /tmp/consul_exporter-0.7.1.linux-amd64/consul_exporter
+     dest:          /usr/local/bin/consul_exporter-0.7.1
+     remote_src:    yes
+     force:         no
+     mode:         755
+
+- name:             link /usr/local/bin/consul_exporter
+  file:  
+     src:           /usr/local/bin/consul_exporter-0.7.1
+     dest:          /usr/local/bin/consul_exporter
+     state:         link  
+     owner:         root
+     force:         yes
 #################################################################################
 - name:      memcached_exporter
   unarchive:
@@ -81,7 +171,20 @@
       remote_src:   yes
       creates:      /tmp/statsd_exporter-0.18.0.linux-amd64
 
-- command:       cp -a /tmp/statsd_exporter-0.18.0.linux-amd64/statsd_exporter     "/usr/local/bin/"  
+- copy:      
+     src:            /tmp/statsd_exporter-0.18.0.linux-amd64/statsd_exporter
+     dest:           /usr/local/bin/statsd_exporter-0.18.0
+     remote_src:    yes
+     force:         no
+     mode:         755
+
+- name:        link /usr/local/bin/statsd_exporter
+  file:  
+     src:      /usr/local/bin/statsd_exporter-0.18.0
+     dest:     /usr/local/bin/statsd_exporter
+     state:    link  
+     owner:    root
+     force:    yes
 #################################################################################
 - name:      graphite_exporter
   unarchive:
@@ -126,7 +229,6 @@
 
 - name:   overide default symlink from prometheus/files.yml
   file:    src='/etc/prometheus/tiny.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=prometheus   force=yes
-
  
 
 ####################################################   systemd for centos 
@@ -137,9 +239,5 @@
 # firewall-cmd reload
 
 ####################################################   reload servers
-- name:        reload prometheus 
-  systemd:    name="prometheus"   daemon_reload="yes"  enabled=no
-
-#- name:        systemd
-#  include      prometheus/systemd.yml
-
+- name:    systemd
+  include: prometheus/systemd-RedHat.yml

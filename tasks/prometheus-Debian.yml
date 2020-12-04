@@ -14,7 +14,11 @@
 
 ####################################################  /etc/prometheus   FILES
 - name:        Files
-  include      prometheus/files.yml
+  include:     prometheus/files.yml
+
+- name:    overide symlink  prometheus.yml, earlied defined in prometheus/files.yml
+  file:    src='/etc/prometheus/dynamic_file_fed.yml'   dest='/etc/prometheus/prometheus.yml'   state=link  owner=root   force=yes
+
 ####################################################  systemd
 - name:        systemd
-  include      prometheus/systemd.yml
+  include:     prometheus/systemd-Debian.yml

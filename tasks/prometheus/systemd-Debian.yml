@@ -1,3 +1,13 @@
+- name:       reload  prometheus exporters
+  shell:       "/etc/init.d/prometheus-{{ item }}-exporter    force-reload"
+  with_items:
+      - postgres
+      - node
+
+- name:       reload  prometheus 
+  systemd:    name="prometheus"   daemon_reload="yes"  enabled=no
+
+################################################################################
 - name:        systemd file
   copy:        src=etc/systemd/system/prometheus-postgres-exporter_5433.service     dest="/etc/systemd/system/"     owner=root
 
@@ -16,3 +26,4 @@
 - name:       reload  postgres-exporter_5433
   systemd:    name="prometheus-postgres-exporter_5433"   daemon_reload="yes"  state=restarted  enabled=no
   when:       ansible_facts.services["prometheus-postgres-exporter_5433.service"].state  == 'running'
+

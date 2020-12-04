@@ -69,14 +69,3 @@
 - name:    mkdir  node_dat
   file:    dest='/var/lib/prometheus/node-exporter/node_dat'    state=directory  owner=root   force=yes
 
-####################################################   reload servers
-
-- name:       reload  prometheus exporters
-  shell:       "/etc/init.d/prometheus-{{ item }}-exporter    force-reload"
-  with_items:
-      - postgres
-      - node
-
-
-- name:       reload  prometheus 
-  systemd:    name="prometheus"   daemon_reload="yes"  enabled=no
