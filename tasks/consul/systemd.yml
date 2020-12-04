@@ -1,0 +1,16 @@
+####################################################   Systemd
+- name:        systemd file
+  copy:        src=etc/systemd/system/consul.service     dest="/etc/systemd/system/"     owner=root
+
+
+- name:       reload  daemon
+  systemd:    daemon_reload="yes"
+
+- wait_for:    delay=5 timeout=0
+
+-  systemd:    name="consul"   daemon_reload="yes"   enabled=no  state="stopped"  
+   when:  ansible_facts.services["consul.service"].state  == 'disabled'
+
+-  systemd:    name="consul-server"   daemon_reload="yes"   enabled=no  state="restarted"  
+   when:  ansible_facts.services["consul.service"].state  == 'running'
+

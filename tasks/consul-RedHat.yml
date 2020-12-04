@@ -1,0 +1,44 @@
+####################################################  packages
+- set_fact: 
+      CONSUL_VER:  "1.9.0"
+      
+- name:       Hashicorp.com  download
+  get_url:
+      url:       "https://releases.hashicorp.com/consul/{{CONSUL_VER}}/consul_{{CONSUL_VER}}_linux_amd64.zip"
+      dest:      "/tmp/consul_{{CONSUL_VER}}_linux_amd64.zip"
+      force:      no
+
+- unarchive:
+    src:           "/tmp/consul_{{CONSUL_VER}}_linux_amd64.zip"
+    dest:          /tmp
+    remote_src:     true
+    creates:        /tmp/consul
+
+- copy:      
+     src:          /tmp/consul
+     dest:        "/usr/local/bin/consul-{{CONSUL_VER}}"  
+     remote_src:   yes
+     force:        no
+     owner:        root
+     mode:         755
+
+- name:        link /usr/local/bin/consul
+  file:  
+     src:      "/usr/local/bin/consul-{{CONSUL_VER}}"  
+     dest:     /usr/local/bin/consul
+     state:    link  
+     owner:    root
+     force:    yes
+
+
+- file:  dest=/tmp/consul_{{CONSUL_VER}}_linux_amd64.zip   state=absent  force=yes
+  when:  false
+- file:  dest=/tmp/consul   state=absent  force=yes
+  when:  false
+####################################################  /etc/consul   FILES
+
+- name: files
+  include: consul/files.yml
+
+- name: systemd
+  include: consul/systemd.yml

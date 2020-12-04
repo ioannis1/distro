@@ -6,7 +6,9 @@
 
 
 - name:            consul Hashicorp.com epository
-  apt_repository:  repo="deb [arch=amd64] https://apt.releases.hashicorp.com buster main"
+  apt_repository:  
+     repo:        deb [arch=amd64] https://apt.releases.hashicorp.com buster main
+     filename:    consul 
 
 
 - name:          packages consul
@@ -14,42 +16,9 @@
      name:          consul
      update_cache:  yes
 ####################################################  /etc/consul   FILES
-- name:        Files   /etc/consul.d/*
-  synchronize:  src="etc/consul.d/"  dest="/etc/consul.d"   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
-- name:    copy token (becaue it is ansible-valuted) 
-  copy:    src="etc/consul.d/consul.token"  dest="/etc/consul.d"    owner=root  mode=640
+- name: files
+  include: consul/files.yml
 
-####################################################  /etc/prometheus  TEMPLATES
-#
-- name:        Templates /etc/consul.d/*
-  template:    src=etc/consul/{{ item }}      dest="/etc/consul.d/"     owner=root
-  with_items:
-      -  basic.json  
-      -  pgbouncer_exporter.json-  
-      -  postgres_exporter.json
-      -  grok_exporter.json  
-      -  grok_exporter_karat.json-  
-      -  node_exporter.json  
-      -  postgres_exporter_5433.json-
-
-####################################################  symlinks 
-- name:    data directory 
-  when:    os_family  == 'Darwin'  
-  file:    path="/var/lib/consul"    state=directory   owner=ioannis   force=yes
-####################################################  /etc/default
-- name:        /etc/default/consul
-  copy:       src=etc/default/consul    dest=/etc/default/consul    owner=root   
-  #
-####################################################   systemd
-- name:        systemd file
-  copy:        src=etc/systemd/system/consul.service     dest="/etc/systemd/system/"     owner=root
-
-####################################################   reload servers
-- name:       reload  consul
-  systemd:    name="consul"   daemon_reload="yes"   enabled=no  state=stopped
-   when:  ansible_facts.services["consul.service"].state  == 'disabled'
-
-- name:       reload  consul
-  systemd:    name="consul"   daemon_reload="yes"   enabled=no  state=restarted
-   when:  ansible_facts.services["consul.service"].state  == 'running'
+- name: systemd
+  include: consul/systemd.yml

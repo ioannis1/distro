@@ -17,5 +17,8 @@
 - include: pgspray-RedHat.yml
   when:    need_pgspray
 
+- include: consul-RedHat.yml
+  when:    need_consul
+
   #- include: grok_exporter-Linux.yml
   #when:    need_grok_exporter
