@@ -16,8 +16,11 @@
 - name:    chown -R grafana.db
   file:    owner=grafana group=grafana  path=/var/lib/grafana/grafana.db mode=640
 
+
 - name:    plugins
-  shell:   grafana-cli --pluginsDir /var/lib/grafana/plugins  plugins install  "{{ item }}"
+  command:   "grafana-cli --pluginsDir /var/lib/grafana/plugins  plugins install  {{ item }}"
+  args:
+     creates: "/var/lib/grafana/plugins/{{item}}"
   with_items:
       - camptocamp-prometheus-alertmanager-datasource	
       - jdbranham-diagram-panel     
@@ -30,6 +33,7 @@
       - michaeldmoore-multistat-panel
       - yesoreyeram-boomtable-panel
       - vonage-status-panel
+
         # --pluginUrl https://packages.hiveeyes.org/grafana/grafana-map-panel/grafana-map-panel-0.9.0.zip plugins install grafana-map-panel
 
       #- grafana-image-renderer

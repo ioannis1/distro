@@ -1,7 +1,6 @@
 
 
 - name:            grafana BETA repository
-  when:                 need_postfix
   blockinfile:
       insertbefore:     EOF
       path:             /etc/yum.repos.d/grafana.repo
