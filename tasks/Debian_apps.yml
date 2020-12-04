@@ -1,7 +1,9 @@
 
 - include: "Linux-config.yml"
 
-- include: grafana.yml
+- include: pgbloat.yml
+
+- include: grafana-Debian.yml
   when:    need_grafana
 
 - include: prometheus-Debian.yml

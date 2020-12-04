@@ -5,6 +5,9 @@
 - include: prometheus-RedHat.yml
   when:    need_prometheus
 
+- include: grafana-RedHat.yml
+  when:    need_grafana
+
   #- include: loki-Linux.yml
   #when:    need_loki
 

@@ -41,7 +41,7 @@
      
 - include: etc.yml
 
-- include: Linux_apps.yml
+- include: Debian_apps.yml
   when: os_family == 'Linux'
 
 - include: Darwin_apps.yml
