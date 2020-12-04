@@ -8,12 +8,14 @@
 - include: grafana-RedHat.yml
   when:    need_grafana
 
-  #- include: loki-Linux.yml
-  #when:    need_loki
+- include: loki-Linux.yml
+  when:    need_loki
 
-  #- include: promtail-Linux.yml
-  #when:    need_promtail
+- include: promtail-Linux.yml
+  when:    need_promtail
 
 - include: pgspray-RedHat.yml
   when:    need_pgspray
 
+  #- include: grok_exporter-Linux.yml
+  #when:    need_grok_exporter

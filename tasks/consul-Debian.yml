@@ -40,9 +40,16 @@
 ####################################################  /etc/default
 - name:        /etc/default/consul
   copy:       src=etc/default/consul    dest=/etc/default/consul    owner=root   
-####################################################   reload servers
+  #
+####################################################   systemd
 - name:        systemd file
   copy:        src=etc/systemd/system/consul.service     dest="/etc/systemd/system/"     owner=root
 
+####################################################   reload servers
 - name:       reload  consul
-  systemd:    name="consul"   daemon_reload="yes"   enabled=no
+  systemd:    name="consul"   daemon_reload="yes"   enabled=no  state=stopped
+   when:  ansible_facts.services["consul.service"].state  == 'disabled'
+
+- name:       reload  consul
+  systemd:    name="consul"   daemon_reload="yes"   enabled=no  state=restarted
+   when:  ansible_facts.services["consul.service"].state  == 'running'

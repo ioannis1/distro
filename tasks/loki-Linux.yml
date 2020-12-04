@@ -62,6 +62,9 @@
 - name:       systemd file
   copy:       src=etc/systemd/system/loki.service     dest="/etc/systemd/system/"     owner=root
 
+- name:       reload  daemon
+  systemd:    daemon_reload="yes" 
+
 - name:       reload  loki
   systemd:    name="loki"   daemon_reload="yes"  state=stopped  enabled=yes
   when:       ansible_facts.services["loki.service"].state  == 'disabled'

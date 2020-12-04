@@ -1,0 +1,55 @@
+##############################################################################################
+- name: grafana passwd
+  copy:  src="etc/grafana/passwd"  dest="/etc/grafana/"  backup='no' mode=600  owner='grafana' group='grafana'
+
+- name:     group grafana
+  group:    name=grafana    #gid=1002
+
+## Add Users
+
+- name:     user grafana
+  user:     name=grafana  shell="/bin/false"   createhome=no  group=grafana   #password=sobxtSZ2VA78Q  uuid=999
+
+- name:    empty grafana.db
+  synchronize:  src="grafana.db"  dest="/var/lib/grafana/grafana.db"    rsync_opts=--ignore-existing
+
+- name:    chown -R grafana.db
+  file:    owner=grafana group=grafana  path=/var/lib/grafana/grafana.db mode=640
+
+- name:    plugins
+  shell:   grafana-cli --pluginsDir /var/lib/grafana/plugins  plugins install  "{{ item }}"
+  with_items:
+      - camptocamp-prometheus-alertmanager-datasource	
+      - jdbranham-diagram-panel     
+      - mtanda-histogram-panel     
+      - grafana-clock-panel        
+      - grafana-piechart-panel    
+      - grafana-worldmap-panel
+      - farski-blendstat-panel
+      - grafana-polystat-panel
+      - michaeldmoore-multistat-panel
+      - yesoreyeram-boomtable-panel
+      - vonage-status-panel
+        # --pluginUrl https://packages.hiveeyes.org/grafana/grafana-map-panel/grafana-map-panel-0.9.0.zip plugins install grafana-map-panel
+
+      #- grafana-image-renderer
+
+
+
+- name:    provisioning
+  synchronize:  src="etc/grafana"  dest="/etc/"   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+
+- name:    chown -R grafana:grafana
+  file:   recurse=yes  owner=grafana group=grafana  path=/etc/grafana
+
+- name:    templates
+  template:  src="etc/grafana/{{ item }}"  dest="/etc/grafana/provisioning/datasources"    owner=grafana group=grafana  mode=640
+  with_items:
+      - qft-postgres.yaml
+
+
+- name:    passwd
+  shell:  "grafana-cli admin reset-admin-password {{ generic_passwd }}"
+  args:
+     chdir: /usr/share/grafana
+  

@@ -33,6 +33,9 @@
 
 
 ####################################################   reload servers
+- name:       reload  daemon
+  systemd:    daemon_reload="yes"
+
 - name:       reload  grok
   systemd:    name="grok_exporter"   daemon_reload="yes"  state=stopped  enabled=no
   when:       ansible_facts.services["grok_exporter.service"].state  == 'disabled'

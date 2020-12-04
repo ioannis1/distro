@@ -15,19 +15,19 @@
 - include: promtail-Linux.yml
   when:    need_promtail
 
-- include: fluentd.yml
+- include: fluentd-Debian.yml
   when:    need_fluentd
 
-- include: pgspray-Linux.yml
+- include: pgspray-Debian.yml
   when:    need_pgspray
 
-- include: fluent-bit-Linux.yml
+- include: fluent-bit-Debian.yml
   when:    need_fluent_bit
 
-- include: grok_exporter-Linux.yml
+- include: grok_exporter-Debian.yml
   when:    need_grok_exporter
 
-- include: consul-Linux.yml
+- include: consul-Debian.yml
   when:    need_consul
 
 - include: stock_brokers.yml

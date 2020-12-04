@@ -1,0 +1,54 @@
+
+
+- name:            grafana BETA repository
+  when:                 need_postfix
+  blockinfile:
+      insertbefore:     EOF
+      path:             /etc/yum.repos.d/grafana.repo
+      owner:            root
+      create:           yes
+      block: |
+                [grafana]
+                name=grafana
+                baseurl=https://packages.grafana.com/oss/rpm
+                repo_gpgcheck=1
+                enabled=1
+                gpgcheck=1
+                gpgkey=https://packages.grafana.com/gpg.key
+                sslverify=1
+                sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+
+- name:  update yum
+  yum:   update_cache=yes  
+
+- name:  packages
+  yum:
+     name:
+                 - grafana
+                 - grafana-loki
+                 - grafana-prometheus
+                 - grafana-postgres
+                 - grafana-graphite
+                 - grafana-elasticsearch
+                 - grafana-influxdb
+                 - grafana-cloudwatch
+                 - grafana-azure-monitor
+                   #- grafana-mysql
+                   #- grafana-opentsdb
+                   #- grafana-pcp
+                   #- grafana-stackdriver
+##############################################################################################
+
+- name: grafana files
+  include: grafana/files.yml
+
+################################################################  systemd
+
+-  systemd:    name="grafana-server"   daemon_reload="yes"   enabled=no  state="stopped"  
+   when:  ansible_facts.services["grafana-server.service"].state  == 'disabled'
+
+-  systemd:    name="grafana-server"   daemon_reload="yes"   enabled=no  state="restarted"  
+   when:  ansible_facts.services["grafana-server.service"].state  == 'running'
+
+# firewall-cmd --add-port=3000/tcp --permanent
+

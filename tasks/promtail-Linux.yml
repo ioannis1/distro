@@ -32,7 +32,12 @@
 ####################################################  systemd
 - name:        systemd file
   copy:        src=etc/systemd/system/promtail.service     dest="/etc/systemd/system/"     owner=root
-####################################################  Reload Servers
+
+- name:       reload  daemon
+  systemd:    daemon_reload="yes"
+
+- wait_for:    delay=3 timeout=0
+
 
 - name:       reload  promtail
   systemd:    name="promtail"   daemon_reload="yes"  state=stopped  enabled=yes
