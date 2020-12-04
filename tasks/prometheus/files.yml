@@ -1,17 +1,3 @@
-####################################################  packages
-- name:          packages prometheus 
-  apt:
-     pkg:
-                  - prometheus-blackbox-exporter 
-                  - prometheus-postgres-exporter
-                  - prometheus-pgbouncer-exporter
-                  - prometheus-node-exporter
-                  - prometheus-pushgateway 
-                  - prometheus-apache-exporter
-                  - pgbouncer
-                  - prometheus-alertmanager
-                  - prometheus 
-
 ####################################################  /etc/prometheus   FILES
 - name:        Files   /etc/prometheus/*
   synchronize:  src="etc/prometheus/"  dest="/etc/prometheus"   delete='no'  owner=no  dirs=yes #rsync_opts=--ignore-existing
@@ -94,22 +80,3 @@
 
 - name:       reload  prometheus 
   systemd:    name="prometheus"   daemon_reload="yes"  enabled=no
-####################################################  systemd
-- name:        systemd file
-  copy:        src=etc/systemd/system/prometheus-postgres-exporter_5433.service     dest="/etc/systemd/system/"     owner=root
-
-- name:       reload  postgres-exporter
-  systemd:    name="prometheus-postgres-exporter"   daemon_reload="yes"  state=stopped  enabled=no
-  when:       ansible_facts.services["prometheus-postgres-exporter.service"].state  == 'disabled'
-
-- name:       reload  postgres-exporter_5433
-  systemd:    name="prometheus-postgres-exporter_5433"   daemon_reload="yes"  state=stopped  enabled=no
-  when:       ansible_facts.services["prometheus-postgres-exporter_5433.service"].state  == 'disabled'
-
-- name:       reload  postgres-exporter_5433
-  systemd:    name="prometheus-postgres-exporter"   daemon_reload="yes"  state=restarted  enabled=no
-  when:       ansible_facts.services["prometheus-postgres-exporter.service"].state  == 'running'
-
-- name:       reload  postgres-exporter_5433
-  systemd:    name="prometheus-postgres-exporter_5433"   daemon_reload="yes"  state=restarted  enabled=no
-  when:       ansible_facts.services["prometheus-postgres-exporter_5433.service"].state  == 'running'

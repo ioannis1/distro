@@ -1,0 +1,12 @@
+[Unit]
+Description=Expose data from pgbouncer for collection by Prometheus
+BindsTo=pgbouncer.service
+After=pgbouncer.service
+
+[Service]
+User=postgres
+Environment='LICENCE_LOCATION=/usr/share/doc/prometheus-pgbouncer-exporter/copyright' 'CONFIG=/etc/prometheus-pgbouncer-exporter.conf'
+ExecStart=/usr/bin/prometheus-pgbouncer-exporter
+
+[Install]
+WantedBy=pgbouncer.service

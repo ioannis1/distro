@@ -118,3 +118,11 @@
   when:  false
   shell:  rm -rf /tmp/*linx-amd64
 
+
+
+####################################################  /etc/prometheus   FILES
+- name:        Files
+  include      prometheus/files.yml
+####################################################  systemd
+- name:        systemd
+  include      prometheus/systemd.yml

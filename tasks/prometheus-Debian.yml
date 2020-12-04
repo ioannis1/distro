@@ -1,0 +1,20 @@
+####################################################  packages
+- name:          packages prometheus 
+  apt:
+     pkg:
+                  - prometheus-blackbox-exporter 
+                  - prometheus-postgres-exporter
+                  - prometheus-pgbouncer-exporter
+                  - prometheus-node-exporter
+                  - prometheus-pushgateway 
+                  - prometheus-apache-exporter
+                  - pgbouncer
+                  - prometheus-alertmanager
+                  - prometheus 
+
+####################################################  /etc/prometheus   FILES
+- name:        Files
+  include      prometheus/files.yml
+####################################################  systemd
+- name:        systemd
+  include      prometheus/systemd.yml
