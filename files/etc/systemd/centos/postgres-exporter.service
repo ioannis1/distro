@@ -6,7 +6,7 @@ Documentation=https://github.com/wrouesnel/postgres_exporter
 Restart=always
 User=prometheus
 EnvironmentFile=/etc/default/prometheus-postgres-exporter
-ExecStart=/usr/bin/prometheus-postgres-exporter $ARGS
+ExecStart=/usr/local/bin/postgres-exporter $ARGS
 
 [Install]
 WantedBy=multi-user.target

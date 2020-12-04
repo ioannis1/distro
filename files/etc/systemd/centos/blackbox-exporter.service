@@ -6,7 +6,7 @@ Documentation=https://prometheus.io/docs/introduction/overview/
 Restart=always
 User=prometheus
 EnvironmentFile=/etc/default/prometheus-blackbox-exporter
-ExecStart=/usr/bin/prometheus-blackbox-exporter $ARGS
+ExecStart=/usr/local/bin/blackbox-exporter $ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]

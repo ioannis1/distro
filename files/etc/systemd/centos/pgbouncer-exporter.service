@@ -6,7 +6,7 @@ After=pgbouncer.service
 [Service]
 User=postgres
 Environment='LICENCE_LOCATION=/usr/share/doc/prometheus-pgbouncer-exporter/copyright' 'CONFIG=/etc/prometheus-pgbouncer-exporter.conf'
-ExecStart=/usr/bin/prometheus-pgbouncer-exporter
+ExecStart=/usr/local/bin/pgbouncer-exporter
 
 [Install]
 WantedBy=pgbouncer.service
