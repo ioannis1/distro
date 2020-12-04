@@ -1,0 +1,16 @@
+
+
+- include: pgbloat.yml
+
+- include: prometheus-RedHat.yml
+  when:    need_prometheus
+
+  #- include: loki-Linux.yml
+  #when:    need_loki
+
+  #- include: promtail-Linux.yml
+  #when:    need_promtail
+
+- include: pgspray-RedHat.yml
+  when:    need_pgspray
+

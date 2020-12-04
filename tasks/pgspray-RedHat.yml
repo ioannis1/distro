@@ -1,28 +1,42 @@
 ####################################################  packages
 - name:          packages DBI, Getopts-Std, Timehires
-  apt:
-     pkg:
-        - libdbi-perl
-        - libtime-hires-perl
-        - libdbd-pg-perl
-        - libnet-prometheus-perl
-        - libplack-perl
-        - libparallel-forkmanager-perl
+  yum:
+      name: 
+         - perl-App-cpanminus
+         - perl-Time-HiRes
+         - perl-File-Slurp
+         - perl-DBI
+         - perl-DBD-Pg
+         - perl-libwww-perl
+         #- perl-Date-CalcXML
 
-####################################################  /etc/consul   FILES
-- name:    verify perl prereqs 
-  command: perl -m{{item}} -e 'print 1'
-  with_items:
-            - Time::HiRes
-            - DBI
-            - DBD::Pg
-            - Net::Prometheus
-            - Parallel::ForkManager
-            - LWP::UserAgent
-            - Config::INI::Reader
-            - Getopt::Compact
-            - File::Slurp
-            - Plack
+- name:           Config::INI
+  command:        cpan -f Config::INI
+  args:
+     creates:    /usr/local/share/perl5/Config/INI
+
+- name:           Net::Prometheus
+  command:        cpan -f  Net::Prometheus
+  args:
+     creates:     /usr/local/share/perl5/Net/Prometheus
+
+- name:           Parallel::ForkManager 
+  command:        cpan -f  Parallel::ForkManager
+  args:
+     creates:     /usr/local/share/perl5/Parallel/ForkManager.pm
+
+- name:           Plack
+  command:        cpan -f  Plack
+  args:
+     creates:     /usr/local/bin/plackup
+
+- name:          Getopt::Compact
+  command:       cpan -f  Getopt::Compact
+  args:
+     creates:    /usr/local/share/perl5/Getopt/Compact
+  
+- name:    rm -rf ~root/.cpan/
+  file :   dest=/root/.cpan     state=absent   force=yes
 
 ####################################################  pgspray binaries
 - name:            /usr/local/bin/pgspray
@@ -66,3 +80,4 @@
   systemd:    name="pgspray_psgi"   daemon_reload="yes"  state=restarted  enabled=no
   when:       ansible_facts.services["pgspray_psgi.service"].state  == 'running'
   #
+####################################################  /etc/consul   FILES

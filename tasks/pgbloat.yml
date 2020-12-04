@@ -1,0 +1,17 @@
+################### git pg_bloat_check  ############################
+- name:        git pg_bloat_check
+  git:  
+     repo:      https://github.com/keithf4/pg_bloat_check.git
+     dest:      /tmp/pg_bloat_check
+     #version:   'master'
+
+
+#############################  install  promtail(1)
+- copy:
+     src:         /tmp/pg_bloat_check/pg_bloat_check.py
+     dest:        /usr/local/bin/
+     remote_src:   yes
+     force:        no
+     mode:         755
+      
+
