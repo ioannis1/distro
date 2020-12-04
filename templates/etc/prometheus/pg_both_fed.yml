@@ -195,7 +195,7 @@ scrape_configs:
              host_ip:   '{{ ansible_all_ipv4_addresses.0 }}'
              hostname:  '{{ ansible_hostname }}'
 
-  - job_name:       'federate'
+  - job_name:       federate_from_bulk
     scrape_interval: 15s
     honor_labels:   true
     metrics_path:   '/federate'

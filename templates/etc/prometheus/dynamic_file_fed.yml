@@ -19,7 +19,7 @@ rule_files:
  
 scrape_configs:
 
-- job_name: federate
+- job_name:      federate
   honor_labels:  true
   metrics_path:  '/federate' 
 
@@ -137,7 +137,7 @@ scrape_configs:
     target_label:  service
 
 
-- job_name:       'federate'
+- job_name:       federate-_from_bulk
   scrape_interval: 15s
   honor_labels:   true
   metrics_path:   '/federate'
