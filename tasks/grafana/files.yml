@@ -44,7 +44,7 @@
   synchronize:  src="etc/grafana"  dest="/etc/"   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 - name:    chown -R grafana:grafana
-  file:   recurse=yes  owner=grafana group=grafana  path=/etc/grafana
+  file:    path=/etc/grafana  recurse=yes  owner=grafana group=grafana  
 
 - name:    templates
   template:  src="etc/grafana/{{ item }}"  dest="/etc/grafana/provisioning/datasources"    owner=grafana group=grafana  mode=640

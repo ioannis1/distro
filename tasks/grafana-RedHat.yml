@@ -18,24 +18,18 @@
                 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
 
 - name:  update yum
-  yum:   update_cache=yes  
+  yum: 
+     update_cache: yes
+     autoremove:   yes
 
 - name:  packages
   yum:
+     enablerepo: grafana
      name:
                  - grafana
-                 - grafana-loki
-                 - grafana-prometheus
-                 - grafana-postgres
-                 - grafana-graphite
-                 - grafana-elasticsearch
-                 - grafana-influxdb
-                 - grafana-cloudwatch
-                 - grafana-azure-monitor
-                   #- grafana-mysql
-                   #- grafana-opentsdb
-                   #- grafana-pcp
-                   #- grafana-stackdriver
+ 
+#- command: yum -y --allowerasing upgrade  grafana
+
 ##############################################################################################
 
 - name: grafana files

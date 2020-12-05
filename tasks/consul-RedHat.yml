@@ -31,10 +31,6 @@
      force:    yes
 
 
-- file:  dest=/tmp/consul_{{CONSUL_VER}}_linux_amd64.zip   state=absent  force=yes
-  when:  false
-- file:  dest=/tmp/consul   state=absent  force=yes
-  when:  false
 ####################################################  /etc/consul   FILES
 
 - name: files
@@ -42,3 +38,7 @@
 
 - name: systemd
   include: consul/systemd.yml
+
+############################################################  Cleanup -- rm files
+- file:  dest=/tmp/consul_{{CONSUL_VER}}_linux_amd64.zip   state=absent  force=yes
+- file:  dest=/tmp/consul   state=absent  force=yes

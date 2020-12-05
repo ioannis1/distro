@@ -6,15 +6,19 @@
   copy:        src=etc/systemd/system/pgspray_psgi.service     dest="/etc/systemd/system/"     owner=root
 
 ####################################################   reload servers
-- name:       reload  daemon
-  systemd:    daemon_reload="yes"
-
+- systemd:    daemon_reload="yes"
 - wait_for:    delay=3 timeout=0
 
+
+
 - name:       reload  pgspray
-  no_log:     true
-  systemd:    name="pgspray"   daemon_reload="yes"  state=stopped  enabled=no
-  when:       ansible_facts.services["pgspray.service"].state  == 'disabled'
+  block:
+     -  systemd:    name="pgspray"   daemon_reload="yes"  state=stopped  enabled=no
+        when:       ansible_facts.services["pgspray.service"].state  == 'disabled'
+  rescue:
+     - wait_for:    delay=10 timeout=0
+     - systemd:    name="pgspray"   daemon_reload="yes"  state=stopped  enabled=no
+        when:       ansible_facts.services["pgspray.service"].state  == 'disabled'
 
 - name:       reload  pgspray_psgi
   no_log:     true
