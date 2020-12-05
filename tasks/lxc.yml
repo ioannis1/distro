@@ -39,10 +39,23 @@
 - name:  /etc/lxc
   synchronize:  src="etc/lxc/"  dest="/etc/lxc"   delete='no'  owner=no  dirs=yes #rsync_opts=--ignore-existing
 
+################################################################  systemd
+- systemd:    daemon_reload="yes"
+- wait_for:    delay=3 timeout=0
+
+
+- name:        set service 
+  block:
+        -  systemd:     name="lxc-net"          daemon_reload="yes"   enabled=no  state="stopped"  
+           when:        ansible_facts.services["grafana-server.service"].state  == 'disabled'
+  rescue:
+        -  wait_for:    delay=10 timeout=0
+        -  systemd:     name="lxc-net"          daemon_reload="yes"   enabled=no  state="stopped"  
+           when:        ansible_facts.services["grafana-server.service"].state  == 'disabled'
 
 - systemd:    name="lxc-net"   daemon_reload="yes"   enabled=no  state="restarted"  
   when:  ansible_facts.services["lxc-net.service"].state  == 'running'
-
+         
   #  lxc-create -n mydeb -t debian -- -r stretch
   #  LANG=C SUITE=stretch MIRROR=http://httpredir.debian.org/debian lxc-create -n debian9 -t debian
 

@@ -62,14 +62,26 @@
 - name:       systemd file
   copy:       src=etc/systemd/system/loki.service     dest="/etc/systemd/system/"     owner=root
 
-- name:       reload  daemon
-  systemd:    daemon_reload="yes" 
+- systemd:    daemon_reload="yes"
+- wait_for:    delay=3 timeout=0
 
-- name:       reload  loki
-  systemd:    name="loki"   daemon_reload="yes"  state=stopped  enabled=yes
-  when:       ansible_facts.services["loki.service"].state  == 'disabled'
+- name:        set service 
+  block:
+       - systemd:    name="loki"   daemon_reload="yes"  state=stopped  enabled=yes
+         when:       ansible_facts.services["loki.service"].state  == 'disabled'
+  rescue:
+     - wait_for:    delay=10 timeout=0
+     - systemd:    name="loki"   daemon_reload="yes"  state=stopped  enabled=yes
+       when:       ansible_facts.services["loki.service"].state  == 'disabled'
+
 
 - name:       reload  loki
   systemd:    name="loki"   daemon_reload="yes"  state=restarted  enabled=yes
   when:       ansible_facts.services["loki.service"].state  == 'running'
+
+
+# firewall-cmd --add-port=3100/tcp --permanent
+####################################################  systemd
+
+
 

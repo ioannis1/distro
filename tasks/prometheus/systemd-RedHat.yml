@@ -1,7 +1,17 @@
 ####################################################   systemd
+- systemd:    daemon_reload="yes"
+- wait_for:    delay=3 timeout=0
+
 - name:       reload  alertmanager
-  systemd:    name="alertmanager"   daemon_reload="yes"   state=stopped    enabled=no
-  when:       ansible_facts.services["alertmanager.service"].state  == 'disabled'
+  block:
+      - systemd:    name="alertmanager"   daemon_reload="yes"   state=stopped    enabled=no
+        when:       ansible_facts.services["alertmanager.service"].state  == 'disabled'
+  rescue:
+      - wait_for:    delay=10 timeout=0
+      - systemd:    name="alertmanager"   daemon_reload="yes"   state=stopped    enabled=no
+        when:       ansible_facts.services["alertmanager.service"].state  == 'disabled'
+
+
 
 - name:       reload  apache-exporter
   systemd:    name="apache-exporter"   daemon_reload="yes"   state=stopped    enabled=no
@@ -39,3 +49,5 @@
 - name:       reload  postgres-exporter_5433
   systemd:    name="postgres-exporter_5433"   daemon_reload="yes"  state=stopped  enabled=no
   when:       ansible_facts.services["postgres-exporter_5433.service"].state  == 'disabled'
+  
+# firewall-cmd --add-port=9090/tcp --permanent

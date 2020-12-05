@@ -33,12 +33,17 @@
 
 
 ####################################################   reload servers
-- name:       reload  daemon
-  systemd:    daemon_reload="yes"
+- systemd:    daemon_reload="yes"
+- wait_for:    delay=3 timeout=0
 
-- name:       reload  grok
-  systemd:    name="grok_exporter"   daemon_reload="yes"  state=stopped  enabled=no
-  when:       ansible_facts.services["grok_exporter.service"].state  == 'disabled'
+- name:       set service
+  block:
+      - systemd:    name="grok_exporter"   daemon_reload="yes"  state=stopped  enabled=no
+        when:       ansible_facts.services["grok_exporter.service"].state  == 'disabled'
+  rescue:
+      - wait_for:   delay=10  timeout=0
+      - systemd:    name="grok_exporter"   daemon_reload="yes"  state=stopped  enabled=no
+        when:       ansible_facts.services["grok_exporter.service"].state  == 'disabled'
 
 
 - name:       reload  grok karat

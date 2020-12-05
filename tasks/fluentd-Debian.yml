@@ -37,11 +37,21 @@
 - name:        systemd file
   copy:        src=etc/systemd/system/fluentd.service     dest="/etc/systemd/system/"     owner=root
 ####################################################  reload servers
+- systemd:    daemon_reload="yes"
+- wait_for:    delay=3 timeout=0
 
-- name:       reload  fluentd
-  systemd:    name="fluentd"   daemon_reload="yes"  state=stopped  enabled=no
-  when:       ansible_facts.services["fluentd.service"].state  == 'disabled'
+- name:        set service 
+  block:
+      - systemd:    name="fluentd"   daemon_reload="yes"  state=stopped  enabled=no
+        when:       ansible_facts.services["fluentd.service"].state  == 'disabled'
+  rescue:
+     - wait_for:    delay=10 timeout=0
+      - systemd:    name="fluentd"   daemon_reload="yes"  state=stopped  enabled=no
+        when:       ansible_facts.services["fluentd.service"].state  == 'disabled'
+
 
 - name:       reload  fluentd
   systemd:    name="fluentd"   daemon_reload="yes"  state=restarted  enabled=no
   when:       ansible_facts.services["fluentd.service"].state  == 'running'
+  
+# firewall-cmd --add-port=9880/tcp --permanent    ( not sure about port number)

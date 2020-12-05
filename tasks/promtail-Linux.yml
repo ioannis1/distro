@@ -33,15 +33,18 @@
 - name:        systemd file
   copy:        src=etc/systemd/system/promtail.service     dest="/etc/systemd/system/"     owner=root
 
-- name:       reload  daemon
-  systemd:    daemon_reload="yes"
-
-- wait_for:    delay=3 timeout=0
+- systemd:    daemon_reload="yes"
+- wait_for:   delay=3   timeout=0
 
 
 - name:       reload  promtail
-  systemd:    name="promtail"   daemon_reload="yes"  state=stopped  enabled=yes
-  when:       ansible_facts.services["promtail.service"].state  == 'disabled'
+  block:
+      - systemd:    name="promtail"   daemon_reload="yes"  state=stopped  enabled=yes
+      - when:       ansible_facts.services["promtail.service"].state  == 'disabled'
+  rescue:
+      - wait_for:   delay=10    timeout=0
+      - systemd:    name="promtail"   daemon_reload="yes"  state=stopped  enabled=yes
+      - when:       ansible_facts.services["promtail.service"].state  == 'disabled'
 
 - name:       reload  promtail
   systemd:    name="promtail"   daemon_reload="yes"  state=restarted  enabled=yes
