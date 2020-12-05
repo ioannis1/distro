@@ -201,7 +201,7 @@
   when:          need_slack
   shell:         snap install slack  --classic
 
-- include        zoom.yml
+- include        zoom-Debian.yml
   when:          need_zoom
 
 - name:           libappindicator3
