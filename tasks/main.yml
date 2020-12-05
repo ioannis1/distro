@@ -10,6 +10,7 @@
       HOME:  "/home"
       SHELL: "/bin/bash"
   when:  os_family == "Linux"
+  # ansible_os_family -> RedHat, Debian
 
 - set_fact: 
       HOME:  "/Users"
@@ -42,7 +43,10 @@
 - include: etc.yml
 
 - include: Debian_apps.yml
-  when: os_family == 'Linux'
+  when: ansible_os_family == 'Debian'
+
+- include: RedHat_apps.yml
+  when: ansible_os_family == 'RedHat'
 
 - include: Darwin_apps.yml
   when: os_family == 'Darwin'
