@@ -11,6 +11,8 @@
 - name:            lxc
   apt:             
      pkg:
+                   - debbootstrap
+                   - schroot
                    - lxc 
                    - libvirt-clients 
                    - libvirt-daemon-system 
