@@ -3,6 +3,9 @@
 
 - include: pgbloat.yml
 
+- include: ansible-Debian.yml
+  when:     need_ansible
+
 - include: grafana-Debian.yml
   when:    need_grafana
 

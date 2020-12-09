@@ -27,7 +27,7 @@
 ####################################################  config files 
 
 - name:         config files
-  synchronize:  src=etc/loki    dest="/etc/"    owner=root    delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+  s/nchronize:  src=etc/loki    dest="/etc/"      delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
 ####################################################  systemd
 - name:        systemd file

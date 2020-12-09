@@ -6,13 +6,21 @@ localhost          ansible_ssh_user=root
 [freebsd]
 maya               ansible_ssh_host=localhost   ansible_ssh_user=root      #ansible_ssh_port=2101
 
+[centos]
+rh                ansible_ssh_user=root    
+192.168.122.1     ansible_ssh_user=root         ansible_ssh_extra_args="-o StrictHostKeyChecking=no"
+try                ansible_ssh_user=root    
+
+
 [debian]
-stretch            ansible_ssh_user=root      #ansible_ssh_port=2201
-qm                 ansible_ssh_user=root      #ansible_ssh_port=2205
-qft                ansible_ssh_user=root      #ansible_ssh_port=2201
+stretch            ansible_ssh_user=root  
+qm                 ansible_ssh_user=root   
+qft                ansible_ssh_user=root    
+ads                ansible_ssh_user=root     
 
 [osx]
-localhost    
+localhost         ansible_ssh_user=root
+bulk              ansible_ssh_user=root
 
 [coreos]
 coreos-1

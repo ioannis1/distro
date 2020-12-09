@@ -1,8 +1,0 @@
-      - macports:    name="geos"              state=present
-      - macports:    name="libproj4"          state=present
-      - macports:    name="libgeotiff"        state=present
-      - macports:    name="libmagic"          state=present
-      - macports:    name="gdal"              state=present
-      - macports:    name="libxml2"           state=present
-      - macports:    name="json-c"            state=present
-      - macports:    name="ImageMagick"       state=present

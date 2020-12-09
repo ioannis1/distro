@@ -1,0 +1,6 @@
+#export ANSIBLE_ROLES_PATH=/etc/ansible/roles:/Users/ioannis/prog/ansible/roles
+#ANSIBLE_VAULT_PASSWORD_FILE=~/data/ansible.vault
+
+export   ANSIBLE_CONFIG=/etc/ansible/ansible.cfg
+export   ANSIBLE_INVENTORY=/etc/ansible/hosts
+export   ANSIBLE_VAULT_PASSWORD_FILE=/etc/ansible/ansible.vault

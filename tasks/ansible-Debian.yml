@@ -1,0 +1,17 @@
+- name:            packages
+  apt:
+     pkg:
+                 - ansible
+                   #- ansible-lint
+                   #- ansible-tower-cli
+############################################################# files
+
+- name:  /etc/ansible files
+  synchronize:  src="etc/ansible"    dest="/etc/"     delete='no'  owner=no  dirs=no  rsync_opts=--ignore-existing
+
+- copy:  src="etc/ansible/ansible.vault"  dest="/etc/ansible/"   mode=640  owner=root force=yes
+
+###############################################################################  .bash_ansible
+- file:  src="/etc/ansible/dot_bash_ansible"  dest="/root/.bash_ansible"   state=link  owner=root force=yes  mode=755 
+################################################################  roles directories
+#- file:  path="/home/ioannis/prog/ansible/roles"   state=directory  owner=ioannis  mode=755 
