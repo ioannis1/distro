@@ -1,7 +1,9 @@
 - name:            packages
   apt:
      pkg:
+
                  - ansible
+                 - python3-lxc
                    #- ansible-lint
                    #- ansible-tower-cli
 
