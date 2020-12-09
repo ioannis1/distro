@@ -3,7 +3,7 @@
      pkg:
 
                  - ansible
-                 - python3-lxc
+                 - python3-lxc                   # required by target host, (NOT from wher we lanch ansible)
                    #- ansible-lint
                    #- ansible-tower-cli
 
