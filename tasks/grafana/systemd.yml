@@ -3,7 +3,7 @@
 - systemd:    daemon_reload="yes"
 - wait_for:    delay=3 timeout=0
 
-- name:       reload  daemon
+- name:        set service 
   block:
      - systemd:    name="grafana-server"   daemon_reload="yes"   enabled=no  state="stopped"  
        when:       ansible_facts.services["grafana-server.service"].state  == 'disabled'

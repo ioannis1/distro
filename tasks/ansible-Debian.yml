@@ -4,6 +4,13 @@
                  - ansible
                    #- ansible-lint
                    #- ansible-tower-cli
+
+- name: collections.    slow..... 
+  command:
+     cmd:       ansible-galaxy collection install community.general
+     creates:  /root/.ansible/collections/ansible_collections/community/general
+
+
 ############################################################# files
 
 - name:  /etc/ansible files
@@ -15,3 +22,5 @@
 - file:  src="/etc/ansible/dot_bash_ansible"  dest="/root/.bash_ansible"   state=link  owner=root force=yes  mode=755 
 ################################################################  roles directories
 #- file:  path="/home/ioannis/prog/ansible/roles"   state=directory  owner=ioannis  mode=755 
+
+

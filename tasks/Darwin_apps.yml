@@ -1,6 +1,8 @@
 
 #- include: "Darwin-config.yml"
 
+- include: pgbloat.yml
+
 - include: prometheus-Darwin.yml
   when:    need_prometheus
 
