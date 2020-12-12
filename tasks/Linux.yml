@@ -188,6 +188,8 @@
                   - xpdf
                   - abook
                   - collectd
+                  - apparmor-utils
+
 
 - name:           snapd
   apt:            pkg=snapd
