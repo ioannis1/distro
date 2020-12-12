@@ -15,6 +15,7 @@
                    - schroot
                    - lxc 
                    - libvirt-clients 
+                   - lxctl
                    - libvirt-daemon-system 
                    - iptables 
                    - ebtables 
