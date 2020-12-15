@@ -1,0 +1,24 @@
+#
+- name:            backports
+  apt_repository:  
+       repo:       deb http://deb.debian.org/debian buster-backports main
+       filename:   backports
+
+- modprobe:
+    name: zfs
+
+#command:         /sbin/modprobe zfs
+
+
+- name:            packages   
+  apt:
+     update_cache:    yes
+     default_release: buster
+     pkg:
+                 - dkms
+                 - spl-dkms
+                 - zfs-dkms 
+                 - zfsutils-linux
+
+
+
