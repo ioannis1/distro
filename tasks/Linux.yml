@@ -60,11 +60,6 @@
   when:            false
   apt_repository:  repo="deb http://ppa.launchpad.net/linuxuprising/java/ubuntu bionic main"    state='present'
 
-- name:           slack repository
-  copy:           src="etc/apt/{{ item }}"  dest="/etc/apt/sources.list.d/{{ item }}" owner=root  mode=644
-  with_items:
-      - slack.list
-
 - name:            timescaledb  repository
   apt_repository:  repo="ppa:timescale/timescaledb-ppa"
   when:   false
@@ -157,6 +152,7 @@
                    - zfsnap
 
 
+
 - name:           Install pgxnclient
   apt:            pkg=pgxnclient     
 
@@ -191,24 +187,9 @@
                   - apparmor-utils
 
 
-- name:           snapd
-  apt:            pkg=snapd
-  when:           need_slack
-
-- name:          Slack 
-  when:          need_slack
-  shell:         snap install slack-term
-
-- name:          Slack 
-  when:          need_slack
-  shell:         snap install slack  --classic
-
 - include        zoom-Debian.yml
   when:          need_zoom
 
-- name:           libappindicator3
-  apt:            pkg=libappindicator3
-  when:           need_slack
 
 - name:           apache2
   apt:            pkg=apache2

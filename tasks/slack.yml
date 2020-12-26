@@ -1,0 +1,20 @@
+- name:           slack repository
+  copy:           src="etc/apt/{{ item }}"  dest="/etc/apt/sources.list.d/{{ item }}" owner=root  mode=644
+  with_items:
+      - slack.list
+- name:           snapd
+  apt:            pkg=snapd
+  when:           need_slack
+
+- name:          Slack 
+  when:          need_slack
+  shell:         snap install slack-term
+
+- name:          Slack 
+  when:          need_slack
+  shell:         snap install slack  --classic
+
+- name:           libappindicator3
+  apt:            pkg=libappindicator3
+  when:           need_slack
+
