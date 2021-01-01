@@ -1,0 +1,44 @@
+- name:  cgroup packages
+  apt:
+     pkg:
+        - libcgroup1
+        - cgroup-tools
+        - cgroupfs-mount
+
+- name:  /root/cgroup 
+  synchronize: src="etc/cgroup"  dest="/root/"   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+
+
+
+####################################################  systemd
+- name:       cgconfigparser.service
+  copy:       src=etc/systemd/system/cgconfigparser.service   dest="/etc/systemd/system/"     owner=root
+
+- name:       cgrulesgend.service
+  copy:       src=etc/systemd/system/cgrulesgend.service     dest="/etc/systemd/system/"     owner=root
+
+- systemd:    daemon_reload="yes"
+- wait_for:    delay=3 timeout=0
+
+- name:        set  cgrulesgend
+  block:
+       - systemd:    name="cgrulesgend"   daemon_reload="yes"  state=stopped  enabled=yes
+         when:       ansible_facts.services["cgrulesgend.service"].state  == 'disabled'
+  rescue:
+     - wait_for:    delay=10 timeout=0
+     - systemd:    name="cgrulesgend"   daemon_reload="yes"  state=stopped  enabled=yes
+       when:       ansible_facts.services["cgrulesgend.service"].state  == 'disabled'
+
+- name:       reload  cgrulesgend
+  systemd:    name="cgrulesgend"   daemon_reload="yes"  state=restarted  enabled=yes
+  when:       ansible_facts.services["cgrulesgend.service"].state  == 'running'
+
+#####
+- name:        set  cgconfigparser
+  systemd:    name="cgconfigparser"   daemon_reload="yes"  state=stopped  enabled=yes
+  when:       ansible_facts.services["cgconfigparser.service"].state  == 'disabled'
+
+- name:       reload  cgconfigparser
+  systemd:    name="cgconfigparser"   daemon_reload="yes"  state=restarted  enabled=yes
+  when:       ansible_facts.services["cgconfigparser.service"].state  == 'running'
+

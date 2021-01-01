@@ -1,0 +1,24 @@
+# /etc/cgconfig.conf
+
+group foo {
+  cpu {
+    #cpu.shares = 100;
+    
+    #cpu.cfs_quota_us=10000;   = 10% of cpu usage
+    cpu.cfs_quota_us=10000;   
+
+  }
+  memory {
+    #memory.limit_in_bytes = 5000000;
+    memory.limit_in_bytes = 1024m;
+
+  }
+}
+
+cpuset {
+  cpuset.cpus="0-1";
+}
+
+
+#$ systemctl enable cgconfig
+
