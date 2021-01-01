@@ -8,6 +8,12 @@
 - name:  /root/cgroup 
   synchronize: src="etc/cgroup"  dest="/root/"   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
 
+- name:  cgconfig.conf
+  copy:  src="etc/cgroup/cgconfig.conf"          dest="/etc"    owner=root  force=yes  mode=644
+
+- name:  /etc/cgrules.conf
+  file:   path="/etc/cgroup/rules.conf"         dest="/etc/cgrules.conf"     state=link
+
 
 
 ####################################################  systemd
