@@ -5,15 +5,24 @@
         - cgroup-tools
         - cgroupfs-mount
 
+- name:   mkdir /etc/cgroup
+  file:   path="/etc/cgroup"        state=directory   force=yes  owner=root   mode=750
+
 - name:  /root/cgroup 
-  synchronize: src="etc/cgroup"  dest="/root/"   delete='no'  owner=no  dirs=yes rsync_opts=--ignore-existing
+  synchronize: src="etc/cgroup"  dest="/root/"   delete='no'  owner=no  dirs=yes  rsync_opts=--ignore-existing
 
 - name:  cgconfig.conf
   copy:  src="etc/cgroup/cgconfig.conf"          dest="/etc"    owner=root  force=yes  mode=644
 
-- name:  /etc/cgrules.conf
-  file:   path="/etc/cgroup/rules.conf"         dest="/etc/cgrules.conf"     state=link
+- name:  /etc
+  copy:  src="etc/cgroup/{{ item }}"          dest="/etc/cgroup"   owner=root  force=yes  mode=644
+  with_items:
+      - rules.conf
+      - makefile
+      - cgred.conf
 
+- name:  /etc/cgrules.conf
+  file:   src="/etc/cgroup/rules.conf"         dest="/etc/cgrules.conf"     state=link  force=yes owner=root
 
 
 ####################################################  systemd
@@ -24,27 +33,4 @@
   copy:       src=etc/systemd/system/cgrulesgend.service     dest="/etc/systemd/system/"     owner=root
 
 - systemd:    daemon_reload="yes"
-- wait_for:    delay=3 timeout=0
-
-- name:        set  cgrulesgend
-  block:
-       - systemd:    name="cgrulesgend"   daemon_reload="yes"  state=stopped  enabled=yes
-         when:       ansible_facts.services["cgrulesgend.service"].state  == 'disabled'
-  rescue:
-     - wait_for:    delay=10 timeout=0
-     - systemd:    name="cgrulesgend"   daemon_reload="yes"  state=stopped  enabled=yes
-       when:       ansible_facts.services["cgrulesgend.service"].state  == 'disabled'
-
-- name:       reload  cgrulesgend
-  systemd:    name="cgrulesgend"   daemon_reload="yes"  state=restarted  enabled=yes
-  when:       ansible_facts.services["cgrulesgend.service"].state  == 'running'
-
-#####
-- name:        set  cgconfigparser
-  systemd:    name="cgconfigparser"   daemon_reload="yes"  state=stopped  enabled=yes
-  when:       ansible_facts.services["cgconfigparser.service"].state  == 'disabled'
-
-- name:       reload  cgconfigparser
-  systemd:    name="cgconfigparser"   daemon_reload="yes"  state=restarted  enabled=yes
-  when:       ansible_facts.services["cgconfigparser.service"].state  == 'running'
 
