@@ -23,3 +23,4 @@ need_consul:                false
 need_pgspray:               false
 need_grok:                  false
 need_ansible:               false
+need_cgroup:                false

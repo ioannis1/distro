@@ -33,7 +33,11 @@
 - include: consul-Debian.yml
   when:    need_consul
 
+- include: cgroup.yml
+  when:    need_cgroup
+
 - include: stock_brokers.yml
+  when:    false
 
 - include: X11.yml
 
