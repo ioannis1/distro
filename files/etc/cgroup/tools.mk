@@ -2,7 +2,7 @@
 .PHONY: $(shell ls)
 .DEFAULT_GOAL = check
 
-group  = foo
+GROUP  = foo
 
 PID = 26980
 CG_CONF = etc.conf
@@ -31,8 +31,8 @@ parser par:
 	cgconfigparser -l  $(CG_CONF)
 	/usr/sbin/cgrulesengd -vvv
 check:  par
-	cat /sys/fs/cgroup/cpu/$(group)/tasks
-	cat /sys/fs/cgroup/memory/$(group)/tasks
+	cat /sys/fs/cgroup/cpu/$(GROUP)/tasks
+	cat /sys/fs/cgroup/memory/$(GROUP)/tasks
 
 	systemctl daemon-reload
 	systemctl $(patsubst systemd_%,%,$@)  cgconfigparser
