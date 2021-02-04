@@ -378,3 +378,4 @@
     - macports: name="yarn"
     - macports: name="zlib"
     - macports: name="coreutils"
+    - macports: name="imapfilter"
