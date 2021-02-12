@@ -379,3 +379,5 @@
     - macports: name="zlib"
     - macports: name="coreutils"
     - macports: name="imapfilter"
+    - macports: name="neomutt"
+    - macports: name=" gnupg2"
